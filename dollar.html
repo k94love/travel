@@ -397,6 +397,19 @@
             margin-top: 4px;
         }
 
+        .edit-amount-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .edit-currency-label {
+            font-size: 14px;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+
         /* Results Grid */
         .results-header {
             display: flex;
@@ -635,6 +648,16 @@
             align-items: center;
             padding: 10px 0;
             border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.15s;
+            margin: 0 -8px;
+            padding-left: 8px;
+            padding-right: 8px;
+            border-radius: 8px;
+        }
+
+        .expense-item:hover {
+            background: var(--tertiary);
         }
 
         .expense-item:last-child {
@@ -1067,6 +1090,26 @@
         </div>
     </div>
 
+    <!-- Edit Expense Modal -->
+    <div class="modal-overlay" id="editExpenseModal">
+        <div class="modal">
+            <div class="modal-handle"></div>
+            <div class="modal-header"><h3 class="modal-title">編輯記錄</h3></div>
+            <div class="modal-body">
+                <label class="modal-label">金額</label>
+                <div class="edit-amount-row">
+                    <input type="number" class="modal-input" id="editExpenseAmount" placeholder="0" inputmode="decimal" style="margin-bottom: 0; flex: 1;">
+                    <span class="edit-currency-label" id="editExpensePreviewCurrency">JPY</span>
+                </div>
+                <label class="modal-label" style="margin-top: 16px;">類別</label>
+                <div class="category-grid-modal" id="editCategoryGrid"></div>
+                <label class="modal-label">備註</label>
+                <input type="text" class="note-input-modal" id="editExpenseNote" placeholder="備註（選填）" style="margin-bottom: 0;">
+                <button class="modal-btn" id="saveEditExpenseBtn" style="margin-top: 20px;">儲存變更</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Category Modal -->
     <div class="modal-overlay" id="categoryModal">
         <div class="modal">
@@ -1299,6 +1342,7 @@
             // Add expense - open category modal
             document.getElementById('addExpenseBtn').addEventListener('click', openCategoryModal);
             document.getElementById('confirmExpenseBtn').addEventListener('click', confirmExpense);
+            document.getElementById('saveEditExpenseBtn').addEventListener('click', saveEditExpense);
 
             // Trip bar
             document.getElementById('tripBar').addEventListener('click', openTripSelectModal);
@@ -1565,9 +1609,74 @@
 
         function deleteExpense(id, e) {
             e.stopPropagation();
-            expenses = expenses.filter(ex => ex.id !== id);
+            if (confirm('確定要刪除這筆記錄嗎？')) {
+                expenses = expenses.filter(ex => ex.id !== id);
+                saveData();
+                renderTrips();
+                showToast('已刪除');
+            }
+        }
+
+        // Edit expense
+        let editingExpenseId = null;
+
+        function openEditExpenseModal(id, e) {
+            e.stopPropagation();
+            const expense = expenses.find(ex => ex.id === id);
+            if (!expense) return;
+
+            editingExpenseId = id;
+
+            // Show amount in edit modal
+            document.getElementById('editExpenseAmount').value = expense.amount;
+            document.getElementById('editExpensePreviewCurrency').textContent = `${currencies[expense.currency]?.flag || ''} ${expense.currency}`;
+
+            // Render category grid
+            const grid = document.getElementById('editCategoryGrid');
+            grid.innerHTML = Object.entries(categories).map(([key, cat]) => `
+                <button class="cat-btn-modal ${key === expense.category ? 'selected' : ''}" data-category="${key}">
+                    <span class="cat-icon">${cat.icon}</span>
+                    <span class="cat-name">${cat.name}</span>
+                </button>
+            `).join('');
+
+            // Category selection
+            grid.querySelectorAll('.cat-btn-modal').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    grid.querySelectorAll('.cat-btn-modal').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                });
+            });
+
+            // Note
+            document.getElementById('editExpenseNote').value = expense.note || '';
+
+            document.getElementById('editExpenseModal').classList.add('active');
+        }
+
+        function saveEditExpense() {
+            const expense = expenses.find(ex => ex.id === editingExpenseId);
+            if (!expense) return;
+
+            const newAmount = parseFloat(document.getElementById('editExpenseAmount').value);
+            if (!newAmount || newAmount <= 0) {
+                showToast('請輸入有效金額');
+                return;
+            }
+
+            const selectedCat = document.querySelector('#editCategoryGrid .cat-btn-modal.selected');
+            const newCategory = selectedCat ? selectedCat.dataset.category : expense.category;
+            const newNote = document.getElementById('editExpenseNote').value.trim() || categories[newCategory].name;
+
+            expense.amount = newAmount;
+            expense.amountTWD = toTWD(newAmount, expense.currency);
+            expense.category = newCategory;
+            expense.note = newNote;
+
             saveData();
+            closeAllModals();
             renderTrips();
+            showToast('✓ 已更新');
         }
 
         // ========== TRIPS ==========
@@ -1666,7 +1775,7 @@
                         ${tripExpenses.length ? `
                         <div class="trip-expenses">
                             ${tripExpenses.map(e => `
-                                <div class="expense-item">
+                                <div class="expense-item" onclick="openEditExpenseModal('${e.id}', event)">
                                     <span class="expense-item-icon">${categories[e.category]?.icon || '📌'}</span>
                                     <div class="expense-item-info">
                                         <div class="expense-item-note">${e.note}</div>
