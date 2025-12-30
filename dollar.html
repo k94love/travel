@@ -192,7 +192,13 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
-            align-items: flex-end;
+        }
+
+        .calc-display-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
         }
 
         .calc-expression {
@@ -221,9 +227,7 @@
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 5px 9px;
-            margin-bottom: 10px;
             cursor: pointer;
-            align-self: flex-start;
         }
 
         .currency-badge:hover {
@@ -242,6 +246,26 @@
         .currency-badge .chevron {
             font-size: 9px;
             color: var(--text-dim);
+        }
+
+        .expense-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .expense-badge:active {
+            transform: scale(0.95);
         }
 
         /* Calculator Buttons */
@@ -292,70 +316,85 @@
             color: #ff6b6b;
         }
 
-        /* Category Quick Select */
-        .category-row {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 12px;
-            overflow-x: auto;
-            padding-bottom: 4px;
+        /* Category Modal */
+        .category-grid-modal {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
         }
 
-        .category-row::-webkit-scrollbar {
-            display: none;
-        }
-
-        .cat-btn {
+        .cat-btn-modal {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 4px;
-            padding: 8px 12px;
-            background: var(--secondary);
+            gap: 6px;
+            padding: 16px 12px;
+            background: var(--tertiary);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            font-size: 12px;
-            color: var(--text-dim);
+            border-radius: 14px;
             cursor: pointer;
-            white-space: nowrap;
             transition: all 0.15s;
         }
 
-        .cat-btn.selected {
+        .cat-btn-modal:hover, .cat-btn-modal.selected {
             border-color: var(--accent);
             background: var(--accent-glow);
+        }
+
+        .cat-btn-modal .cat-icon {
+            font-size: 28px;
+        }
+
+        .cat-btn-modal .cat-name {
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .cat-btn-modal.selected .cat-name {
             color: var(--accent);
         }
 
-        .cat-btn .cat-icon {
+        .note-input-modal {
+            width: 100%;
+            background: var(--tertiary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-family: inherit;
             font-size: 14px;
+            color: var(--text);
+            margin-bottom: 16px;
         }
 
-        /* Add Expense Button */
-        .add-expense-row {
-            display: flex;
-            gap: 10px;
+        .note-input-modal:focus {
+            outline: none;
+            border-color: var(--accent);
         }
 
-        .add-expense-btn {
-            flex: 1;
-            padding: 14px;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
-            border: none;
-            border-radius: 14px;
-            font-size: 15px;
+        .note-input-modal::placeholder {
+            color: var(--text-dim);
+        }
+
+        .expense-amount-preview {
+            text-align: center;
+            padding: 16px;
+            background: var(--primary);
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .expense-amount-preview .amount {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 28px;
             font-weight: 600;
-            color: var(--primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
+            color: var(--accent);
         }
 
-        .add-expense-btn:active {
-            transform: scale(0.98);
+        .expense-amount-preview .currency {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-top: 4px;
         }
 
         /* Results Grid */
@@ -910,23 +949,19 @@
             <span class="trip-bar-chevron">▶</span>
         </div>
 
-        <!-- Category Quick Select -->
-        <div class="category-row">
-            <button class="cat-btn selected" data-category="food"><span class="cat-icon">🍜</span>餐飲</button>
-            <button class="cat-btn" data-category="transport"><span class="cat-icon">🚗</span>交通</button>
-            <button class="cat-btn" data-category="hotel"><span class="cat-icon">🏨</span>住宿</button>
-            <button class="cat-btn" data-category="shopping"><span class="cat-icon">🛒</span>購物</button>
-            <button class="cat-btn" data-category="entertainment"><span class="cat-icon">🎮</span>娛樂</button>
-            <button class="cat-btn" data-category="other"><span class="cat-icon">📌</span>其他</button>
-        </div>
-
         <!-- Calculator -->
         <div class="calculator-card">
             <div class="calc-display">
-                <div class="currency-badge" id="currencyBadge">
-                    <span class="flag" id="baseFlag">🇯🇵</span>
-                    <span class="code" id="baseCode">JPY</span>
-                    <span class="chevron">▼</span>
+                <div class="calc-display-top">
+                    <div class="currency-badge" id="currencyBadge">
+                        <span class="flag" id="baseFlag">🇯🇵</span>
+                        <span class="code" id="baseCode">JPY</span>
+                        <span class="chevron">▼</span>
+                    </div>
+                    <button class="expense-badge" id="addExpenseBtn">
+                        <span>📝</span>
+                        <span>記帳</span>
+                    </button>
                 </div>
                 <div class="calc-expression" id="expression"></div>
                 <div class="calc-result" id="result">0</div>
@@ -954,14 +989,6 @@
                 <button class="calc-btn num" data-num=".">.</button>
                 <button class="calc-btn action" data-action="equals">=</button>
             </div>
-        </div>
-
-        <!-- Add Expense Button -->
-        <div class="add-expense-row">
-            <button class="add-expense-btn" id="addExpenseBtn">
-                <span>📝</span>
-                <span>記帳</span>
-            </button>
         </div>
 
         <!-- Results -->
@@ -1037,6 +1064,23 @@
             <div class="modal-handle"></div>
             <div class="modal-header"><h3 class="modal-title">選擇旅程</h3></div>
             <div class="modal-body" id="tripSelectBody"></div>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal-overlay" id="categoryModal">
+        <div class="modal">
+            <div class="modal-handle"></div>
+            <div class="modal-header"><h3 class="modal-title">選擇類別並記帳</h3></div>
+            <div class="modal-body">
+                <div class="expense-amount-preview">
+                    <div class="amount" id="expensePreviewAmount">0</div>
+                    <div class="currency" id="expensePreviewCurrency">JPY</div>
+                </div>
+                <div class="category-grid-modal" id="categoryGrid"></div>
+                <input type="text" class="note-input-modal" id="expenseNote" placeholder="備註（選填）">
+                <button class="modal-btn" id="confirmExpenseBtn">確認記帳</button>
+            </div>
         </div>
     </div>
 
@@ -1179,6 +1223,7 @@
                 expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
                 currentTripId = localStorage.getItem('currentTripId') || null;
                 baseCurrency = localStorage.getItem('baseCurrency') || 'JPY';
+                selectedCategory = localStorage.getItem('lastCategory') || 'food';
 
                 const stored = localStorage.getItem('fx_rates_history');
                 if (stored) {
@@ -1251,17 +1296,9 @@
                 setTimeout(() => document.getElementById('refreshBtn').classList.remove('spinning'), 500);
             });
 
-            // Category
-            document.querySelectorAll('.cat-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    selectedCategory = btn.dataset.category;
-                });
-            });
-
-            // Add expense
-            document.getElementById('addExpenseBtn').addEventListener('click', addExpense);
+            // Add expense - open category modal
+            document.getElementById('addExpenseBtn').addEventListener('click', openCategoryModal);
+            document.getElementById('confirmExpenseBtn').addEventListener('click', confirmExpense);
 
             // Trip bar
             document.getElementById('tripBar').addEventListener('click', openTripSelectModal);
@@ -1459,30 +1496,70 @@
         }
 
         // ========== EXPENSE ==========
-        function addExpense() {
+        let pendingExpenseAmount = 0;
+
+        function openCategoryModal() {
             if (!currentTripId) {
                 showToast('請先選擇旅程');
                 openTripSelectModal();
                 return;
             }
-            const amount = calculate();
-            if (!amount || amount <= 0) {
+            
+            pendingExpenseAmount = calculate();
+            if (!pendingExpenseAmount || pendingExpenseAmount <= 0) {
                 showToast('請輸入金額');
                 return;
             }
+
+            // Show amount preview
+            document.getElementById('expensePreviewAmount').textContent = formatAmount(pendingExpenseAmount, baseCurrency);
+            document.getElementById('expensePreviewCurrency').textContent = `${currencies[baseCurrency].flag} ${baseCurrency}`;
+
+            // Render category grid
+            const grid = document.getElementById('categoryGrid');
+            grid.innerHTML = Object.entries(categories).map(([key, cat]) => `
+                <button class="cat-btn-modal ${key === selectedCategory ? 'selected' : ''}" data-category="${key}">
+                    <span class="cat-icon">${cat.icon}</span>
+                    <span class="cat-name">${cat.name}</span>
+                </button>
+            `).join('');
+
+            // Category selection
+            grid.querySelectorAll('.cat-btn-modal').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    grid.querySelectorAll('.cat-btn-modal').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    selectedCategory = btn.dataset.category;
+                    // Save last selected category
+                    localStorage.setItem('lastCategory', selectedCategory);
+                });
+            });
+
+            // Clear note
+            document.getElementById('expenseNote').value = '';
+
+            document.getElementById('categoryModal').classList.add('active');
+        }
+
+        function confirmExpense() {
+            const note = document.getElementById('expenseNote').value.trim() || categories[selectedCategory].name;
 
             expenses.push({
                 id: Date.now().toString(),
                 tripId: currentTripId,
                 category: selectedCategory,
                 currency: baseCurrency,
-                amount,
-                amountTWD: toTWD(amount, baseCurrency),
-                note: categories[selectedCategory].name,
+                amount: pendingExpenseAmount,
+                amountTWD: toTWD(pendingExpenseAmount, baseCurrency),
+                note,
                 date: new Date().toISOString()
             });
+
+            // Save last selected category
+            localStorage.setItem('lastCategory', selectedCategory);
             saveData();
             clear();
+            closeAllModals();
             showToast('✓ 已記帳');
         }
 
