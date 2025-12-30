@@ -4,10 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>我的旅程 ✈️</title>
+
+    <!-- PWA / iOS App 設定 -->
+    <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="main.png">
     <link rel="apple-touch-icon" href="main.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="main.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="main.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="main.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="旅程">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#FF6B6B">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -606,8 +615,48 @@
         // Initialize
         renderTrips();
 
+        // iOS Web App 模式導航處理
+        // 攔截所有內部連結，保持在 Web App 模式中
+        function setupWebAppNavigation() {
+            document.addEventListener('click', function(e) {
+                // 找到被點擊的 <a> 標籤
+                let target = e.target;
+                while (target && target.tagName !== 'A') {
+                    target = target.parentElement;
+                }
+
+                if (target && target.tagName === 'A') {
+                    const href = target.getAttribute('href');
+
+                    // 只處理相對路徑（內部連結）
+                    if (href && !href.startsWith('http') && !href.startsWith('//')) {
+                        e.preventDefault();
+                        window.location.href = href;
+                    }
+                }
+            }, true);
+        }
+
+        // 檢查是否在 Web App 模式中運行
+        if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
+            setupWebAppNavigation();
+        }
+
         // Prevent double-tap zoom
         document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
+
+        // 註冊 Service Worker（PWA 離線支援）
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker 註冊成功:', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker 註冊失敗:', err);
+                    });
+            });
+        }
     </script>
 </body>
 </html>
