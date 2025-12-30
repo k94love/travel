@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>即時匯率換算器</title>
+    <title>匯率換算器</title>
     <link rel="icon" type="image/x-icon" href="https://k94love.github.io/travel/favicon.ico">
     <link rel="shortcut icon" type="image/x-icon" href="https://k94love.github.io/travel/favicon.ico">
     <link rel="icon" type="image/png" href="https://k94love.github.io/travel/favicon.png">
@@ -1042,17 +1042,41 @@
                 `;
             }).join('');
 
-            // Click to copy
+            // Click to swap currencies
             document.querySelectorAll('.result-row').forEach(row => {
                 row.addEventListener('click', () => {
-                    const code = row.dataset.currency;
-                    const rate = getRate(baseCurrency, code, todayRates);
-                    const convertedAmount = rate ? amount * rate : 0;
+                    const clickedCurrency = row.dataset.currency;
+                    const oldBaseCurrency = baseCurrency;
                     
-                    navigator.clipboard.writeText(formatAmount(convertedAmount, code).replace(/,/g, '')).then(() => {
-                        row.classList.add('highlight');
-                        setTimeout(() => row.classList.remove('highlight'), 300);
-                    });
+                    // Swap: clicked currency becomes base, old base becomes target
+                    baseCurrency = clickedCurrency;
+                    updateBaseCurrencyDisplay();
+                    
+                    // Get current input amount
+                    const currentAmount = calculate();
+                    
+                    // Convert the amount to the new base currency
+                    if (currentAmount > 0) {
+                        const rate = getRate(oldBaseCurrency, clickedCurrency, todayRates);
+                        if (rate) {
+                            const newAmount = currentAmount * rate;
+                            // Format based on currency type
+                            const noDecimalCurrencies = ['JPY', 'KRW', 'VND', 'TWD'];
+                            if (noDecimalCurrencies.includes(clickedCurrency)) {
+                                currentInput = Math.round(newAmount).toString();
+                            } else {
+                                currentInput = newAmount.toFixed(2);
+                            }
+                            expression = '';
+                            shouldResetInput = true;
+                        }
+                    }
+                    
+                    // Highlight effect
+                    row.classList.add('highlight');
+                    setTimeout(() => row.classList.remove('highlight'), 300);
+                    
+                    updateDisplay();
                 });
             });
         }
