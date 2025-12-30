@@ -10,8 +10,6 @@
     <link rel="apple-touch-icon" href="https://k94love.github.io/travel/favicon.png">
     <link rel="apple-touch-icon-precomposed" href="https://k94love.github.io/travel/favicon.png">
     <link rel="apple-touch-icon" sizes="180x180" href="https://k94love.github.io/travel/favicon.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="https://k94love.github.io/travel/favicon.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="https://k94love.github.io/travel/favicon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="旅行記帳">
@@ -48,7 +46,6 @@
             color: var(--text);
             overflow-x: hidden;
             touch-action: manipulation;
-            -ms-touch-action: manipulation;
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             user-select: none;
@@ -68,14 +65,13 @@
                 radial-gradient(ellipse 60% 80% at 80% 60%, rgba(59, 130, 246, 0.03) 0%, transparent 50%);
         }
 
-        /* Pages */
         .page {
             display: none;
             position: relative;
             z-index: 1;
             max-width: 480px;
             margin: 0 auto;
-            padding: 24px 16px;
+            padding: 20px 16px;
             min-height: calc(100vh - 80px);
         }
 
@@ -88,7 +84,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .logo {
@@ -112,7 +108,6 @@
         .header h1 {
             font-size: 18px;
             font-weight: 600;
-            color: var(--text);
         }
 
         .status-bar {
@@ -132,66 +127,68 @@
         }
 
         .status-dot.loading { background: var(--warning); }
-        .status-dot.error { background: #ef4444; animation: none; }
+        .status-dot.error { background: var(--danger); animation: none; }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.4; }
         }
 
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--secondary);
-            border-top: 1px solid var(--border);
+        /* Trip Selector Bar */
+        .trip-bar {
             display: flex;
-            justify-content: space-around;
-            padding: 12px 0;
-            padding-bottom: max(12px, env(safe-area-inset-bottom));
-            z-index: 1000;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 4px;
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            font-size: 11px;
-            cursor: pointer;
-            padding: 8px 16px;
+            gap: 10px;
+            background: var(--secondary);
+            border: 1px solid var(--border);
             border-radius: 12px;
-            transition: all 0.2s;
+            padding: 10px 14px;
+            margin-bottom: 16px;
+            cursor: pointer;
         }
 
-        .nav-item.active {
-            color: var(--accent);
+        .trip-bar:hover {
+            border-color: var(--accent);
         }
 
-        .nav-item .nav-icon {
+        .trip-bar-icon {
             font-size: 22px;
         }
 
-        /* Calculator Card */
+        .trip-bar-info {
+            flex: 1;
+        }
+
+        .trip-bar-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .trip-bar-detail {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .trip-bar-chevron {
+            color: var(--text-dim);
+            font-size: 12px;
+        }
+
+        /* Calculator */
         .calculator-card {
             background: var(--secondary);
             border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 20px;
-            margin-bottom: 20px;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
         }
 
         .calc-display {
             background: var(--primary);
-            border-radius: 16px;
-            padding: 16px 20px;
-            margin-bottom: 16px;
-            min-height: 100px;
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            min-height: 90px;
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
@@ -200,19 +197,18 @@
 
         .calc-expression {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 16px;
+            font-size: 14px;
             color: var(--text-dim);
-            margin-bottom: 8px;
-            min-height: 20px;
+            margin-bottom: 6px;
+            min-height: 18px;
             word-break: break-all;
             text-align: right;
         }
 
         .calc-result {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 36px;
+            font-size: 32px;
             font-weight: 600;
-            color: var(--text);
             word-break: break-all;
             text-align: right;
         }
@@ -224,10 +220,9 @@
             background: var(--tertiary);
             border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 6px 10px;
-            margin-bottom: 12px;
+            padding: 5px 9px;
+            margin-bottom: 10px;
             cursor: pointer;
-            transition: all 0.2s;
             align-self: flex-start;
         }
 
@@ -236,33 +231,32 @@
         }
 
         .currency-badge .flag {
-            font-size: 16px;
+            font-size: 15px;
         }
 
         .currency-badge .code {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
-            color: var(--text);
         }
 
         .currency-badge .chevron {
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-dim);
         }
 
-        /* Calculator buttons */
+        /* Calculator Buttons */
         .calc-buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            gap: 8px;
         }
 
         .calc-btn {
-            aspect-ratio: 1.3;
+            aspect-ratio: 1.4;
             border: none;
-            border-radius: 14px;
+            border-radius: 12px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 500;
             cursor: pointer;
             transition: transform 0.1s;
@@ -271,7 +265,6 @@
             justify-content: center;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
             user-select: none;
         }
 
@@ -284,17 +277,9 @@
             color: var(--text);
         }
 
-        .calc-btn.num:hover {
-            background: #253352;
-        }
-
         .calc-btn.op {
             background: var(--btn-op);
             color: var(--accent);
-        }
-
-        .calc-btn.op:hover {
-            background: #354a6a;
         }
 
         .calc-btn.action {
@@ -302,30 +287,87 @@
             color: var(--primary);
         }
 
-        .calc-btn.action:hover {
-            background: #00c49a;
-        }
-
         .calc-btn.clear {
             background: #3d2a2a;
             color: #ff6b6b;
         }
 
-        .calc-btn.clear:hover {
-            background: #4d3535;
+        /* Category Quick Select */
+        .category-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            overflow-x: auto;
+            padding-bottom: 4px;
         }
 
-        /* Results Section */
+        .category-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cat-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-dim);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s;
+        }
+
+        .cat-btn.selected {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+            color: var(--accent);
+        }
+
+        .cat-btn .cat-icon {
+            font-size: 14px;
+        }
+
+        /* Add Expense Button */
+        .add-expense-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .add-expense-btn {
+            flex: 1;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .add-expense-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Results Grid */
         .results-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
-            padding: 0 4px;
+            margin-bottom: 10px;
         }
 
         .results-title {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 500;
             color: var(--text-dim);
         }
@@ -337,16 +379,14 @@
             cursor: pointer;
             padding: 6px;
             border-radius: 6px;
-            transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 12px;
+            gap: 5px;
+            font-size: 11px;
         }
 
         .refresh-btn:hover {
             color: var(--accent);
-            background: rgba(0, 212, 170, 0.1);
         }
 
         .refresh-btn.spinning svg {
@@ -358,21 +398,16 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Currency Results Grid */
         .results-grid {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            max-height: 300px;
+            gap: 6px;
+            max-height: 200px;
             overflow-y: auto;
         }
 
         .results-grid::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .results-grid::-webkit-scrollbar-track {
-            background: transparent;
+            width: 3px;
         }
 
         .results-grid::-webkit-scrollbar-thumb {
@@ -385,53 +420,34 @@
             align-items: center;
             background: var(--secondary);
             border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 14px 16px;
+            border-radius: 12px;
+            padding: 10px 12px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s;
         }
 
-        .result-row:hover {
-            border-color: var(--accent);
-            background: rgba(0, 212, 170, 0.03);
-        }
-
-        .result-row.highlight {
+        .result-row:hover, .result-row.highlight {
             border-color: var(--accent);
             background: var(--accent-glow);
         }
 
         .result-flag {
-            font-size: 26px;
-            margin-right: 12px;
+            font-size: 22px;
+            margin-right: 10px;
         }
 
         .result-info {
             flex: 1;
-            min-width: 0;
-        }
-
-        .result-currency {
-            display: flex;
-            align-items: baseline;
-            gap: 6px;
         }
 
         .result-code {
-            font-size: 15px;
+            font-size: 13px;
             font-weight: 600;
-            color: var(--text);
-        }
-
-        .result-name {
-            font-size: 11px;
-            color: var(--text-dim);
         }
 
         .result-rate {
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-dim);
-            margin-top: 2px;
             font-family: 'JetBrains Mono', monospace;
         }
 
@@ -441,324 +457,66 @@
 
         .result-amount {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 500;
             color: var(--accent);
         }
 
         .result-change {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            margin-top: 4px;
+            font-size: 10px;
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            gap: 4px;
+            gap: 2px;
         }
 
         .result-change.up { color: var(--success); }
         .result-change.down { color: var(--danger); }
         .result-change.neutral { color: var(--text-dim); }
 
-        /* ========== EXPENSE PAGE ========== */
-        .trip-selector {
-            background: var(--secondary);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 14px 16px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-        }
-
-        .trip-selector:hover {
-            border-color: var(--accent);
-        }
-
-        .trip-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .trip-icon {
-            font-size: 28px;
-        }
-
-        .trip-details h3 {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .trip-details p {
-            font-size: 12px;
-            color: var(--text-dim);
-        }
-
-        .trip-chevron {
-            color: var(--text-dim);
-        }
-
-        /* Category Grid */
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .category-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            padding: 16px 12px;
-            background: var(--secondary);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .category-btn:hover, .category-btn.selected {
-            border-color: var(--accent);
-            background: var(--accent-glow);
-        }
-
-        .category-btn .cat-icon {
-            font-size: 24px;
-        }
-
-        .category-btn .cat-name {
-            font-size: 12px;
-            color: var(--text-dim);
-        }
-
-        .category-btn.selected .cat-name {
-            color: var(--accent);
-        }
-
-        /* Expense Input */
-        .expense-input-section {
-            background: var(--secondary);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .expense-amount-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .expense-currency-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--tertiary);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px 14px;
-            cursor: pointer;
-        }
-
-        .expense-currency-btn:hover {
-            border-color: var(--accent);
-        }
-
-        .expense-currency-btn .flag {
-            font-size: 20px;
-        }
-
-        .expense-currency-btn .code {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .expense-amount-input {
-            flex: 1;
-            background: var(--tertiary);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 20px;
-            color: var(--text);
-            text-align: right;
-        }
-
-        .expense-amount-input:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .expense-note-input {
-            width: 100%;
-            background: var(--tertiary);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px 16px;
-            font-family: inherit;
-            font-size: 14px;
-            color: var(--text);
-            margin-bottom: 16px;
-        }
-
-        .expense-note-input:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .expense-note-input::placeholder {
-            color: var(--text-dim);
-        }
-
-        .add-expense-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--primary);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .add-expense-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(0, 212, 170, 0.4);
-        }
-
-        /* Expense List */
-        .expense-list-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .expense-list-title {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-dim);
-        }
-
-        .expense-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .expense-item {
-            display: flex;
-            align-items: center;
-            background: var(--secondary);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 14px 16px;
-        }
-
-        .expense-item-icon {
-            font-size: 24px;
-            margin-right: 12px;
-        }
-
-        .expense-item-info {
-            flex: 1;
-        }
-
-        .expense-item-note {
-            font-size: 14px;
-            color: var(--text);
-        }
-
-        .expense-item-meta {
-            font-size: 11px;
-            color: var(--text-dim);
-            margin-top: 2px;
-        }
-
-        .expense-item-amount {
-            text-align: right;
-        }
-
-        .expense-item-original {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .expense-item-converted {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            color: var(--accent);
-            margin-top: 2px;
-        }
-
-        .expense-item-delete {
-            background: none;
-            border: none;
-            color: var(--danger);
-            font-size: 18px;
-            cursor: pointer;
-            padding: 4px 8px;
-            margin-left: 8px;
-            opacity: 0.6;
-        }
-
-        .expense-item-delete:hover {
-            opacity: 1;
-        }
-
         /* ========== TRIPS PAGE ========== */
-        .trips-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
             margin-bottom: 20px;
         }
 
         .add-trip-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--secondary);
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            font-size: 15px;
+            color: var(--text-dim);
+            cursor: pointer;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 10px 16px;
-            background: var(--accent);
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--primary);
-            cursor: pointer;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .add-trip-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         .trip-card {
             background: var(--secondary);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 20px;
+            padding: 16px;
             margin-bottom: 12px;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
-        .trip-card:hover {
+        .trip-card:hover, .trip-card.active {
             border-color: var(--accent);
         }
 
         .trip-card.active {
-            border-color: var(--accent);
             background: var(--accent-glow);
         }
 
@@ -770,7 +528,7 @@
         }
 
         .trip-card-icon {
-            font-size: 32px;
+            font-size: 28px;
         }
 
         .trip-card-title {
@@ -778,28 +536,26 @@
         }
 
         .trip-card-title h3 {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
-            color: var(--text);
         }
 
         .trip-card-title p {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-dim);
         }
 
-        .trip-card-actions {
-            display: flex;
-            gap: 8px;
+        .trip-card-delete {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            opacity: 0.5;
+            padding: 8px;
         }
 
-        .trip-card-actions button {
-            background: var(--tertiary);
-            border: none;
-            border-radius: 8px;
-            padding: 8px;
-            cursor: pointer;
-            font-size: 14px;
+        .trip-card-delete:hover {
+            opacity: 1;
         }
 
         .trip-card-stats {
@@ -814,16 +570,122 @@
         }
 
         .trip-stat-label {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-dim);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .trip-stat-value {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             color: var(--accent);
+        }
+
+        /* Expense List in Trip Card */
+        .trip-expenses {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .expense-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .expense-item:last-child {
+            border-bottom: none;
+        }
+
+        .expense-item-icon {
+            font-size: 18px;
+            margin-right: 10px;
+        }
+
+        .expense-item-info {
+            flex: 1;
+        }
+
+        .expense-item-note {
+            font-size: 13px;
+        }
+
+        .expense-item-meta {
+            font-size: 10px;
+            color: var(--text-dim);
+        }
+
+        .expense-item-amount {
+            text-align: right;
+        }
+
+        .expense-item-original {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .expense-item-converted {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--accent);
+        }
+
+        .expense-item-delete {
+            background: none;
+            border: none;
+            color: var(--danger);
+            font-size: 14px;
+            cursor: pointer;
+            padding: 4px 8px;
+            margin-left: 8px;
+            opacity: 0.5;
+        }
+
+        .expense-item-delete:hover {
+            opacity: 1;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--secondary);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 10px;
+            cursor: pointer;
+            padding: 6px 20px;
+            border-radius: 10px;
+        }
+
+        .nav-item.active {
+            color: var(--accent);
+        }
+
+        .nav-item .nav-icon {
+            font-size: 22px;
         }
 
         /* Modal */
@@ -853,7 +715,7 @@
             right: 0;
             background: var(--secondary);
             border-radius: 20px 20px 0 0;
-            max-height: 80vh;
+            max-height: 70vh;
             z-index: 2001;
             transform: translateY(100%);
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -875,14 +737,13 @@
         }
 
         .modal-header {
-            padding: 0 20px 16px;
+            padding: 0 20px 14px;
             border-bottom: 1px solid var(--border);
         }
 
         .modal-title {
             font-size: 16px;
             font-weight: 600;
-            color: var(--text);
         }
 
         .modal-body {
@@ -912,6 +773,13 @@
             color: var(--text-dim);
         }
 
+        .modal-label {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+            display: block;
+        }
+
         .modal-btn {
             width: 100%;
             padding: 14px;
@@ -925,15 +793,14 @@
             margin-top: 8px;
         }
 
-        /* Currency option in modal */
+        /* Currency Option */
         .currency-option {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 14px 12px;
+            padding: 12px;
             border-radius: 10px;
             cursor: pointer;
-            transition: background 0.2s;
         }
 
         .currency-option:hover {
@@ -945,7 +812,7 @@
         }
 
         .currency-option .currency-flag {
-            font-size: 28px;
+            font-size: 26px;
         }
 
         .currency-option-info {
@@ -953,19 +820,18 @@
         }
 
         .currency-option-code {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
-            color: var(--text);
         }
 
         .currency-option-name {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-dim);
         }
 
         .currency-option-check {
             color: var(--accent);
-            font-size: 18px;
+            font-size: 16px;
             opacity: 0;
         }
 
@@ -973,7 +839,7 @@
             opacity: 1;
         }
 
-        /* Empty state */
+        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -981,43 +847,47 @@
         }
 
         .empty-state-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
+            font-size: 40px;
+            margin-bottom: 10px;
         }
 
         .empty-state-text {
+            font-size: 13px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--tertiary);
+            border: 1px solid var(--accent);
+            padding: 12px 24px;
+            border-radius: 12px;
             font-size: 14px;
-        }
-
-        /* Footer */
-        .footer {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 11px;
-            color: var(--text-dim);
-            opacity: 0.7;
-        }
-
-        .footer a {
             color: var(--accent);
-            text-decoration: none;
+            z-index: 3000;
+            opacity: 0;
+            transition: all 0.3s;
+            pointer-events: none;
         }
 
-        @media (max-width: 400px) {
-            .calc-result {
-                font-size: 28px;
-            }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
 
-            .calc-btn {
-                font-size: 18px;
-            }
+        @media (max-width: 380px) {
+            .calc-result { font-size: 26px; }
+            .calc-btn { font-size: 18px; }
         }
     </style>
 </head>
 <body>
     <div class="bg-gradient"></div>
 
-    <!-- ========== PAGE 1: CONVERTER ========== -->
+    <!-- ========== PAGE: CONVERTER ========== -->
     <div class="page active" id="pageConverter">
         <header class="header">
             <div class="logo">
@@ -1030,11 +900,32 @@
             </div>
         </header>
 
+        <!-- Current Trip Bar -->
+        <div class="trip-bar" id="tripBar">
+            <span class="trip-bar-icon" id="tripBarIcon">🧳</span>
+            <div class="trip-bar-info">
+                <div class="trip-bar-name" id="tripBarName">尚未選擇旅程</div>
+                <div class="trip-bar-detail" id="tripBarDetail">點擊選擇或新增旅程</div>
+            </div>
+            <span class="trip-bar-chevron">▶</span>
+        </div>
+
+        <!-- Category Quick Select -->
+        <div class="category-row">
+            <button class="cat-btn selected" data-category="food"><span class="cat-icon">🍜</span>餐飲</button>
+            <button class="cat-btn" data-category="transport"><span class="cat-icon">🚗</span>交通</button>
+            <button class="cat-btn" data-category="hotel"><span class="cat-icon">🏨</span>住宿</button>
+            <button class="cat-btn" data-category="shopping"><span class="cat-icon">🛒</span>購物</button>
+            <button class="cat-btn" data-category="entertainment"><span class="cat-icon">🎮</span>娛樂</button>
+            <button class="cat-btn" data-category="other"><span class="cat-icon">📌</span>其他</button>
+        </div>
+
+        <!-- Calculator -->
         <div class="calculator-card">
             <div class="calc-display">
                 <div class="currency-badge" id="currencyBadge">
-                    <span class="flag" id="baseFlag">🇹🇼</span>
-                    <span class="code" id="baseCode">TWD</span>
+                    <span class="flag" id="baseFlag">🇯🇵</span>
+                    <span class="code" id="baseCode">JPY</span>
                     <span class="chevron">▼</span>
                 </div>
                 <div class="calc-expression" id="expression"></div>
@@ -1065,128 +956,45 @@
             </div>
         </div>
 
-        <div class="results-header">
-            <span class="results-title">換算結果 (24h漲跌)</span>
+        <!-- Add Expense Button -->
+        <div class="add-expense-row">
+            <button class="add-expense-btn" id="addExpenseBtn">
+                <span>📝</span>
+                <span>記帳</span>
+            </button>
+        </div>
+
+        <!-- Results -->
+        <div class="results-header" style="margin-top: 16px;">
+            <span class="results-title">換算結果</span>
             <button class="refresh-btn" id="refreshBtn">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
                 </svg>
-                重新整理
+                更新
             </button>
         </div>
 
-        <div class="results-grid" id="resultsGrid">
-            <div class="empty-state">
-                <div class="empty-state-text">輸入金額查看換算結果</div>
-            </div>
-        </div>
+        <div class="results-grid" id="resultsGrid"></div>
     </div>
 
-    <!-- ========== PAGE 2: EXPENSE ========== -->
-    <div class="page" id="pageExpense">
-        <header class="header">
-            <div class="logo">
-                <div class="logo-icon">📝</div>
-                <h1>記帳</h1>
-            </div>
-        </header>
-
-        <div class="trip-selector" id="tripSelector">
-            <div class="trip-info">
-                <span class="trip-icon" id="currentTripIcon">🧳</span>
-                <div class="trip-details">
-                    <h3 id="currentTripName">尚未選擇旅程</h3>
-                    <p id="currentTripDate">請先建立或選擇旅程</p>
-                </div>
-            </div>
-            <span class="trip-chevron">▶</span>
-        </div>
-
-        <div class="category-grid">
-            <button class="category-btn selected" data-category="food">
-                <span class="cat-icon">🍜</span>
-                <span class="cat-name">餐飲</span>
-            </button>
-            <button class="category-btn" data-category="transport">
-                <span class="cat-icon">🚗</span>
-                <span class="cat-name">交通</span>
-            </button>
-            <button class="category-btn" data-category="hotel">
-                <span class="cat-icon">🏨</span>
-                <span class="cat-name">住宿</span>
-            </button>
-            <button class="category-btn" data-category="shopping">
-                <span class="cat-icon">🛒</span>
-                <span class="cat-name">購物</span>
-            </button>
-            <button class="category-btn" data-category="entertainment">
-                <span class="cat-icon">🎮</span>
-                <span class="cat-name">娛樂</span>
-            </button>
-            <button class="category-btn" data-category="other">
-                <span class="cat-icon">📌</span>
-                <span class="cat-name">其他</span>
-            </button>
-        </div>
-
-        <div class="expense-input-section">
-            <div class="expense-amount-row">
-                <button class="expense-currency-btn" id="expenseCurrencyBtn">
-                    <span class="flag" id="expenseCurrencyFlag">🇯🇵</span>
-                    <span class="code" id="expenseCurrencyCode">JPY</span>
-                    <span class="chevron">▼</span>
-                </button>
-                <input type="number" class="expense-amount-input" id="expenseAmount" placeholder="0" inputmode="decimal">
-            </div>
-            <input type="text" class="expense-note-input" id="expenseNote" placeholder="備註（選填）">
-            <button class="add-expense-btn" id="addExpenseBtn">新增支出</button>
-        </div>
-
-        <div class="expense-list-header">
-            <span class="expense-list-title">今日支出</span>
-        </div>
-        <div class="expense-list" id="expenseList">
-            <div class="empty-state">
-                <div class="empty-state-icon">📋</div>
-                <div class="empty-state-text">尚無支出記錄</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========== PAGE 3: TRIPS ========== -->
+    <!-- ========== PAGE: TRIPS ========== -->
     <div class="page" id="pageTrips">
-        <header class="header">
-            <div class="logo">
-                <div class="logo-icon">🧳</div>
-                <h1>旅程管理</h1>
-            </div>
-        </header>
+        <h2 class="page-title">🧳 我的旅程</h2>
 
-        <div class="trips-header">
-            <span class="results-title">我的旅程</span>
-            <button class="add-trip-btn" id="addTripBtn">
-                <span>+</span>
-                <span>新增旅程</span>
-            </button>
-        </div>
+        <button class="add-trip-btn" id="addTripBtn">
+            <span>＋</span>
+            <span>新增旅程</span>
+        </button>
 
-        <div id="tripsList">
-            <div class="empty-state">
-                <div class="empty-state-icon">✈️</div>
-                <div class="empty-state-text">尚無旅程，點擊上方新增</div>
-            </div>
-        </div>
+        <div id="tripsList"></div>
     </div>
 
-    <!-- ========== BOTTOM NAVIGATION ========== -->
+    <!-- ========== BOTTOM NAV ========== -->
     <nav class="bottom-nav">
         <button class="nav-item active" data-page="pageConverter">
             <span class="nav-icon">💱</span>
-            <span>匯率</span>
-        </button>
-        <button class="nav-item" data-page="pageExpense">
-            <span class="nav-icon">📝</span>
-            <span>記帳</span>
+            <span>換算</span>
         </button>
         <button class="nav-item" data-page="pageTrips">
             <span class="nav-icon">🧳</span>
@@ -1199,9 +1007,7 @@
     <div class="modal-overlay" id="currencyModal">
         <div class="modal">
             <div class="modal-handle"></div>
-            <div class="modal-header">
-                <h3 class="modal-title">選擇貨幣</h3>
-            </div>
+            <div class="modal-header"><h3 class="modal-title">選擇貨幣</h3></div>
             <div class="modal-body" id="currencyModalBody"></div>
         </div>
     </div>
@@ -1210,15 +1016,17 @@
     <div class="modal-overlay" id="newTripModal">
         <div class="modal">
             <div class="modal-handle"></div>
-            <div class="modal-header">
-                <h3 class="modal-title">新增旅程</h3>
-            </div>
+            <div class="modal-header"><h3 class="modal-title">新增旅程</h3></div>
             <div class="modal-body">
                 <input type="text" class="modal-input" id="newTripName" placeholder="旅程名稱（如：東京自由行）">
-                <input type="text" class="modal-input" id="newTripDestination" placeholder="目的地（如：日本）">
-                <input type="date" class="modal-input" id="newTripStartDate">
-                <input type="date" class="modal-input" id="newTripEndDate">
-                <button class="modal-btn" id="saveTripBtn">建立旅程</button>
+                <input type="text" class="modal-input" id="newTripDestination" placeholder="目的地（如：日本 🇯🇵）">
+                <label class="modal-label">旅行日期</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="date" class="modal-input" id="newTripStartDate" style="margin-bottom:0; flex:1;">
+                    <span style="color: var(--text-dim);">→</span>
+                    <input type="date" class="modal-input" id="newTripEndDate" style="margin-bottom:0; flex:1;">
+                </div>
+                <button class="modal-btn" id="saveTripBtn" style="margin-top: 16px;">建立旅程</button>
             </div>
         </div>
     </div>
@@ -1227,12 +1035,13 @@
     <div class="modal-overlay" id="tripSelectModal">
         <div class="modal">
             <div class="modal-handle"></div>
-            <div class="modal-header">
-                <h3 class="modal-title">選擇旅程</h3>
-            </div>
+            <div class="modal-header"><h3 class="modal-title">選擇旅程</h3></div>
             <div class="modal-body" id="tripSelectBody"></div>
         </div>
     </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">已記帳！</div>
 
     <script>
         // ========== DATA ==========
@@ -1269,20 +1078,91 @@
         const priorityOrder = ['TWD', 'JPY', 'USD', 'KRW'];
         const otherCurrencies = ['EUR', 'GBP', 'CNY', 'HKD', 'SGD', 'AUD', 'CAD', 'CHF', 'THB', 'MYR', 'PHP', 'VND', 'INR', 'NZD'];
 
-        // State
+        // Country to currency mapping
+        const countryCurrency = {
+            TW: 'TWD', JP: 'JPY', US: 'USD', KR: 'KRW',
+            DE: 'EUR', FR: 'EUR', IT: 'EUR', ES: 'EUR', NL: 'EUR', PT: 'EUR', AT: 'EUR', BE: 'EUR', FI: 'EUR', IE: 'EUR', GR: 'EUR',
+            GB: 'GBP', CN: 'CNY', HK: 'HKD', SG: 'SGD',
+            AU: 'AUD', CA: 'CAD', CH: 'CHF', TH: 'THB',
+            MY: 'MYR', PH: 'PHP', VN: 'VND', IN: 'INR', NZ: 'NZD'
+        };
+
         let todayRates = {};
         let yesterdayRates = {};
-        let baseCurrency = 'TWD';
-        let expenseCurrency = 'JPY';
+        let baseCurrency = 'JPY';
         let selectedCategory = 'food';
         let currentTripId = null;
         let trips = [];
         let expenses = [];
 
-        // Calculator state
         let currentInput = '0';
         let expression = '';
         let shouldResetInput = false;
+
+        // ========== GEOLOCATION ==========
+        async function detectLocationCurrency() {
+            try {
+                // First try GPS
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        async (position) => {
+                            const { latitude, longitude } = position.coords;
+                            await getCurrencyFromCoords(latitude, longitude);
+                        },
+                        async (error) => {
+                            console.log('GPS failed, trying IP geolocation');
+                            await getCurrencyFromIP();
+                        },
+                        { timeout: 5000, enableHighAccuracy: false }
+                    );
+                } else {
+                    await getCurrencyFromIP();
+                }
+            } catch (e) {
+                console.log('Geolocation failed');
+            }
+        }
+
+        async function getCurrencyFromCoords(lat, lon) {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+                const data = await res.json();
+                const countryCode = data.address?.country_code?.toUpperCase();
+                if (countryCode && countryCurrency[countryCode]) {
+                    setDetectedCurrency(countryCurrency[countryCode], data.address?.country);
+                }
+            } catch (e) {
+                console.log('Reverse geocoding failed');
+                await getCurrencyFromIP();
+            }
+        }
+
+        async function getCurrencyFromIP() {
+            try {
+                const res = await fetch('https://ipapi.co/json/');
+                const data = await res.json();
+                const countryCode = data.country_code?.toUpperCase();
+                if (countryCode && countryCurrency[countryCode]) {
+                    setDetectedCurrency(countryCurrency[countryCode], data.country_name);
+                }
+            } catch (e) {
+                console.log('IP geolocation failed');
+            }
+        }
+
+        function setDetectedCurrency(currency, countryName) {
+            // Only auto-set if user hasn't manually changed it in this session
+            const manuallySet = sessionStorage.getItem('currencyManuallySet');
+            if (!manuallySet && currencies[currency]) {
+                baseCurrency = currency;
+                updateCurrencyDisplay();
+                saveData();
+                updateResults();
+                if (countryName) {
+                    showToast(`📍 偵測到 ${countryName}，已切換為 ${currency}`);
+                }
+            }
+        }
 
         // ========== INIT ==========
         function init() {
@@ -1290,15 +1170,16 @@
             setupEventListeners();
             fetchRates();
             updateUI();
+            detectLocationCurrency();
         }
 
         function loadData() {
             try {
                 trips = JSON.parse(localStorage.getItem('trips') || '[]');
                 expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
-                currentTripId = localStorage.getItem('currentTripId');
-                
-                // Load yesterday rates
+                currentTripId = localStorage.getItem('currentTripId') || null;
+                baseCurrency = localStorage.getItem('baseCurrency') || 'JPY';
+
                 const stored = localStorage.getItem('fx_rates_history');
                 if (stored) {
                     const history = JSON.parse(stored);
@@ -1311,52 +1192,44 @@
                         }
                     }
                 }
-            } catch (e) {
-                console.log('Error loading data');
-            }
+            } catch (e) {}
         }
 
         function saveData() {
             try {
                 localStorage.setItem('trips', JSON.stringify(trips));
                 localStorage.setItem('expenses', JSON.stringify(expenses));
-                if (currentTripId) {
-                    localStorage.setItem('currentTripId', currentTripId);
-                }
-            } catch (e) {
-                console.log('Error saving data');
-            }
+                localStorage.setItem('baseCurrency', baseCurrency);
+                if (currentTripId) localStorage.setItem('currentTripId', currentTripId);
+            } catch (e) {}
         }
 
-        function saveRatesToStorage() {
+        function saveRates() {
             try {
                 const today = new Date().toDateString();
                 const stored = localStorage.getItem('fx_rates_history');
                 let history = stored ? JSON.parse(stored) : {};
                 history[today] = todayRates;
                 const keys = Object.keys(history).sort((a, b) => new Date(b) - new Date(a));
-                if (keys.length > 3) {
-                    keys.slice(3).forEach(k => delete history[k]);
-                }
+                if (keys.length > 3) keys.slice(3).forEach(k => delete history[k]);
                 localStorage.setItem('fx_rates_history', JSON.stringify(history));
             } catch (e) {}
         }
 
-        // ========== NAVIGATION ==========
+        // ========== EVENTS ==========
         function setupEventListeners() {
-            // Bottom nav
+            // Nav
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.addEventListener('click', () => {
-                    const pageId = item.dataset.page;
-                    showPage(pageId);
+                    showPage(item.dataset.page);
                     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                     item.classList.add('active');
                 });
             });
 
-            // Calculator buttons - use touchstart for faster response
+            // Calculator - fast touch
             document.querySelectorAll('.calc-btn').forEach(btn => {
-                const handlePress = (e) => {
+                const handler = (e) => {
                     e.preventDefault();
                     if (btn.dataset.num !== undefined) inputNumber(btn.dataset.num);
                     else if (btn.dataset.op) inputOperator(btn.dataset.op);
@@ -1364,26 +1237,24 @@
                     else if (btn.dataset.action === 'backspace') backspace();
                     else if (btn.dataset.action === 'equals') equals();
                 };
-                
-                btn.addEventListener('touchstart', handlePress, { passive: false });
-                btn.addEventListener('mousedown', handlePress);
+                btn.addEventListener('touchstart', handler, { passive: false });
+                btn.addEventListener('mousedown', handler);
             });
 
             // Currency badge
-            document.getElementById('currencyBadge').addEventListener('click', () => openCurrencyModal('converter'));
-            document.getElementById('expenseCurrencyBtn').addEventListener('click', () => openCurrencyModal('expense'));
+            document.getElementById('currencyBadge').addEventListener('click', () => openCurrencyModal());
 
-            // Refresh rates
+            // Refresh
             document.getElementById('refreshBtn').addEventListener('click', async () => {
                 document.getElementById('refreshBtn').classList.add('spinning');
                 await fetchRates();
                 setTimeout(() => document.getElementById('refreshBtn').classList.remove('spinning'), 500);
             });
 
-            // Category buttons
-            document.querySelectorAll('.category-btn').forEach(btn => {
+            // Category
+            document.querySelectorAll('.cat-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
+                    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
                     btn.classList.add('selected');
                     selectedCategory = btn.dataset.category;
                 });
@@ -1392,14 +1263,14 @@
             // Add expense
             document.getElementById('addExpenseBtn').addEventListener('click', addExpense);
 
-            // Trip selector
-            document.getElementById('tripSelector').addEventListener('click', () => openTripSelectModal());
+            // Trip bar
+            document.getElementById('tripBar').addEventListener('click', openTripSelectModal);
 
             // Add trip
-            document.getElementById('addTripBtn').addEventListener('click', () => openNewTripModal());
+            document.getElementById('addTripBtn').addEventListener('click', openNewTripModal);
             document.getElementById('saveTripBtn').addEventListener('click', saveNewTrip);
 
-            // Modal close
+            // Close modals
             document.querySelectorAll('.modal-overlay').forEach(modal => {
                 modal.addEventListener('click', (e) => {
                     if (e.target === modal) closeAllModals();
@@ -1408,11 +1279,11 @@
 
             // Prevent zoom
             document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
-            let lastTouchEnd = 0;
+            let lastTouch = 0;
             document.addEventListener('touchend', e => {
                 const now = Date.now();
-                if (now - lastTouchEnd <= 300) e.preventDefault();
-                lastTouchEnd = now;
+                if (now - lastTouch <= 300) e.preventDefault();
+                lastTouch = now;
             }, { passive: false });
         }
 
@@ -1420,7 +1291,6 @@
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             if (pageId === 'pageTrips') renderTrips();
-            if (pageId === 'pageExpense') renderExpenses();
         }
 
         // ========== RATES ==========
@@ -1434,11 +1304,11 @@
 
                 if (data.result === 'success') {
                     todayRates = data.rates;
-                    saveRatesToStorage();
-                    const updateTime = new Date(data.time_last_update_utc);
+                    saveRates();
+                    const time = new Date(data.time_last_update_utc);
                     document.getElementById('statusDot').className = 'status-dot';
-                    document.getElementById('statusText').textContent = updateTime.toLocaleDateString('zh-TW');
-                    updateConverterResults();
+                    document.getElementById('statusText').textContent = time.toLocaleDateString('zh-TW');
+                    updateResults();
                 }
             } catch (e) {
                 document.getElementById('statusDot').className = 'status-dot error';
@@ -1447,68 +1317,55 @@
         }
 
         function getRate(from, to, rates = todayRates) {
-            if (!rates || Object.keys(rates).length === 0) return null;
+            if (!rates || !Object.keys(rates).length) return null;
             if (from === to) return 1;
-            if (from === 'TWD') return rates[to] || null;
-            if (to === 'TWD') return rates[from] ? (1 / rates[from]) : null;
-            const fromRate = rates[from];
-            const toRate = rates[to];
-            if (!fromRate || !toRate) return null;
-            return toRate / fromRate;
+            if (from === 'TWD') return rates[to];
+            if (to === 'TWD') return rates[from] ? 1 / rates[from] : null;
+            return rates[from] && rates[to] ? rates[to] / rates[from] : null;
         }
 
-        function convertToTWD(amount, currency) {
+        function toTWD(amount, currency) {
             const rate = getRate(currency, 'TWD');
             return rate ? amount * rate : 0;
         }
 
         // ========== CALCULATOR ==========
         function updateCalcDisplay() {
-            document.getElementById('result').textContent = formatDisplayNumber(currentInput);
-            document.getElementById('expression').textContent = formatExpression(expression);
-            updateConverterResults();
+            document.getElementById('result').textContent = formatDisplay(currentInput);
+            document.getElementById('expression').textContent = formatExpr(expression);
+            updateResults();
         }
 
-        function formatDisplayNumber(num) {
+        function formatDisplay(num) {
             if (num === '' || num === '-') return num || '0';
             const parts = num.toString().split('.');
             parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
             return parts.join('.');
         }
 
-        function formatExpression(expr) {
-            return expr.replace(/\*/g, ' × ').replace(/\//g, ' ÷ ').replace(/\+/g, ' + ').replace(/-/g, ' − ').replace(/%/g, ' % ');
+        function formatExpr(expr) {
+            return expr.replace(/\*/g, '×').replace(/\//g, '÷').replace(/\+/g, '+').replace(/-/g, '−');
         }
 
         function inputNumber(num) {
-            if (shouldResetInput) {
-                currentInput = num;
-                shouldResetInput = false;
-            } else {
-                if (currentInput === '0' && num !== '.') currentInput = num;
-                else if (num === '.' && currentInput.includes('.')) return;
-                else currentInput += num;
-            }
+            if (shouldResetInput) { currentInput = num; shouldResetInput = false; }
+            else if (currentInput === '0' && num !== '.') currentInput = num;
+            else if (num === '.' && currentInput.includes('.')) return;
+            else currentInput += num;
             updateCalcDisplay();
         }
 
         function inputOperator(op) {
             if (expression && shouldResetInput) expression = expression.slice(0, -1) + op;
-            else {
-                expression += currentInput + op;
-                shouldResetInput = true;
-            }
+            else { expression += currentInput + op; shouldResetInput = true; }
             updateCalcDisplay();
         }
 
         function calculate() {
             if (!expression && currentInput) return parseFloat(currentInput) || 0;
-            let fullExpression = expression + currentInput;
-            fullExpression = fullExpression.replace(/(\d+)%/g, '($1/100)');
-            try {
-                const result = Function('"use strict"; return (' + fullExpression + ')')();
-                return isFinite(result) ? result : 0;
-            } catch (e) { return 0; }
+            let expr = (expression + currentInput).replace(/(\d+)%/g, '($1/100)');
+            try { return Function('"use strict"; return (' + expr + ')')() || 0; }
+            catch { return 0; }
         }
 
         function equals() {
@@ -1528,325 +1385,288 @@
 
         function backspace() {
             if (shouldResetInput) { clear(); return; }
-            if (currentInput.length > 1) currentInput = currentInput.slice(0, -1);
-            else currentInput = '0';
+            currentInput = currentInput.length > 1 ? currentInput.slice(0, -1) : '0';
             updateCalcDisplay();
         }
 
-        function getDisplayOrder() {
-            let order = priorityOrder.filter(code => code !== baseCurrency);
-            return order.concat(otherCurrencies.filter(code => code !== baseCurrency));
-        }
-
-        function updateConverterResults() {
+        function updateResults() {
             const amount = calculate();
             const grid = document.getElementById('resultsGrid');
 
-            if (amount === 0 || Object.keys(todayRates).length === 0) {
-                grid.innerHTML = '<div class="empty-state"><div class="empty-state-text">輸入金額查看換算結果</div></div>';
+            if (!amount || !Object.keys(todayRates).length) {
+                grid.innerHTML = '<div class="empty-state"><div class="empty-state-text">輸入金額查看換算</div></div>';
                 return;
             }
 
-            const displayOrder = getDisplayOrder();
-            grid.innerHTML = displayOrder.map(code => {
-                const { flag, name } = currencies[code];
+            const order = [...priorityOrder, ...otherCurrencies].filter(c => c !== baseCurrency);
+            grid.innerHTML = order.map(code => {
+                const { flag } = currencies[code];
                 const rate = getRate(baseCurrency, code);
                 const converted = rate ? amount * rate : 0;
-                const todayRate = getRate(baseCurrency, code, todayRates);
-                const yestRate = getRate(baseCurrency, code, yesterdayRates);
-                let changeClass = 'neutral', changeArrow = '', changeText = '--';
-                if (todayRate && yestRate) {
-                    const change = ((todayRate - yestRate) / yestRate) * 100;
-                    if (change > 0.01) { changeClass = 'down'; changeArrow = '▼'; changeText = `${change.toFixed(2)}%`; }
-                    else if (change < -0.01) { changeClass = 'up'; changeArrow = '▲'; changeText = `+${Math.abs(change).toFixed(2)}%`; }
-                    else changeText = '0.00%';
+                const tRate = getRate(baseCurrency, code, todayRates);
+                const yRate = getRate(baseCurrency, code, yesterdayRates);
+                let cls = 'neutral', arrow = '', txt = '--';
+                if (tRate && yRate) {
+                    const chg = ((tRate - yRate) / yRate) * 100;
+                    if (chg > 0.01) { cls = 'down'; arrow = '▼'; txt = chg.toFixed(2) + '%'; }
+                    else if (chg < -0.01) { cls = 'up'; arrow = '▲'; txt = '+' + Math.abs(chg).toFixed(2) + '%'; }
+                    else txt = '0.00%';
                 }
                 return `
                     <div class="result-row" data-currency="${code}">
                         <span class="result-flag">${flag}</span>
                         <div class="result-info">
-                            <div class="result-currency">
-                                <span class="result-code">${code}</span>
-                                <span class="result-name">${name}</span>
-                            </div>
+                            <div class="result-code">${code}</div>
                             <div class="result-rate">1 ${baseCurrency} = ${formatRate(rate)} ${code}</div>
                         </div>
                         <div class="result-right">
                             <div class="result-amount">${formatAmount(converted, code)}</div>
-                            <div class="result-change ${changeClass}">
-                                <span>${changeArrow}</span><span>${changeText}</span>
-                            </div>
+                            <div class="result-change ${cls}">${arrow} ${txt}</div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }).join('');
 
-            document.querySelectorAll('.result-row').forEach(row => {
+            grid.querySelectorAll('.result-row').forEach(row => {
                 row.addEventListener('click', () => {
                     baseCurrency = row.dataset.currency;
-                    updateBaseCurrencyDisplay();
+                    sessionStorage.setItem('currencyManuallySet', 'true');
+                    updateCurrencyDisplay();
+                    saveData();
                     row.classList.add('highlight');
-                    setTimeout(() => row.classList.remove('highlight'), 300);
-                    updateConverterResults();
+                    setTimeout(() => row.classList.remove('highlight'), 200);
+                    updateResults();
                 });
             });
         }
 
-        function updateBaseCurrencyDisplay() {
+        function updateCurrencyDisplay() {
             document.getElementById('baseFlag').textContent = currencies[baseCurrency].flag;
             document.getElementById('baseCode').textContent = baseCurrency;
         }
 
-        function formatAmount(num, currency) {
-            if (isNaN(num) || num === 0) return '0';
-            const noDecimal = ['JPY', 'KRW', 'VND', 'TWD'];
-            let decimals = noDecimal.includes(currency) ? 0 : 2;
-            if (Math.abs(num) < 0.01 && Math.abs(num) > 0) return num.toFixed(6);
-            return num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: decimals });
+        function formatAmount(num, cur) {
+            if (!num) return '0';
+            const noD = ['JPY', 'KRW', 'VND', 'TWD'];
+            const d = noD.includes(cur) ? 0 : 2;
+            return num.toLocaleString('en-US', { maximumFractionDigits: d });
         }
 
-        function formatRate(rate) {
-            if (!rate) return '--';
-            if (rate >= 100) return rate.toFixed(2);
-            if (rate >= 1) return rate.toFixed(4);
-            return rate.toFixed(6);
+        function formatRate(r) {
+            if (!r) return '--';
+            if (r >= 100) return r.toFixed(2);
+            if (r >= 1) return r.toFixed(4);
+            return r.toFixed(6);
         }
 
         // ========== EXPENSE ==========
         function addExpense() {
             if (!currentTripId) {
-                alert('請先選擇或建立旅程');
-                showPage('pageTrips');
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                document.querySelector('[data-page="pageTrips"]').classList.add('active');
+                showToast('請先選擇旅程');
+                openTripSelectModal();
                 return;
             }
-
-            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const amount = calculate();
             if (!amount || amount <= 0) {
-                alert('請輸入金額');
+                showToast('請輸入金額');
                 return;
             }
 
-            const expense = {
+            expenses.push({
                 id: Date.now().toString(),
                 tripId: currentTripId,
                 category: selectedCategory,
-                currency: expenseCurrency,
-                amount: amount,
-                amountTWD: convertToTWD(amount, expenseCurrency),
-                note: document.getElementById('expenseNote').value || categories[selectedCategory].name,
+                currency: baseCurrency,
+                amount,
+                amountTWD: toTWD(amount, baseCurrency),
+                note: categories[selectedCategory].name,
                 date: new Date().toISOString()
-            };
-
-            expenses.push(expense);
+            });
             saveData();
-
-            document.getElementById('expenseAmount').value = '';
-            document.getElementById('expenseNote').value = '';
-
-            renderExpenses();
+            clear();
+            showToast('✓ 已記帳');
         }
 
-        function deleteExpense(id) {
-            expenses = expenses.filter(e => e.id !== id);
+        function deleteExpense(id, e) {
+            e.stopPropagation();
+            expenses = expenses.filter(ex => ex.id !== id);
             saveData();
-            renderExpenses();
             renderTrips();
-        }
-
-        function renderExpenses() {
-            const list = document.getElementById('expenseList');
-            const tripExpenses = expenses.filter(e => e.tripId === currentTripId).sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            if (tripExpenses.length === 0) {
-                list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">尚無支出記錄</div></div>';
-                return;
-            }
-
-            list.innerHTML = tripExpenses.map(e => `
-                <div class="expense-item">
-                    <span class="expense-item-icon">${categories[e.category]?.icon || '📌'}</span>
-                    <div class="expense-item-info">
-                        <div class="expense-item-note">${e.note}</div>
-                        <div class="expense-item-meta">${new Date(e.date).toLocaleDateString('zh-TW')} ${new Date(e.date).toLocaleTimeString('zh-TW', {hour: '2-digit', minute: '2-digit'})}</div>
-                    </div>
-                    <div class="expense-item-amount">
-                        <div class="expense-item-original">${currencies[e.currency]?.flag} ${formatAmount(e.amount, e.currency)}</div>
-                        <div class="expense-item-converted">≈ TWD ${formatAmount(e.amountTWD, 'TWD')}</div>
-                    </div>
-                    <button class="expense-item-delete" onclick="deleteExpense('${e.id}')">✕</button>
-                </div>
-            `).join('');
-        }
-
-        function updateCurrentTripDisplay() {
-            const trip = trips.find(t => t.id === currentTripId);
-            if (trip) {
-                document.getElementById('currentTripIcon').textContent = trip.icon || '🧳';
-                document.getElementById('currentTripName').textContent = trip.name;
-                document.getElementById('currentTripDate').textContent = `${trip.destination} | ${trip.startDate}`;
-            } else {
-                document.getElementById('currentTripIcon').textContent = '🧳';
-                document.getElementById('currentTripName').textContent = '尚未選擇旅程';
-                document.getElementById('currentTripDate').textContent = '請先建立或選擇旅程';
-            }
         }
 
         // ========== TRIPS ==========
         function openNewTripModal() {
             document.getElementById('newTripModal').classList.add('active');
-            document.getElementById('newTripStartDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('newTripEndDate').value = new Date().toISOString().split('T')[0];
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('newTripStartDate').value = today;
+            document.getElementById('newTripEndDate').value = today;
         }
 
         function saveNewTrip() {
             const name = document.getElementById('newTripName').value.trim();
-            const destination = document.getElementById('newTripDestination').value.trim();
-            const startDate = document.getElementById('newTripStartDate').value;
-            const endDate = document.getElementById('newTripEndDate').value;
+            const dest = document.getElementById('newTripDestination').value.trim();
+            const start = document.getElementById('newTripStartDate').value;
+            const end = document.getElementById('newTripEndDate').value;
+            if (!name) { showToast('請輸入旅程名稱'); return; }
 
-            if (!name) { alert('請輸入旅程名稱'); return; }
-
-            const icons = ['✈️', '🏖️', '🗼', '🏔️', '🌸', '🎌', '🇯🇵', '🇰🇷', '🇺🇸', '🇪🇺'];
+            const icons = ['✈️', '🏖️', '🗼', '🏔️', '🌸', '🎌', '🗾', '🌏'];
             const trip = {
                 id: Date.now().toString(),
                 name,
-                destination,
-                startDate,
-                endDate,
-                icon: icons[Math.floor(Math.random() * icons.length)],
-                createdAt: new Date().toISOString()
+                destination: dest,
+                startDate: start,
+                endDate: end,
+                icon: icons[Math.floor(Math.random() * icons.length)]
             };
-
             trips.push(trip);
             currentTripId = trip.id;
             saveData();
-
             closeAllModals();
             document.getElementById('newTripName').value = '';
             document.getElementById('newTripDestination').value = '';
-
+            updateTripBar();
             renderTrips();
-            updateCurrentTripDisplay();
+            showToast('✓ 旅程已建立');
         }
 
         function selectTrip(id) {
             currentTripId = id;
             saveData();
-            updateCurrentTripDisplay();
-            renderTrips();
+            updateTripBar();
             closeAllModals();
         }
 
-        function deleteTrip(id) {
-            if (!confirm('確定要刪除此旅程嗎？相關的支出記錄也會一併刪除。')) return;
+        function deleteTrip(id, e) {
+            e.stopPropagation();
+            if (!confirm('確定刪除此旅程？')) return;
             trips = trips.filter(t => t.id !== id);
-            expenses = expenses.filter(e => e.tripId !== id);
+            expenses = expenses.filter(ex => ex.tripId !== id);
             if (currentTripId === id) currentTripId = trips[0]?.id || null;
             saveData();
+            updateTripBar();
             renderTrips();
-            updateCurrentTripDisplay();
         }
 
-        function getTripStats(tripId) {
-            const tripExpenses = expenses.filter(e => e.tripId === tripId);
-            const totalTWD = tripExpenses.reduce((sum, e) => sum + e.amountTWD, 0);
-            const count = tripExpenses.length;
-            return { totalTWD, count };
+        function getTripStats(id) {
+            const list = expenses.filter(e => e.tripId === id);
+            return {
+                total: list.reduce((s, e) => s + e.amountTWD, 0),
+                count: list.length
+            };
         }
 
         function renderTrips() {
             const container = document.getElementById('tripsList');
-            if (trips.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✈️</div><div class="empty-state-text">尚無旅程，點擊上方新增</div></div>';
+            if (!trips.length) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✈️</div><div class="empty-state-text">尚無旅程</div></div>';
                 return;
             }
 
             container.innerHTML = trips.map(trip => {
                 const stats = getTripStats(trip.id);
                 const isActive = trip.id === currentTripId;
+                const tripExpenses = expenses.filter(e => e.tripId === trip.id).sort((a, b) => new Date(b.date) - new Date(a.date));
+
                 return `
                     <div class="trip-card ${isActive ? 'active' : ''}" onclick="selectTrip('${trip.id}')">
                         <div class="trip-card-header">
                             <span class="trip-card-icon">${trip.icon}</span>
                             <div class="trip-card-title">
                                 <h3>${trip.name}</h3>
-                                <p>${trip.destination} | ${trip.startDate} ~ ${trip.endDate}</p>
+                                <p>${trip.destination || ''} ${trip.startDate} ~ ${trip.endDate}</p>
                             </div>
-                            <div class="trip-card-actions">
-                                <button onclick="event.stopPropagation(); deleteTrip('${trip.id}')">🗑️</button>
-                            </div>
+                            <button class="trip-card-delete" onclick="deleteTrip('${trip.id}', event)">🗑️</button>
                         </div>
                         <div class="trip-card-stats">
                             <div class="trip-stat">
-                                <div class="trip-stat-label">總支出 (TWD)</div>
-                                <div class="trip-stat-value">$${formatAmount(stats.totalTWD, 'TWD')}</div>
+                                <div class="trip-stat-label">總花費 (TWD)</div>
+                                <div class="trip-stat-value">$${formatAmount(stats.total, 'TWD')}</div>
                             </div>
                             <div class="trip-stat">
-                                <div class="trip-stat-label">記錄筆數</div>
-                                <div class="trip-stat-value">${stats.count} 筆</div>
+                                <div class="trip-stat-label">筆數</div>
+                                <div class="trip-stat-value">${stats.count}</div>
                             </div>
                         </div>
-                    </div>
-                `;
+                        ${tripExpenses.length ? `
+                        <div class="trip-expenses">
+                            ${tripExpenses.map(e => `
+                                <div class="expense-item">
+                                    <span class="expense-item-icon">${categories[e.category]?.icon || '📌'}</span>
+                                    <div class="expense-item-info">
+                                        <div class="expense-item-note">${e.note}</div>
+                                        <div class="expense-item-meta">${new Date(e.date).toLocaleDateString('zh-TW')} ${new Date(e.date).toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'})}</div>
+                                    </div>
+                                    <div class="expense-item-amount">
+                                        <div class="expense-item-original">${currencies[e.currency]?.flag} ${formatAmount(e.amount, e.currency)}</div>
+                                        <div class="expense-item-converted">≈ NT$ ${formatAmount(e.amountTWD, 'TWD')}</div>
+                                    </div>
+                                    <button class="expense-item-delete" onclick="deleteExpense('${e.id}', event)">✕</button>
+                                </div>
+                            `).join('')}
+                        </div>` : ''}
+                    </div>`;
             }).join('');
+        }
+
+        function updateTripBar() {
+            const trip = trips.find(t => t.id === currentTripId);
+            if (trip) {
+                document.getElementById('tripBarIcon').textContent = trip.icon;
+                document.getElementById('tripBarName').textContent = trip.name;
+                document.getElementById('tripBarDetail').textContent = `${trip.destination || ''} ${trip.startDate}`;
+            } else {
+                document.getElementById('tripBarIcon').textContent = '🧳';
+                document.getElementById('tripBarName').textContent = '尚未選擇旅程';
+                document.getElementById('tripBarDetail').textContent = '點擊選擇或新增';
+            }
         }
 
         function openTripSelectModal() {
             const body = document.getElementById('tripSelectBody');
-            body.innerHTML = trips.map(trip => {
-                const isSelected = trip.id === currentTripId;
-                return `
-                    <div class="currency-option ${isSelected ? 'selected' : ''}" onclick="selectTrip('${trip.id}')">
-                        <span class="currency-flag">${trip.icon}</span>
+            if (!trips.length) {
+                body.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-text">尚無旅程</div>
+                    </div>
+                    <button class="modal-btn" onclick="closeAllModals(); openNewTripModal();">＋ 新增旅程</button>`;
+            } else {
+                body.innerHTML = trips.map(t => `
+                    <div class="currency-option ${t.id === currentTripId ? 'selected' : ''}" onclick="selectTrip('${t.id}')">
+                        <span class="currency-flag">${t.icon}</span>
                         <div class="currency-option-info">
-                            <div class="currency-option-code">${trip.name}</div>
-                            <div class="currency-option-name">${trip.destination}</div>
+                            <div class="currency-option-code">${t.name}</div>
+                            <div class="currency-option-name">${t.destination || ''}</div>
                         </div>
                         <span class="currency-option-check">✓</span>
                     </div>
-                `;
-            }).join('') || '<div class="empty-state"><div class="empty-state-text">尚無旅程</div></div>';
+                `).join('') + `<button class="modal-btn" onclick="closeAllModals(); openNewTripModal();" style="margin-top:12px;">＋ 新增旅程</button>`;
+            }
             document.getElementById('tripSelectModal').classList.add('active');
         }
 
         // ========== CURRENCY MODAL ==========
-        let currencyModalTarget = 'converter';
-
-        function openCurrencyModal(target) {
-            currencyModalTarget = target;
+        function openCurrencyModal() {
             const body = document.getElementById('currencyModalBody');
-            const selected = target === 'converter' ? baseCurrency : expenseCurrency;
-            const allCurrencies = [...priorityOrder, ...otherCurrencies];
-
-            body.innerHTML = allCurrencies.map(code => {
+            const all = [...priorityOrder, ...otherCurrencies];
+            body.innerHTML = all.map(code => {
                 const { flag, name } = currencies[code];
-                const isSelected = code === selected;
                 return `
-                    <div class="currency-option ${isSelected ? 'selected' : ''}" data-code="${code}">
+                    <div class="currency-option ${code === baseCurrency ? 'selected' : ''}" data-code="${code}">
                         <span class="currency-flag">${flag}</span>
                         <div class="currency-option-info">
                             <div class="currency-option-code">${code}</div>
                             <div class="currency-option-name">${name}</div>
                         </div>
                         <span class="currency-option-check">✓</span>
-                    </div>
-                `;
+                    </div>`;
             }).join('');
 
             body.querySelectorAll('.currency-option').forEach(opt => {
                 opt.addEventListener('click', () => {
-                    const code = opt.dataset.code;
-                    if (currencyModalTarget === 'converter') {
-                        baseCurrency = code;
-                        updateBaseCurrencyDisplay();
-                        updateConverterResults();
-                    } else {
-                        expenseCurrency = code;
-                        document.getElementById('expenseCurrencyFlag').textContent = currencies[code].flag;
-                        document.getElementById('expenseCurrencyCode').textContent = code;
-                    }
+                    baseCurrency = opt.dataset.code;
+                    sessionStorage.setItem('currencyManuallySet', 'true');
+                    updateCurrencyDisplay();
+                    saveData();
+                    updateResults();
                     closeAllModals();
                 });
             });
@@ -1858,15 +1678,21 @@
             document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
         }
 
-        // ========== UI UPDATE ==========
-        function updateUI() {
-            updateBaseCurrencyDisplay();
-            updateCurrentTripDisplay();
-            updateCalcDisplay();
-            renderExpenses();
+        // ========== TOAST ==========
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
         }
 
-        // Initialize
+        // ========== UI ==========
+        function updateUI() {
+            updateCurrencyDisplay();
+            updateTripBar();
+            updateCalcDisplay();
+        }
+
         init();
     </script>
 </body>
