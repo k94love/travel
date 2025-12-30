@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>即時匯率換算器</title>
+    <link rel="icon" type="image/x-icon" href="https://k94love.github.io/travel/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="https://k94love.github.io/travel/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0a0f1a;
+            --secondary: #131b2e;
+            --tertiary: #1a2540;
+            --accent: #00d4aa;
+            --accent-dim: #00a888;
+            --accent-glow: rgba(0, 212, 170, 0.15);
+            --text: #e8edf5;
+            --text-dim: #7a8ba8;
+            --border: rgba(255, 255, 255, 0.06);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --btn-num: #1e2a45;
+            --btn-op: #2a3a5a;
+            --btn-action: #00a888;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--primary);
+            min-height: 100vh;
+            color: var(--text);
+            overflow-x: hidden;
+            touch-action: manipulation;
+            -ms-touch-action: manipulation;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background: 
+                radial-gradient(ellipse 80% 50% at 20% 40%, rgba(0, 212, 170, 0.04) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 80% at 80% 60%, rgba(59, 130, 246, 0.03) 0%, transparent 50%);
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 24px 16px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 4px 16px rgba(0, 212, 170, 0.25);
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.loading { background: var(--warning); }
+        .status-dot.error { background: #ef4444; animation: none; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Calculator Card */
+        .calculator-card {
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Display */
+        .calc-display {
+            background: var(--primary);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-end;
+        }
+
+        .calc-expression {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            min-height: 20px;
+            word-break: break-all;
+            text-align: right;
+        }
+
+        .calc-result {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 36px;
+            font-weight: 600;
+            color: var(--text);
+            word-break: break-all;
+            text-align: right;
+        }
+
+        .currency-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 10px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            align-self: flex-start;
+        }
+
+        .currency-badge:hover {
+            border-color: var(--accent);
+        }
+
+        .currency-badge .flag {
+            font-size: 16px;
+        }
+
+        .currency-badge .code {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .currency-badge .chevron {
+            font-size: 10px;
+            color: var(--text-dim);
+        }
+
+        /* Calculator buttons */
+        .calc-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .calc-btn {
+            aspect-ratio: 1.3;
+            border: none;
+            border-radius: 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 22px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calc-btn:active {
+            transform: scale(0.95);
+        }
+
+        .calc-btn.num {
+            background: var(--btn-num);
+            color: var(--text);
+        }
+
+        .calc-btn.num:hover {
+            background: #253352;
+        }
+
+        .calc-btn.op {
+            background: var(--btn-op);
+            color: var(--accent);
+        }
+
+        .calc-btn.op:hover {
+            background: #354a6a;
+        }
+
+        .calc-btn.action {
+            background: var(--btn-action);
+            color: var(--primary);
+        }
+
+        .calc-btn.action:hover {
+            background: #00c49a;
+        }
+
+        .calc-btn.clear {
+            background: #3d2a2a;
+            color: #ff6b6b;
+        }
+
+        .calc-btn.clear:hover {
+            background: #4d3535;
+        }
+
+        /* Results Section */
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding: 0 4px;
+        }
+
+        .results-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-dim);
+        }
+
+        .refresh-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+
+        .refresh-btn:hover {
+            color: var(--accent);
+            background: rgba(0, 212, 170, 0.1);
+        }
+
+        .refresh-btn.spinning svg {
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Currency Results Grid */
+        .results-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .results-grid::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .results-grid::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .results-grid::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        .result-row {
+            display: flex;
+            align-items: center;
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .result-row:hover {
+            border-color: var(--accent);
+            background: rgba(0, 212, 170, 0.03);
+        }
+
+        .result-row.highlight {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .result-flag {
+            font-size: 26px;
+            margin-right: 12px;
+        }
+
+        .result-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .result-currency {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .result-code {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .result-name {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .result-rate {
+            font-size: 10px;
+            color: var(--text-dim);
+            margin-top: 2px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .result-right {
+            text-align: right;
+        }
+
+        .result-amount {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--accent);
+        }
+
+        .result-change {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+        }
+
+        .result-change.up {
+            color: var(--success);
+        }
+
+        .result-change.down {
+            color: var(--danger);
+        }
+
+        .result-change.neutral {
+            color: var(--text-dim);
+        }
+
+        .change-arrow {
+            font-size: 10px;
+        }
+
+        /* Currency modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--secondary);
+            border-radius: 20px 20px 0 0;
+            max-height: 60vh;
+            z-index: 101;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-handle {
+            width: 36px;
+            height: 4px;
+            background: var(--text-dim);
+            opacity: 0.3;
+            border-radius: 2px;
+            margin: 12px auto;
+        }
+
+        .modal-header {
+            padding: 0 20px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 12px;
+        }
+
+        .currency-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .currency-option:hover {
+            background: var(--tertiary);
+        }
+
+        .currency-option.selected {
+            background: var(--accent-glow);
+        }
+
+        .currency-option .currency-flag {
+            font-size: 28px;
+        }
+
+        .currency-option-info {
+            flex: 1;
+        }
+
+        .currency-option-code {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .currency-option-name {
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .currency-option-check {
+            color: var(--accent);
+            font-size: 18px;
+            opacity: 0;
+        }
+
+        .currency-option.selected .currency-option-check {
+            opacity: 1;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-dim);
+            opacity: 0.7;
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        /* Empty state */
+        .empty-hint {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-dim);
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 400px) {
+            .calc-result {
+                font-size: 28px;
+            }
+
+            .calc-btn {
+                font-size: 18px;
+            }
+
+            .result-amount {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">💱</div>
+                <h1>即時匯率換算</h1>
+            </div>
+            <div class="status-bar">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">載入中...</span>
+            </div>
+        </header>
+
+        <!-- Calculator Section -->
+        <div class="calculator-card">
+            <div class="calc-display">
+                <div class="currency-badge" id="currencyBadge">
+                    <span class="flag" id="baseFlag">🇹🇼</span>
+                    <span class="code" id="baseCode">TWD</span>
+                    <span class="chevron">▼</span>
+                </div>
+                <div class="calc-expression" id="expression"></div>
+                <div class="calc-result" id="result">0</div>
+            </div>
+
+            <div class="calc-buttons">
+                <button class="calc-btn clear" data-action="clear">C</button>
+                <button class="calc-btn op" data-action="backspace">⌫</button>
+                <button class="calc-btn op" data-op="%">%</button>
+                <button class="calc-btn op" data-op="/">÷</button>
+
+                <button class="calc-btn num" data-num="7">7</button>
+                <button class="calc-btn num" data-num="8">8</button>
+                <button class="calc-btn num" data-num="9">9</button>
+                <button class="calc-btn op" data-op="*">×</button>
+
+                <button class="calc-btn num" data-num="4">4</button>
+                <button class="calc-btn num" data-num="5">5</button>
+                <button class="calc-btn num" data-num="6">6</button>
+                <button class="calc-btn op" data-op="-">−</button>
+
+                <button class="calc-btn num" data-num="1">1</button>
+                <button class="calc-btn num" data-num="2">2</button>
+                <button class="calc-btn num" data-num="3">3</button>
+                <button class="calc-btn op" data-op="+">+</button>
+
+                <button class="calc-btn num" data-num="00">00</button>
+                <button class="calc-btn num" data-num="0">0</button>
+                <button class="calc-btn num" data-num=".">.</button>
+                <button class="calc-btn action" data-action="equals">=</button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-header">
+            <span class="results-title">換算結果 (24h漲跌)</span>
+            <button class="refresh-btn" id="refreshBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                </svg>
+                重新整理
+            </button>
+        </div>
+
+        <div class="results-grid" id="resultsGrid">
+            <div class="empty-hint">輸入金額查看各幣別換算結果</div>
+        </div>
+
+        <footer class="footer">
+            <p>資料來源: <a href="https://www.exchangerate-api.com" target="_blank">ExchangeRate-API</a> · 每日更新</p>
+        </footer>
+    </div>
+
+    <!-- Currency Selection Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-handle"></div>
+            <div class="modal-header">
+                <h3 class="modal-title">選擇貨幣</h3>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Currency data
+        const currencies = {
+            TWD: { flag: '🇹🇼', name: '新台幣' },
+            JPY: { flag: '🇯🇵', name: '日圓' },
+            USD: { flag: '🇺🇸', name: '美元' },
+            KRW: { flag: '🇰🇷', name: '韓元' },
+            EUR: { flag: '🇪🇺', name: '歐元' },
+            GBP: { flag: '🇬🇧', name: '英鎊' },
+            CNY: { flag: '🇨🇳', name: '人民幣' },
+            HKD: { flag: '🇭🇰', name: '港幣' },
+            SGD: { flag: '🇸🇬', name: '新加坡幣' },
+            AUD: { flag: '🇦🇺', name: '澳幣' },
+            CAD: { flag: '🇨🇦', name: '加幣' },
+            CHF: { flag: '🇨🇭', name: '瑞士法郎' },
+            THB: { flag: '🇹🇭', name: '泰銖' },
+            MYR: { flag: '🇲🇾', name: '馬來幣' },
+            PHP: { flag: '🇵🇭', name: '菲律賓披索' },
+            VND: { flag: '🇻🇳', name: '越南盾' },
+            INR: { flag: '🇮🇳', name: '印度盧比' },
+            NZD: { flag: '🇳🇿', name: '紐幣' }
+        };
+
+        const priorityOrder = ['TWD', 'JPY', 'USD', 'KRW'];
+        const otherCurrencies = ['EUR', 'GBP', 'CNY', 'HKD', 'SGD', 'AUD', 'CAD', 'CHF', 'THB', 'MYR', 'PHP', 'VND', 'INR', 'NZD'];
+
+        let todayRates = {};      // 今日匯率 (以 TWD 為基準)
+        let yesterdayRates = {};  // 昨日匯率 (以 TWD 為基準)
+        let baseCurrency = 'TWD';
+        let lastUpdateDate = '';
+        
+        // Calculator state
+        let currentInput = '0';
+        let expression = '';
+        let shouldResetInput = false;
+
+        // DOM elements
+        const resultDisplay = document.getElementById('result');
+        const expressionDisplay = document.getElementById('expression');
+        const baseFlag = document.getElementById('baseFlag');
+        const baseCode = document.getElementById('baseCode');
+        const resultsGrid = document.getElementById('resultsGrid');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalBody = document.getElementById('modalBody');
+        const refreshBtn = document.getElementById('refreshBtn');
+
+        // Get yesterday date string (skip weekends)
+        function getYesterdayDateString() {
+            const date = new Date();
+            date.setDate(date.getDate() - 1);
+            // Skip weekends
+            while (date.getDay() === 0 || date.getDay() === 6) {
+                date.setDate(date.getDate() - 1);
+            }
+            return date.toISOString().split('T')[0];
+        }
+
+        // Calculator functions
+        function updateDisplay() {
+            resultDisplay.textContent = formatDisplayNumber(currentInput);
+            expressionDisplay.textContent = formatExpression(expression);
+            updateResults();
+        }
+
+        function formatDisplayNumber(num) {
+            if (num === '' || num === '-') return num || '0';
+            const parts = num.toString().split('.');
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return parts.join('.');
+        }
+
+        function formatExpression(expr) {
+            return expr
+                .replace(/\*/g, ' × ')
+                .replace(/\//g, ' ÷ ')
+                .replace(/\+/g, ' + ')
+                .replace(/-/g, ' − ')
+                .replace(/%/g, ' % ');
+        }
+
+        function inputNumber(num) {
+            if (shouldResetInput) {
+                currentInput = num;
+                shouldResetInput = false;
+            } else {
+                if (currentInput === '0' && num !== '.') {
+                    currentInput = num;
+                } else if (num === '.' && currentInput.includes('.')) {
+                    return;
+                } else {
+                    currentInput += num;
+                }
+            }
+            updateDisplay();
+        }
+
+        function inputOperator(op) {
+            if (expression && shouldResetInput) {
+                expression = expression.slice(0, -1) + op;
+            } else {
+                expression += currentInput + op;
+                shouldResetInput = true;
+            }
+            updateDisplay();
+        }
+
+        function calculate() {
+            if (!expression && currentInput) {
+                return parseFloat(currentInput) || 0;
+            }
+            
+            let fullExpression = expression + currentInput;
+            fullExpression = fullExpression.replace(/(\d+)%/g, '($1/100)');
+            
+            try {
+                const result = Function('"use strict"; return (' + fullExpression + ')')();
+                return isFinite(result) ? result : 0;
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        function equals() {
+            const result = calculate();
+            expression = '';
+            currentInput = result.toString();
+            shouldResetInput = true;
+            updateDisplay();
+        }
+
+        function clear() {
+            currentInput = '0';
+            expression = '';
+            shouldResetInput = false;
+            updateDisplay();
+        }
+
+        function backspace() {
+            if (shouldResetInput) {
+                clear();
+                return;
+            }
+            if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput = '0';
+            }
+            updateDisplay();
+        }
+
+        // Get display order
+        function getDisplayOrder() {
+            let order = priorityOrder.filter(code => code !== baseCurrency);
+            order = order.concat(otherCurrencies.filter(code => code !== baseCurrency));
+            return order;
+        }
+
+        // Fetch exchange rates - today and yesterday
+        async function fetchRates() {
+            try {
+                statusDot.className = 'status-dot loading';
+                statusText.textContent = '更新中...';
+
+                const yesterdayDate = getYesterdayDateString();
+
+                // Fetch today's rates and yesterday's rates in parallel
+                const [todayRes, yesterdayRes] = await Promise.all([
+                    fetch('https://open.er-api.com/v6/latest/TWD'),
+                    fetch(`https://v6.exchangerate-api.com/v6/open/history/TWD/${yesterdayDate}`)
+                        .catch(() => null) // Yesterday might fail, that's ok
+                ]);
+
+                const todayData = await todayRes.json();
+
+                if (todayData.result === 'success') {
+                    todayRates = todayData.rates;
+                    lastUpdateDate = todayData.time_last_update_utc;
+
+                    // Try to get yesterday's rates
+                    // If the history API fails, try alternative method
+                    if (yesterdayRes && yesterdayRes.ok) {
+                        try {
+                            const yesterdayData = await yesterdayRes.json();
+                            if (yesterdayData.result === 'success') {
+                                yesterdayRates = yesterdayData.conversion_rates || {};
+                            }
+                        } catch (e) {
+                            console.log('Could not parse yesterday rates');
+                        }
+                    }
+
+                    // If no yesterday data, try localStorage fallback
+                    if (Object.keys(yesterdayRates).length === 0) {
+                        loadYesterdayFromStorage();
+                    }
+
+                    // Save today's rates for tomorrow's comparison
+                    saveToStorage();
+
+                    const updateTime = new Date(lastUpdateDate);
+                    statusDot.className = 'status-dot';
+                    statusText.textContent = updateTime.toLocaleDateString('zh-TW');
+                    updateResults();
+                } else {
+                    throw new Error('Failed to fetch rates');
+                }
+            } catch (error) {
+                console.error('Error fetching rates:', error);
+                statusDot.className = 'status-dot error';
+                statusText.textContent = '載入失敗';
+            }
+        }
+
+        // Save rates to localStorage for future comparison
+        function saveToStorage() {
+            try {
+                const today = new Date().toDateString();
+                const stored = localStorage.getItem('fx_rates_history');
+                let history = stored ? JSON.parse(stored) : {};
+                
+                // Save today's rates
+                history[today] = todayRates;
+                
+                // Keep only last 3 days
+                const keys = Object.keys(history).sort((a, b) => new Date(b) - new Date(a));
+                if (keys.length > 3) {
+                    keys.slice(3).forEach(k => delete history[k]);
+                }
+                
+                localStorage.setItem('fx_rates_history', JSON.stringify(history));
+            } catch (e) {
+                console.log('localStorage not available');
+            }
+        }
+
+        // Load yesterday's rates from localStorage
+        function loadYesterdayFromStorage() {
+            try {
+                const stored = localStorage.getItem('fx_rates_history');
+                if (stored) {
+                    const history = JSON.parse(stored);
+                    const dates = Object.keys(history).sort((a, b) => new Date(b) - new Date(a));
+                    
+                    // Find a date that's not today
+                    const today = new Date().toDateString();
+                    for (const date of dates) {
+                        if (date !== today) {
+                            yesterdayRates = history[date];
+                            console.log('Loaded yesterday rates from:', date);
+                            break;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log('Could not load from localStorage');
+            }
+        }
+
+        // Get exchange rate between two currencies
+        function getRate(from, to, rates) {
+            if (!rates || Object.keys(rates).length === 0) return null;
+            if (from === to) return 1;
+
+            // rates are based on TWD (1 TWD = X foreign currency)
+            if (from === 'TWD') {
+                return rates[to] || null;
+            } else if (to === 'TWD') {
+                return rates[from] ? (1 / rates[from]) : null;
+            } else {
+                const fromRate = rates[from];
+                const toRate = rates[to];
+                if (!fromRate || !toRate) return null;
+                return toRate / fromRate;
+            }
+        }
+
+        // Calculate 24h change percentage
+        // Positive = target currency strengthened (you get less of it)
+        // Negative = target currency weakened (you get more of it)
+        function getChangePercent(from, to) {
+            const todayRate = getRate(from, to, todayRates);
+            const yesterdayRate = getRate(from, to, yesterdayRates);
+            
+            if (!todayRate || !yesterdayRate) return null;
+            
+            // Calculate percentage change
+            // If rate goes from 0.031 to 0.032, target currency weakened (you get more)
+            const change = ((todayRate - yesterdayRate) / yesterdayRate) * 100;
+            return change;
+        }
+
+        // Format amount
+        function formatAmount(num, currency) {
+            if (isNaN(num) || num === 0) return '0';
+            
+            const noDecimalCurrencies = ['JPY', 'KRW', 'VND', 'TWD'];
+            let decimals = noDecimalCurrencies.includes(currency) ? 0 : 2;
+            
+            if (Math.abs(num) < 0.01 && Math.abs(num) > 0) {
+                return num.toFixed(6);
+            }
+            
+            return num.toLocaleString('en-US', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: decimals
+            });
+        }
+
+        // Format rate
+        function formatRate(rate) {
+            if (!rate) return '--';
+            if (rate >= 100) return rate.toFixed(2);
+            if (rate >= 1) return rate.toFixed(4);
+            return rate.toFixed(6);
+        }
+
+        // Update results
+        function updateResults() {
+            const amount = calculate();
+            
+            if (amount === 0 || Object.keys(todayRates).length === 0) {
+                resultsGrid.innerHTML = '<div class="empty-hint">輸入金額查看各幣別換算結果</div>';
+                return;
+            }
+
+            const displayOrder = getDisplayOrder();
+
+            resultsGrid.innerHTML = displayOrder.map(code => {
+                if (!currencies[code]) return '';
+                
+                const { flag, name } = currencies[code];
+                const rate = getRate(baseCurrency, code, todayRates);
+                const convertedAmount = rate ? amount * rate : 0;
+                const changePercent = getChangePercent(baseCurrency, code);
+                
+                let changeClass = 'neutral';
+                let changeArrow = '';
+                let changeText = '--';
+                
+                if (changePercent !== null) {
+                    // Positive change means you get MORE of the target currency = target weakened
+                    // Negative change means you get LESS of the target currency = target strengthened
+                    if (changePercent > 0.01) {
+                        // Target currency weakened (you get more) - show as red/down for the target
+                        changeClass = 'down';
+                        changeArrow = '▼';
+                        changeText = `${changePercent.toFixed(2)}%`;
+                    } else if (changePercent < -0.01) {
+                        // Target currency strengthened (you get less) - show as green/up for the target
+                        changeClass = 'up';
+                        changeArrow = '▲';
+                        changeText = `+${Math.abs(changePercent).toFixed(2)}%`;
+                    } else {
+                        changeText = '0.00%';
+                    }
+                }
+                
+                return `
+                    <div class="result-row" data-currency="${code}">
+                        <span class="result-flag">${flag}</span>
+                        <div class="result-info">
+                            <div class="result-currency">
+                                <span class="result-code">${code}</span>
+                                <span class="result-name">${name}</span>
+                            </div>
+                            <div class="result-rate">1 ${baseCurrency} = ${formatRate(rate)} ${code}</div>
+                        </div>
+                        <div class="result-right">
+                            <div class="result-amount">${formatAmount(convertedAmount, code)}</div>
+                            <div class="result-change ${changeClass}">
+                                <span class="change-arrow">${changeArrow}</span>
+                                <span>${changeText}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Click to copy
+            document.querySelectorAll('.result-row').forEach(row => {
+                row.addEventListener('click', () => {
+                    const code = row.dataset.currency;
+                    const rate = getRate(baseCurrency, code, todayRates);
+                    const convertedAmount = rate ? amount * rate : 0;
+                    
+                    navigator.clipboard.writeText(formatAmount(convertedAmount, code).replace(/,/g, '')).then(() => {
+                        row.classList.add('highlight');
+                        setTimeout(() => row.classList.remove('highlight'), 300);
+                    });
+                });
+            });
+        }
+
+        // Update base currency display
+        function updateBaseCurrencyDisplay() {
+            baseFlag.textContent = currencies[baseCurrency].flag;
+            baseCode.textContent = baseCurrency;
+        }
+
+        // Open modal
+        function openModal() {
+            const allCurrencies = [...priorityOrder, ...otherCurrencies];
+            
+            modalBody.innerHTML = allCurrencies.map(code => {
+                const { flag, name } = currencies[code];
+                const isSelected = code === baseCurrency;
+                return `
+                    <div class="currency-option ${isSelected ? 'selected' : ''}" data-code="${code}">
+                        <span class="currency-flag">${flag}</span>
+                        <div class="currency-option-info">
+                            <div class="currency-option-code">${code}</div>
+                            <div class="currency-option-name">${name}</div>
+                        </div>
+                        <span class="currency-option-check">✓</span>
+                    </div>
+                `;
+            }).join('');
+
+            document.querySelectorAll('.currency-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    baseCurrency = option.dataset.code;
+                    updateBaseCurrencyDisplay();
+                    updateResults();
+                    closeModal();
+                });
+            });
+
+            modalOverlay.classList.add('active');
+        }
+
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+        }
+
+        // Event listeners - Calculator buttons
+        document.querySelectorAll('.calc-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.dataset.num !== undefined) {
+                    inputNumber(btn.dataset.num);
+                } else if (btn.dataset.op) {
+                    inputOperator(btn.dataset.op);
+                } else if (btn.dataset.action === 'clear') {
+                    clear();
+                } else if (btn.dataset.action === 'backspace') {
+                    backspace();
+                } else if (btn.dataset.action === 'equals') {
+                    equals();
+                }
+            });
+        });
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9') {
+                inputNumber(e.key);
+            } else if (e.key === '.') {
+                inputNumber('.');
+            } else if (['+', '-', '*', '/', '%'].includes(e.key)) {
+                inputOperator(e.key);
+            } else if (e.key === 'Enter' || e.key === '=') {
+                equals();
+            } else if (e.key === 'Escape' || e.key === 'c' || e.key === 'C') {
+                clear();
+            } else if (e.key === 'Backspace') {
+                backspace();
+            }
+        });
+
+        document.getElementById('currencyBadge').addEventListener('click', openModal);
+
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        refreshBtn.addEventListener('click', async () => {
+            refreshBtn.classList.add('spinning');
+            await fetchRates();
+            setTimeout(() => refreshBtn.classList.remove('spinning'), 500);
+        });
+
+        // Prevent double-tap zoom on mobile
+        document.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(e) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, { passive: false });
+
+        // Initialize
+        updateBaseCurrencyDisplay();
+        updateDisplay();
+        fetchRates();
+        setInterval(fetchRates, 5 * 60 * 1000);
+    </script>
+</body>
+</html>
