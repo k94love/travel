@@ -1272,7 +1272,7 @@
                 <div class="import-format-box">
                     <div class="format-header">
                         <span>📋 JSON 格式範例</span>
-                        <button class="copy-format-btn" id="copyFormatBtn">複製格式</button>
+                        <button class="copy-format-btn" id="copyFormatBtn">複製提示詞</button>
                     </div>
                     <pre class="format-code" id="formatCode">{
   "expenses": [
@@ -2039,9 +2039,38 @@
         }
 
         function copyFormat() {
-            const formatCode = document.getElementById('formatCode').textContent;
-            navigator.clipboard.writeText(formatCode).then(() => {
-                showToast('✓ 已複製格式');
+            const fullFormat = `請幫我將以下發票/收據內容轉換成 JSON 格式，用於旅行記帳 APP 匯入：
+
+[在這裡貼上發票圖片或文字]
+
+輸出格式：
+{
+  "expenses": [
+    {
+      "amount": 1500,
+      "currency": "JPY",
+      "category": "food",
+      "note": "午餐拉麵",
+      "date": "2024-01-15T12:30:00"
+    }
+  ]
+}
+
+類別代碼：
+- food = 🍜 餐飲
+- transport = 🚗 交通
+- hotel = 🏨 住宿
+- shopping = 🛒 購物
+- entertainment = 🎮 娛樂
+- other = 📌 其他
+
+幣別代碼：
+TWD(台幣), JPY(日圓), USD(美元), KRW(韓元), EUR(歐元), GBP(英鎊), CNY(人民幣), HKD(港幣), SGD(新加坡幣), AUD(澳幣), CAD(加幣), CHF(瑞士法郎), THB(泰銖), MYR(馬來幣), PHP(菲律賓披索), VND(越南盾), INR(印度盧比), NZD(紐幣)
+
+請只輸出 JSON，不要其他說明文字。`;
+
+            navigator.clipboard.writeText(fullFormat).then(() => {
+                showToast('✓ 已複製完整格式與提示詞');
             });
         }
 
