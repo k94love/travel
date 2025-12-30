@@ -265,14 +265,18 @@
             font-size: 22px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.15s;
+            transition: transform 0.1s;
             display: flex;
             align-items: center;
             justify-content: center;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            user-select: none;
         }
 
         .calc-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.92);
         }
 
         .calc-btn.num {
@@ -1350,15 +1354,19 @@
                 });
             });
 
-            // Calculator buttons
+            // Calculator buttons - use touchstart for faster response
             document.querySelectorAll('.calc-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
+                const handlePress = (e) => {
+                    e.preventDefault();
                     if (btn.dataset.num !== undefined) inputNumber(btn.dataset.num);
                     else if (btn.dataset.op) inputOperator(btn.dataset.op);
                     else if (btn.dataset.action === 'clear') clear();
                     else if (btn.dataset.action === 'backspace') backspace();
                     else if (btn.dataset.action === 'equals') equals();
-                });
+                };
+                
+                btn.addEventListener('touchstart', handlePress, { passive: false });
+                btn.addEventListener('mousedown', handlePress);
             });
 
             // Currency badge
