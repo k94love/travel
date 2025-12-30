@@ -410,6 +410,151 @@
             white-space: nowrap;
         }
 
+        /* Import Modal Styles */
+        .import-info {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .import-format-box {
+            background: var(--primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .format-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: var(--tertiary);
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .copy-format-btn {
+            background: var(--accent);
+            border: none;
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .copy-format-btn:active {
+            transform: scale(0.95);
+        }
+
+        .format-code {
+            padding: 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--accent);
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin: 0;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .import-category-info {
+            background: var(--tertiary);
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .import-category-info p {
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+
+        .category-codes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .category-codes span {
+            background: var(--primary);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: var(--text);
+        }
+
+        .currency-codes {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .import-textarea {
+            width: 100%;
+            min-height: 100px;
+            background: var(--tertiary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--text);
+            resize: vertical;
+            margin-bottom: 12px;
+        }
+
+        .import-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .import-textarea::placeholder {
+            color: var(--text-dim);
+        }
+
+        .import-preview {
+            margin-bottom: 12px;
+            font-size: 12px;
+        }
+
+        .import-preview.success {
+            color: var(--success);
+        }
+
+        .import-preview.error {
+            color: var(--danger);
+        }
+
+        .import-preview-list {
+            background: var(--tertiary);
+            border-radius: 8px;
+            padding: 10px;
+            max-height: 120px;
+            overflow-y: auto;
+            margin-top: 8px;
+        }
+
+        .import-preview-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+        }
+
+        .import-preview-item:last-child {
+            border-bottom: none;
+        }
+
         /* Results Grid */
         .results-header {
             display: flex;
@@ -590,11 +735,36 @@
         .trip-card-title h3 {
             font-size: 15px;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .trip-card-title p {
             font-size: 11px;
             color: var(--text-dim);
+        }
+
+        .trip-card-title {
+            flex: 1;
+            cursor: pointer;
+            padding: 4px;
+            margin: -4px;
+            border-radius: 8px;
+            transition: background 0.15s;
+        }
+
+        .trip-card-title:hover {
+            background: var(--tertiary);
+        }
+
+        .import-hint {
+            font-size: 12px;
+            opacity: 0.5;
+        }
+
+        .trip-card-title:hover .import-hint {
+            opacity: 1;
         }
 
         .trip-card-delete {
@@ -1090,6 +1260,62 @@
         </div>
     </div>
 
+    <!-- Import Expenses Modal -->
+    <div class="modal-overlay" id="importModal">
+        <div class="modal" style="max-height: 85vh;">
+            <div class="modal-handle"></div>
+            <div class="modal-header"><h3 class="modal-title">📥 匯入發票/花費</h3></div>
+            <div class="modal-body">
+                <div class="import-info">
+                    <p>請將以下 JSON 格式提供給 AI，讓它幫你轉換發票資料：</p>
+                </div>
+                <div class="import-format-box">
+                    <div class="format-header">
+                        <span>📋 JSON 格式範例</span>
+                        <button class="copy-format-btn" id="copyFormatBtn">複製格式</button>
+                    </div>
+                    <pre class="format-code" id="formatCode">{
+  "expenses": [
+    {
+      "amount": 1500,
+      "currency": "JPY",
+      "category": "food",
+      "note": "午餐拉麵",
+      "date": "2024-01-15T12:30:00"
+    },
+    {
+      "amount": 850,
+      "currency": "JPY",
+      "category": "transport",
+      "note": "地鐵車票",
+      "date": "2024-01-15T14:00:00"
+    }
+  ]
+}</pre>
+                </div>
+                <div class="import-category-info">
+                    <p><strong>類別代碼：</strong></p>
+                    <div class="category-codes">
+                        <span>🍜 food</span>
+                        <span>🚗 transport</span>
+                        <span>🏨 hotel</span>
+                        <span>🛒 shopping</span>
+                        <span>🎮 entertainment</span>
+                        <span>📌 other</span>
+                    </div>
+                    <p style="margin-top: 8px;"><strong>幣別代碼：</strong></p>
+                    <div class="currency-codes">
+                        TWD, JPY, USD, KRW, EUR, GBP, CNY, HKD, SGD, AUD, CAD, CHF, THB, MYR, PHP, VND, INR, NZD
+                    </div>
+                </div>
+                <label class="modal-label" style="margin-top: 16px;">貼上 JSON 資料</label>
+                <textarea class="import-textarea" id="importTextarea" placeholder='貼上 AI 產生的 JSON 資料...'></textarea>
+                <div class="import-preview" id="importPreview"></div>
+                <button class="modal-btn" id="importBtn">匯入資料</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Edit Expense Modal -->
     <div class="modal-overlay" id="editExpenseModal">
         <div class="modal">
@@ -1350,6 +1576,11 @@
             // Add trip
             document.getElementById('addTripBtn').addEventListener('click', openNewTripModal);
             document.getElementById('saveTripBtn').addEventListener('click', saveNewTrip);
+
+            // Import
+            document.getElementById('copyFormatBtn').addEventListener('click', copyFormat);
+            document.getElementById('importTextarea').addEventListener('input', previewImport);
+            document.getElementById('importBtn').addEventListener('click', executeImport);
 
             // Close modals
             document.querySelectorAll('.modal-overlay').forEach(modal => {
@@ -1679,6 +1910,141 @@
             showToast('✓ 已更新');
         }
 
+        // ========== IMPORT ==========
+        let importTripId = null;
+
+        function openImportModal(tripId, e) {
+            e.stopPropagation();
+            importTripId = tripId;
+            document.getElementById('importTextarea').value = '';
+            document.getElementById('importPreview').innerHTML = '';
+            document.getElementById('importModal').classList.add('active');
+        }
+
+        function parseImportData(jsonStr) {
+            try {
+                const data = JSON.parse(jsonStr);
+                if (!data.expenses || !Array.isArray(data.expenses)) {
+                    return { error: '格式錯誤：需要 "expenses" 陣列' };
+                }
+
+                const validExpenses = [];
+                const errors = [];
+
+                data.expenses.forEach((exp, idx) => {
+                    // Validate required fields
+                    if (!exp.amount || typeof exp.amount !== 'number') {
+                        errors.push(`第 ${idx + 1} 筆：缺少有效金額`);
+                        return;
+                    }
+                    if (!exp.currency || !currencies[exp.currency]) {
+                        errors.push(`第 ${idx + 1} 筆：無效幣別 "${exp.currency}"`);
+                        return;
+                    }
+                    if (!exp.category || !categories[exp.category]) {
+                        errors.push(`第 ${idx + 1} 筆：無效類別 "${exp.category}"`);
+                        return;
+                    }
+
+                    validExpenses.push({
+                        amount: exp.amount,
+                        currency: exp.currency,
+                        category: exp.category,
+                        note: exp.note || categories[exp.category].name,
+                        date: exp.date || new Date().toISOString()
+                    });
+                });
+
+                return { expenses: validExpenses, errors };
+            } catch (e) {
+                return { error: 'JSON 解析失敗：請確認格式正確' };
+            }
+        }
+
+        function previewImport() {
+            const textarea = document.getElementById('importTextarea');
+            const preview = document.getElementById('importPreview');
+            const jsonStr = textarea.value.trim();
+
+            if (!jsonStr) {
+                preview.innerHTML = '';
+                return;
+            }
+
+            const result = parseImportData(jsonStr);
+
+            if (result.error) {
+                preview.className = 'import-preview error';
+                preview.innerHTML = `❌ ${result.error}`;
+                return;
+            }
+
+            if (result.errors && result.errors.length > 0) {
+                preview.className = 'import-preview error';
+                preview.innerHTML = `⚠️ 部分資料有問題：<br>${result.errors.join('<br>')}`;
+                return;
+            }
+
+            if (result.expenses.length === 0) {
+                preview.className = 'import-preview error';
+                preview.innerHTML = '❌ 沒有有效的資料可匯入';
+                return;
+            }
+
+            preview.className = 'import-preview success';
+            preview.innerHTML = `
+                ✓ 找到 ${result.expenses.length} 筆資料
+                <div class="import-preview-list">
+                    ${result.expenses.map(exp => `
+                        <div class="import-preview-item">
+                            <span>${categories[exp.category].icon} ${exp.note}</span>
+                            <span>${currencies[exp.currency].flag} ${formatAmount(exp.amount, exp.currency)}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function executeImport() {
+            const jsonStr = document.getElementById('importTextarea').value.trim();
+            if (!jsonStr) {
+                showToast('請貼上 JSON 資料');
+                return;
+            }
+
+            const result = parseImportData(jsonStr);
+            if (result.error || !result.expenses || result.expenses.length === 0) {
+                showToast('資料格式有誤，無法匯入');
+                return;
+            }
+
+            // Add expenses to the trip
+            result.expenses.forEach(exp => {
+                expenses.push({
+                    id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                    tripId: importTripId,
+                    category: exp.category,
+                    currency: exp.currency,
+                    amount: exp.amount,
+                    amountTWD: toTWD(exp.amount, exp.currency),
+                    note: exp.note,
+                    date: exp.date
+                });
+            });
+
+            saveData();
+            closeAllModals();
+            renderTrips();
+            showToast(`✓ 已匯入 ${result.expenses.length} 筆資料`);
+        }
+
+        function copyFormat() {
+            const formatCode = document.getElementById('formatCode').textContent;
+            navigator.clipboard.writeText(formatCode).then(() => {
+                showToast('✓ 已複製格式');
+            });
+        }
+
         // ========== TRIPS ==========
         function openNewTripModal() {
             document.getElementById('newTripModal').classList.add('active');
@@ -1756,8 +2122,8 @@
                     <div class="trip-card ${isActive ? 'active' : ''}" onclick="selectTrip('${trip.id}')">
                         <div class="trip-card-header">
                             <span class="trip-card-icon">${trip.icon}</span>
-                            <div class="trip-card-title">
-                                <h3>${trip.name}</h3>
+                            <div class="trip-card-title" onclick="openImportModal('${trip.id}', event)">
+                                <h3>${trip.name} <span class="import-hint">📥</span></h3>
                                 <p>${trip.destination || ''} ${trip.startDate} ~ ${trip.endDate}</p>
                             </div>
                             <button class="trip-card-delete" onclick="deleteTrip('${trip.id}', event)">🗑️</button>
