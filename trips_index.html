@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>我的旅程 ✈️</title>
+    <link rel="icon" type="image/x-icon" href="https://k94love.github.io/travel/favicon.ico">
+    <link rel="apple-touch-icon" href="https://k94love.github.io/travel/favicon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #FFD93D;
+            --accent: #6BCF7F;
+            --purple: #A78BFA;
+            --pink: #FF85B3;
+            --orange: #FF9671;
+            --blue: #4ECDC4;
+            --bg-light: #FFF8F0;
+            --bg-cream: #FFF4E6;
+            --text-dark: #2D3436;
+            --text-gray: #636E72;
+            --shadow: rgba(255, 107, 107, 0.2);
+        }
+
+        body {
+            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #FFF8F0 0%, #FFE6CC 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            touch-action: manipulation;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px 16px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header-title {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--orange) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 15px;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 900;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--orange) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-gray);
+            font-weight: 600;
+        }
+
+        /* Trip Cards */
+        .trips-section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-icon {
+            font-size: 20px;
+        }
+
+        .trip-card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .trip-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--orange) 50%, var(--secondary) 100%);
+        }
+
+        .trip-card:active {
+            transform: scale(0.98);
+        }
+
+        .trip-card:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            transform: translateY(-4px);
+        }
+
+        .trip-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .trip-flag {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--bg-cream) 0%, var(--bg-light) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .trip-info {
+            flex: 1;
+        }
+
+        .trip-name {
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .trip-destination {
+            font-size: 13px;
+            color: var(--text-gray);
+            margin-bottom: 6px;
+        }
+
+        .trip-dates {
+            font-size: 12px;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        .trip-countdown {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--orange) 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 6px 14px;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .trip-countdown.in-progress {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--blue) 100%);
+            box-shadow: 0 4px 15px rgba(107, 207, 127, 0.3);
+        }
+
+        .trip-countdown.completed {
+            background: linear-gradient(135deg, var(--purple) 0%, var(--pink) 100%);
+            box-shadow: 0 4px 15px rgba(167, 139, 250, 0.3);
+        }
+
+        .trip-stats {
+            display: flex;
+            gap: 16px;
+            padding-top: 16px;
+            border-top: 2px dashed var(--bg-cream);
+        }
+
+        .trip-stat {
+            flex: 1;
+            text-align: center;
+        }
+
+        .trip-stat-value {
+            font-size: 20px;
+            font-weight: 900;
+            font-family: 'Poppins', sans-serif;
+            color: var(--primary);
+            margin-bottom: 2px;
+        }
+
+        .trip-stat-label {
+            font-size: 11px;
+            color: var(--text-gray);
+            font-weight: 600;
+        }
+
+        /* Add Trip Button */
+        .add-trip-btn {
+            width: 100%;
+            background: white;
+            border: 3px dashed var(--text-gray);
+            border-radius: 24px;
+            padding: 30px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .add-trip-btn:hover {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.05) 0%, rgba(255, 150, 113, 0.05) 100%);
+        }
+
+        .add-trip-btn:active {
+            transform: scale(0.98);
+        }
+
+        .add-trip-icon {
+            font-size: 40px;
+            margin-bottom: 8px;
+            opacity: 0.6;
+        }
+
+        .add-trip-text {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-gray);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-gray);
+        }
+
+        .empty-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .empty-text {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: var(--text-gray);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 24px;
+            border-radius: 15px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(255, 150, 113, 0.1) 100%);
+        }
+
+        .nav-item .nav-icon {
+            font-size: 24px;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--orange) 100%);
+            color: var(--text-dark);
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        /* Animation */
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-icon">🗺️</div>
+            <h1 class="header-title">我的旅程</h1>
+            <p class="header-subtitle">探索世界，記錄美好時光</p>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-card fade-in">
+                <div class="stat-number" id="totalTrips">0</div>
+                <div class="stat-label">總旅程</div>
+            </div>
+            <div class="stat-card fade-in" style="animation-delay: 0.1s;">
+                <div class="stat-number" id="totalDays">0</div>
+                <div class="stat-label">總天數</div>
+            </div>
+            <div class="stat-card fade-in" style="animation-delay: 0.2s;">
+                <div class="stat-number" id="upcomingTrips">0</div>
+                <div class="stat-label">即將出發</div>
+            </div>
+        </div>
+
+        <!-- Upcoming Trips -->
+        <div class="trips-section" id="upcomingSection">
+            <h2 class="section-title">
+                <span class="section-icon">🎒</span>
+                即將出發
+                <span class="badge" id="upcomingBadge">0</span>
+            </h2>
+            <div id="upcomingTripsContainer"></div>
+        </div>
+
+        <!-- Past Trips -->
+        <div class="trips-section" id="pastSection" style="display: none;">
+            <h2 class="section-title">
+                <span class="section-icon">📸</span>
+                美好回憶
+                <span class="badge" id="pastBadge">0</span>
+            </h2>
+            <div id="pastTripsContainer"></div>
+        </div>
+
+        <!-- Add Trip Button (Future Feature) -->
+        <!-- <button class="add-trip-btn">
+            <div class="add-trip-icon">➕</div>
+            <div class="add-trip-text">新增旅程</div>
+        </button> -->
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="trips_index.html" class="nav-item active">
+            <span class="nav-icon">🗺️</span>
+            <span>行程</span>
+        </a>
+        <a href="dollar.html" class="nav-item">
+            <span class="nav-icon">💱</span>
+            <span>記帳</span>
+        </a>
+    </nav>
+
+    <script>
+        // Trip data configuration
+        const trips = [
+            {
+                id: 'FUK',
+                name: '福岡之旅',
+                destination: '日本 🇯🇵 福岡・由布院・熊本',
+                flag: '🇯🇵',
+                startDate: '2026-04-26',
+                endDate: '2026-05-03',
+                days: 8,
+                url: 'itinerary_FUK.html'
+            }
+            // 未來可以新增更多旅程
+            // {
+            //     id: 'TYO',
+            //     name: '東京自由行',
+            //     destination: '日本 🇯🇵 東京・橫濱',
+            //     flag: '🇯🇵',
+            //     startDate: '2026-07-15',
+            //     endDate: '2026-07-22',
+            //     days: 8,
+            //     url: 'itinerary_TYO.html'
+            // }
+        ];
+
+        // Calculate trip status
+        function getTripStatus(startDate, endDate) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const start = new Date(startDate);
+            start.setHours(0, 0, 0, 0);
+
+            const end = new Date(endDate);
+            end.setHours(0, 0, 0, 0);
+
+            if (today < start) {
+                // Upcoming trip
+                const diff = start - today;
+                const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                return {
+                    status: 'upcoming',
+                    text: `還有 ${days} 天`,
+                    class: ''
+                };
+            } else if (today >= start && today <= end) {
+                // In progress
+                const diff = today - start;
+                const dayNum = Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
+                return {
+                    status: 'in-progress',
+                    text: `Day ${dayNum}`,
+                    class: 'in-progress'
+                };
+            } else {
+                // Completed
+                return {
+                    status: 'completed',
+                    text: '已完成',
+                    class: 'completed'
+                };
+            }
+        }
+
+        // Format date
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${month}/${day}`;
+        }
+
+        // Render trip card
+        function renderTripCard(trip) {
+            const status = getTripStatus(trip.startDate, trip.endDate);
+            const startFormatted = formatDate(trip.startDate);
+            const endFormatted = formatDate(trip.endDate);
+
+            return `
+                <a href="${trip.url}" class="trip-card fade-in">
+                    <div class="trip-countdown ${status.class}">${status.text}</div>
+                    <div class="trip-header">
+                        <div class="trip-flag">${trip.flag}</div>
+                        <div class="trip-info">
+                            <div class="trip-name">${trip.name}</div>
+                            <div class="trip-destination">${trip.destination}</div>
+                            <div class="trip-dates">${startFormatted} - ${endFormatted}</div>
+                        </div>
+                    </div>
+                    <div class="trip-stats">
+                        <div class="trip-stat">
+                            <div class="trip-stat-value">${trip.days}</div>
+                            <div class="trip-stat-label">天數</div>
+                        </div>
+                        <div class="trip-stat">
+                            <div class="trip-stat-value">${trip.startDate.split('-')[0]}</div>
+                            <div class="trip-stat-label">年份</div>
+                        </div>
+                        <div class="trip-stat">
+                            <div class="trip-stat-value">👉</div>
+                            <div class="trip-stat-label">查看行程</div>
+                        </div>
+                    </div>
+                </a>
+            `;
+        }
+
+        // Render all trips
+        function renderTrips() {
+            const upcomingContainer = document.getElementById('upcomingTripsContainer');
+            const pastContainer = document.getElementById('pastTripsContainer');
+            const upcomingSection = document.getElementById('upcomingSection');
+            const pastSection = document.getElementById('pastSection');
+
+            let upcomingTrips = [];
+            let pastTrips = [];
+            let totalDays = 0;
+
+            trips.forEach(trip => {
+                const status = getTripStatus(trip.startDate, trip.endDate);
+                totalDays += trip.days;
+
+                if (status.status === 'completed') {
+                    pastTrips.push(trip);
+                } else {
+                    upcomingTrips.push(trip);
+                }
+            });
+
+            // Render upcoming trips
+            if (upcomingTrips.length > 0) {
+                upcomingContainer.innerHTML = upcomingTrips.map(renderTripCard).join('');
+                document.getElementById('upcomingBadge').textContent = upcomingTrips.length;
+            } else {
+                upcomingSection.style.display = 'none';
+            }
+
+            // Render past trips
+            if (pastTrips.length > 0) {
+                pastContainer.innerHTML = pastTrips.map(renderTripCard).join('');
+                document.getElementById('pastBadge').textContent = pastTrips.length;
+                pastSection.style.display = 'block';
+            }
+
+            // Update stats
+            document.getElementById('totalTrips').textContent = trips.length;
+            document.getElementById('totalDays').textContent = totalDays;
+            document.getElementById('upcomingTrips').textContent = upcomingTrips.length;
+        }
+
+        // Initialize
+        renderTrips();
+
+        // Prevent double-tap zoom
+        document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
+    </script>
+</body>
+</html>

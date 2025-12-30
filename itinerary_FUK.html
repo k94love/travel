@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>福岡之旅行程表 ✈️</title>
+    <link rel="icon" type="image/x-icon" href="https://k94love.github.io/travel/favicon.ico">
+    <link rel="apple-touch-icon" href="https://k94love.github.io/travel/favicon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #FFD93D;
+            --accent: #6BCF7F;
+            --purple: #A78BFA;
+            --pink: #FF85B3;
+            --orange: #FF9671;
+            --bg-light: #FFF8F0;
+            --bg-cream: #FFF4E6;
+            --text-dark: #2D3436;
+            --text-gray: #636E72;
+            --shadow: rgba(255, 107, 107, 0.2);
+        }
+
+        body {
+            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #FFF8F0 0%, #FFE6CC 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            touch-action: pan-y;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--orange) 100%);
+            padding: 20px 20px 30px;
+            border-radius: 0 0 30px 30px;
+            box-shadow: 0 10px 30px var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '✈️';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 120px;
+            opacity: 0.1;
+            transform: rotate(45deg);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            border-radius: 15px;
+            padding: 10px 16px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            text-decoration: none;
+        }
+
+        .back-btn:active {
+            transform: scale(0.95);
+        }
+
+        .countdown-badge {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .trip-title {
+            font-size: 32px;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .trip-dates {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 500;
+        }
+
+        /* Day Navigation */
+        .day-nav {
+            display: flex;
+            gap: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .day-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .day-nav-item {
+            min-width: 70px;
+            height: 70px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .day-nav-item.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--orange) 100%);
+            border-color: transparent;
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px var(--shadow);
+        }
+
+        .day-nav-item.today::after {
+            content: '●';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            color: var(--accent);
+            font-size: 12px;
+        }
+
+        .day-nav-number {
+            font-size: 20px;
+            font-weight: 900;
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 2px;
+        }
+
+        .day-nav-item.active .day-nav-number {
+            color: white;
+        }
+
+        .day-nav-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-gray);
+        }
+
+        .day-nav-item.active .day-nav-label {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Day Page */
+        .day-page {
+            display: none;
+            padding: 0 20px 20px;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .day-page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .day-header {
+            background: white;
+            border-radius: 25px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .day-title {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .day-subtitle {
+            font-size: 15px;
+            color: var(--text-gray);
+            font-weight: 500;
+        }
+
+        /* Activity Card */
+        .activity-card {
+            background: white;
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 14px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            border-left: 5px solid var(--accent);
+            transition: all 0.3s;
+        }
+
+        .activity-card:active {
+            transform: scale(0.98);
+        }
+
+        .activity-card.flight {
+            border-left-color: var(--primary);
+            background: linear-gradient(135deg, #FFF 0%, #FFF5F5 100%);
+        }
+
+        .activity-card.food {
+            border-left-color: var(--orange);
+        }
+
+        .activity-card.sightseeing {
+            border-left-color: var(--purple);
+        }
+
+        .activity-card.shopping {
+            border-left-color: var(--pink);
+        }
+
+        .activity-card.hotel {
+            border-left-color: var(--secondary);
+            background: linear-gradient(135deg, #FFF 0%, #FFFEF5 100%);
+        }
+
+        .activity-card.pending {
+            border-left-color: var(--text-gray);
+            background: linear-gradient(135deg, #FFF 0%, #F8F9FA 100%);
+            border-style: dashed;
+        }
+
+        .activity-header {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+
+        .activity-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--orange) 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(255, 217, 61, 0.3);
+        }
+
+        .activity-card.flight .activity-icon {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--pink) 100%);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .activity-card.sightseeing .activity-icon {
+            background: linear-gradient(135deg, var(--purple) 0%, var(--pink) 100%);
+            box-shadow: 0 4px 15px rgba(167, 139, 250, 0.3);
+        }
+
+        .activity-card.shopping .activity-icon {
+            background: linear-gradient(135deg, var(--pink) 0%, var(--primary) 100%);
+            box-shadow: 0 4px 15px rgba(255, 133, 179, 0.3);
+        }
+
+        .activity-card.hotel .activity-icon {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+            box-shadow: 0 4px 15px rgba(107, 207, 127, 0.3);
+        }
+
+        .activity-info {
+            flex: 1;
+        }
+
+        .activity-time {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--orange) 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 8px;
+        }
+
+        .activity-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .activity-detail {
+            font-size: 14px;
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        .activity-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .activity-tag {
+            background: var(--bg-cream);
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-gray);
+        }
+
+        .activity-tag.pending {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--orange) 100%);
+            color: white;
+        }
+
+        /* Flight Card Special */
+        .flight-route {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 12px;
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+        }
+
+        .flight-airport {
+            flex: 1;
+            text-align: center;
+        }
+
+        .flight-code {
+            font-size: 22px;
+            font-weight: 900;
+            font-family: 'Poppins', sans-serif;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .flight-time {
+            font-size: 13px;
+            color: var(--text-gray);
+            font-weight: 600;
+        }
+
+        .flight-arrow {
+            font-size: 24px;
+            color: var(--orange);
+        }
+
+        .flight-number {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            border-radius: 10px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            margin-top: 8px;
+        }
+
+        /* Hotel Card Special */
+        .hotel-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .hotel-name-en {
+            font-size: 12px;
+            color: var(--text-gray);
+            font-style: italic;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: var(--text-gray);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 24px;
+            border-radius: 15px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(255, 150, 113, 0.1) 100%);
+        }
+
+        .nav-item .nav-icon {
+            font-size: 24px;
+        }
+
+        /* Swipe Indicator */
+        .swipe-hint {
+            text-align: center;
+            padding: 10px;
+            color: var(--text-gray);
+            font-size: 12px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(10px); }
+        }
+
+        /* Empty State */
+        .empty-activities {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-gray);
+        }
+
+        .empty-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 15px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-top">
+                <a href="dollar.html" class="back-btn">
+                    <span>←</span>
+                    <span>記帳</span>
+                </a>
+                <div class="countdown-badge" id="countdown">載入中...</div>
+            </div>
+            <div class="trip-title">福岡之旅 🇯🇵</div>
+            <div class="trip-dates">2026.04.26 - 05.03 • 8天7夜</div>
+        </div>
+
+        <!-- Day Navigation -->
+        <div class="day-nav" id="dayNav">
+            <div class="day-nav-item" data-day="1">
+                <div class="day-nav-number">1</div>
+                <div class="day-nav-label">4/26</div>
+            </div>
+            <div class="day-nav-item" data-day="2">
+                <div class="day-nav-number">2</div>
+                <div class="day-nav-label">4/27</div>
+            </div>
+            <div class="day-nav-item" data-day="3">
+                <div class="day-nav-number">3</div>
+                <div class="day-nav-label">4/28</div>
+            </div>
+            <div class="day-nav-item" data-day="4">
+                <div class="day-nav-number">4</div>
+                <div class="day-nav-label">4/29</div>
+            </div>
+            <div class="day-nav-item" data-day="5">
+                <div class="day-nav-number">5</div>
+                <div class="day-nav-label">4/30</div>
+            </div>
+            <div class="day-nav-item" data-day="6">
+                <div class="day-nav-number">6</div>
+                <div class="day-nav-label">5/1</div>
+            </div>
+            <div class="day-nav-item" data-day="7">
+                <div class="day-nav-number">7</div>
+                <div class="day-nav-label">5/2</div>
+            </div>
+            <div class="day-nav-item" data-day="8">
+                <div class="day-nav-number">8</div>
+                <div class="day-nav-label">5/3</div>
+            </div>
+        </div>
+
+        <!-- Day 1: 4/26 -->
+        <div class="day-page" data-day="1">
+            <div class="day-header">
+                <div class="day-title">Day 1 • 啟程前往福岡</div>
+                <div class="day-subtitle">4/26 (六) 台北 → 福岡</div>
+            </div>
+
+            <div class="activity-card flight">
+                <div class="activity-header">
+                    <div class="activity-icon">✈️</div>
+                    <div class="activity-info">
+                        <div class="activity-time">14:40 出發</div>
+                        <div class="activity-title">CI 128 班機</div>
+                    </div>
+                </div>
+                <div class="flight-route">
+                    <div class="flight-airport">
+                        <div class="flight-code">TPE</div>
+                        <div class="flight-time">14:40</div>
+                    </div>
+                    <div class="flight-arrow">✈️</div>
+                    <div class="flight-airport">
+                        <div class="flight-code">FUK</div>
+                        <div class="flight-time">18:05</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card shopping">
+                <div class="activity-header">
+                    <div class="activity-icon">🛍️</div>
+                    <div class="activity-info">
+                        <div class="activity-time">晚上</div>
+                        <div class="activity-title">唐吉軻德購物</div>
+                        <div class="activity-detail">福岡必逛的24小時驚安殿堂！藥妝、零食、日用品應有盡有，還有超多限定商品等你挖寶～</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag">購物天堂</div>
+                            <div class="activity-tag">24小時營業</div>
+                            <div class="activity-tag">免稅</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card food pending">
+                <div class="activity-header">
+                    <div class="activity-icon">🍜</div>
+                    <div class="activity-info">
+                        <div class="activity-time">晚餐</div>
+                        <div class="activity-title">晚餐待定</div>
+                        <div class="activity-detail">推薦選項：博多拉麵、一蘭拉麵總店、中洲屋台小吃、天神美食街</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag pending">待規劃</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card hotel">
+                <div class="activity-header">
+                    <div class="activity-icon">🏨</div>
+                    <div class="activity-info">
+                        <div class="activity-time">住宿</div>
+                        <div class="hotel-name">福岡蒙特利拉蘇瑞酒店</div>
+                        <div class="hotel-name-en">Hotel Monterey La Soeur Fukuoka</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 2: 4/27 -->
+        <div class="day-page" data-day="2">
+            <div class="day-header">
+                <div class="day-title">Day 2 • 文化巡禮</div>
+                <div class="day-subtitle">4/27 (日) 柳橋市場 → 太宰府 → 柳川</div>
+            </div>
+
+            <div class="activity-card food">
+                <div class="activity-header">
+                    <div class="activity-icon">🌅</div>
+                    <div class="activity-info">
+                        <div class="activity-time">08:00</div>
+                        <div class="activity-title">飯店早餐</div>
+                        <div class="activity-detail">享用豐盛的飯店早餐，為一天的旅程儲備能量！</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card sightseeing">
+                <div class="activity-header">
+                    <div class="activity-icon">🐟</div>
+                    <div class="activity-info">
+                        <div class="activity-time">09:30</div>
+                        <div class="activity-title">柳橋連合市場</div>
+                        <div class="activity-detail">被譽為「福岡的廚房」！新鮮海產、當地特色食材，感受最道地的市場文化，別忘了試試現做的海鮮丼～</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag">在地市場</div>
+                            <div class="activity-tag">新鮮海產</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card sightseeing">
+                <div class="activity-header">
+                    <div class="activity-icon">⛩️</div>
+                    <div class="activity-info">
+                        <div class="activity-time">11:30</div>
+                        <div class="activity-title">太宰府天滿宮</div>
+                        <div class="activity-detail">供奉學問之神菅原道真的神社，漫步美麗的參道，品嚐特色梅枝餅，到御守店挑選可愛的御守和繪馬！</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag">祈求學業</div>
+                            <div class="activity-tag">梅枝餅</div>
+                            <div class="activity-tag">網美景點</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card sightseeing">
+                <div class="activity-header">
+                    <div class="activity-icon">🚣</div>
+                    <div class="activity-info">
+                        <div class="activity-time">15:00</div>
+                        <div class="activity-title">柳川遊船</div>
+                        <div class="activity-detail">搭乘傳統「どんこ舟」遊覽柳川水道，兩岸垂柳搖曳，古樸街景如畫，船夫還會唱歌喔～超浪漫！</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag">水鄉之都</div>
+                            <div class="activity-tag">傳統遊船</div>
+                            <div class="activity-tag">拍照聖地</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card hotel">
+                <div class="activity-header">
+                    <div class="activity-icon">🏨</div>
+                    <div class="activity-info">
+                        <div class="activity-time">住宿</div>
+                        <div class="hotel-name">福岡全日空皇冠假日酒店</div>
+                        <div class="hotel-name-en">ANA Crowne Plaza Fukuoka</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 3: 4/28 -->
+        <div class="day-page" data-day="3">
+            <div class="day-header">
+                <div class="day-title">Day 3 • 自由探索</div>
+                <div class="day-subtitle">4/28 (一) 福岡市區自由活動</div>
+            </div>
+
+            <div class="activity-card pending">
+                <div class="activity-header">
+                    <div class="activity-icon">💭</div>
+                    <div class="activity-info">
+                        <div class="activity-time">全天</div>
+                        <div class="activity-title">自由活動日</div>
+                        <div class="activity-detail">建議行程：
+
+• 福岡塔 & 百道海濱公園 - 360度俯瞰福岡美景
+• 大濠公園散策 - 城市中的綠洲，超療癒
+• Canal City 博多運河城 - 購物、美食、娛樂一次滿足
+• 博多屋台美食體驗 - 感受最道地的福岡夜生活
+• 天神地下街購物 - 時尚品牌雲集</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag pending">待規劃</div>
+                            <div class="activity-tag">自由安排</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card hotel">
+                <div class="activity-header">
+                    <div class="activity-icon">🏨</div>
+                    <div class="activity-info">
+                        <div class="activity-time">住宿</div>
+                        <div class="hotel-name">福岡全日空皇冠假日酒店</div>
+                        <div class="hotel-name-en">ANA Crowne Plaza Fukuoka</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 4: 4/29 -->
+        <div class="day-page" data-day="4">
+            <div class="day-header">
+                <div class="day-title">Day 4 • 由布院溫泉小鎮</div>
+                <div class="day-subtitle">4/29 (二) 由布院一日遊</div>
+            </div>
+
+            <div class="activity-card food">
+                <div class="activity-header">
+                    <div class="activity-icon">🌅</div>
+                    <div class="activity-info">
+                        <div class="activity-time">08:00</div>
+                        <div class="activity-title">飯店早餐</div>
+                        <div class="activity-detail">享用早餐後準備出發前往由布院～</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card sightseeing">
+                <div class="activity-header">
+                    <div class="activity-icon">🚂</div>
+                    <div class="activity-info">
+                        <div class="activity-time">09:00</div>
+                        <div class="activity-title">前往由布院</div>
+                        <div class="activity-detail">搭乘JR特急列車「由布院之森」或巴士前往，車程約2小時，沿途風景超美！</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag">觀光列車</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card shopping">
+                <div class="activity-header">
+                    <div class="activity-icon">🛍️</div>
+                    <div class="activity-info">
+                        <div class="activity-time">11:30</div>
+                        <div class="activity-title">由布院散策</div>
+                        <div class="activity-detail">湯之坪街道購物尋寶、金鱗湖畔悠閒散步、必吃B-Speak蛋糕捲（記得早點去排隊！）、還有超多可愛雜貨小店等你發掘～</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag">B-Speak</div>
+                            <div class="activity-tag">金鱗湖</div>
+                            <div class="activity-tag">文青小店</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card sightseeing">
+                <div class="activity-header">
+                    <div class="activity-icon">♨️</div>
+                    <div class="activity-info">
+                        <div class="activity-time">14:00</div>
+                        <div class="activity-title">溫泉體驗</div>
+                        <div class="activity-detail">體驗由布院特色溫泉，泡湯、賞景，享受超療癒的溫泉時光！推薦「夢想園」或「下之湯」。</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag">溫泉</div>
+                            <div class="activity-tag">放鬆身心</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card sightseeing">
+                <div class="activity-header">
+                    <div class="activity-icon">🚂</div>
+                    <div class="activity-info">
+                        <div class="activity-time">17:00</div>
+                        <div class="activity-title">返回福岡</div>
+                        <div class="activity-detail">搭乘列車返回福岡市區，結束美好的由布院之旅～</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card hotel">
+                <div class="activity-header">
+                    <div class="activity-icon">🏨</div>
+                    <div class="activity-info">
+                        <div class="activity-time">住宿</div>
+                        <div class="hotel-name">福岡全日空皇冠假日酒店</div>
+                        <div class="hotel-name-en">ANA Crowne Plaza Fukuoka</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 5: 4/30 -->
+        <div class="day-page" data-day="5">
+            <div class="day-header">
+                <div class="day-title">Day 5 • 自由探索</div>
+                <div class="day-subtitle">4/30 (三) 福岡市區自由活動</div>
+            </div>
+
+            <div class="activity-card pending">
+                <div class="activity-header">
+                    <div class="activity-icon">💭</div>
+                    <div class="activity-info">
+                        <div class="activity-time">全天</div>
+                        <div class="activity-title">自由活動日</div>
+                        <div class="activity-detail">建議行程：
+
+• 福岡城跡 & 舞鶴公園 - 賞櫻勝地（季節限定）
+• 天神地下街購物 - 時尚天堂
+• 中洲屋台美食巡禮 - 夜晚限定
+• MarinOa City Outlet - 好買到剁手
+• 博多運河城 - 娛樂購物一次滿足</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag pending">待規劃</div>
+                            <div class="activity-tag">自由安排</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card hotel">
+                <div class="activity-header">
+                    <div class="activity-icon">🏨</div>
+                    <div class="activity-info">
+                        <div class="activity-time">住宿</div>
+                        <div class="hotel-name">福岡全日空皇冠假日酒店</div>
+                        <div class="hotel-name-en">ANA Crowne Plaza Fukuoka</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 6: 5/1 -->
+        <div class="day-page" data-day="6">
+            <div class="day-header">
+                <div class="day-title">Day 6 • 熊本探險</div>
+                <div class="day-subtitle">5/1 (四) 熊本城 & 城彩苑</div>
+            </div>
+
+            <div class="activity-card sightseeing">
+                <div class="activity-header">
+                    <div class="activity-icon">🚅</div>
+                    <div class="activity-info">
+                        <div class="activity-time">08:30</div>
+                        <div class="activity-title">前往熊本</div>
+                        <div class="activity-detail">搭乘九州新幹線前往熊本，車程僅需35分鐘，超快速！</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag">新幹線</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card sightseeing">
+                <div class="activity-header">
+                    <div class="activity-icon">🏯</div>
+                    <div class="activity-info">
+                        <div class="activity-time">10:00</div>
+                        <div class="activity-title">熊本城</div>
+                        <div class="activity-detail">日本三大名城之一！雄偉壯觀的黑色城堡，雖然仍在修復中，但依然超震撼。登上天守閣俯瞰熊本市景～</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag">三大名城</div>
+                            <div class="activity-tag">必訪景點</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card food">
+                <div class="activity-header">
+                    <div class="activity-icon">🏮</div>
+                    <div class="activity-info">
+                        <div class="activity-time">13:00</div>
+                        <div class="activity-title">櫻花馬場城彩苑</div>
+                        <div class="activity-detail">熊本城下町復古風情！品嚐熊本拉麵、馬肉料理等在地美食，還能買到超萌的熊本熊商品～</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag">熊本美食</div>
+                            <div class="activity-tag">熊本熊</div>
+                            <div class="activity-tag">伴手禮</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card shopping">
+                <div class="activity-header">
+                    <div class="activity-icon">🐻</div>
+                    <div class="activity-info">
+                        <div class="activity-time">15:30</div>
+                        <div class="activity-title">熊本市區散策</div>
+                        <div class="activity-detail">逛上下通商店街、拜訪熊本熊廣場（運氣好還能看到熊本熊出來跳舞！），尋找可愛的熊本熊蹤跡～</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag">熊本熊廣場</div>
+                            <div class="activity-tag">商店街</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card sightseeing">
+                <div class="activity-header">
+                    <div class="activity-icon">🚅</div>
+                    <div class="activity-info">
+                        <div class="activity-time">17:30</div>
+                        <div class="activity-title">返回福岡</div>
+                        <div class="activity-detail">搭乘新幹線返回博多，晚上可以去屋台吃宵夜！</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card hotel">
+                <div class="activity-header">
+                    <div class="activity-icon">🏨</div>
+                    <div class="activity-info">
+                        <div class="activity-time">住宿</div>
+                        <div class="hotel-name">東急博多卓越飯店</div>
+                        <div class="hotel-name-en">Tokyu Excel Hotel Hakata</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 7: 5/2 -->
+        <div class="day-page" data-day="7">
+            <div class="day-header">
+                <div class="day-title">Day 7 • 北九州巡禮</div>
+                <div class="day-subtitle">5/2 (五) 小倉 & 門司港</div>
+            </div>
+
+            <div class="activity-card sightseeing">
+                <div class="activity-header">
+                    <div class="activity-icon">🚄</div>
+                    <div class="activity-info">
+                        <div class="activity-time">09:00</div>
+                        <div class="activity-title">前往小倉</div>
+                        <div class="activity-detail">搭乘JR前往小倉，車程約15分鐘～</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card sightseeing">
+                <div class="activity-header">
+                    <div class="activity-icon">🏛️</div>
+                    <div class="activity-info">
+                        <div class="activity-time">10:00</div>
+                        <div class="activity-title">小倉城</div>
+                        <div class="activity-detail">參觀小倉城天守閣，了解北九州的歷史文化，城堡周邊的小倉城庭園也很值得一逛～</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag">歷史古蹟</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card sightseeing">
+                <div class="activity-header">
+                    <div class="activity-icon">🚃</div>
+                    <div class="activity-info">
+                        <div class="activity-time">12:00</div>
+                        <div class="activity-title">前往門司港</div>
+                        <div class="activity-detail">搭乘JR前往門司港，車程約15分鐘，準備探索復古港區～</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card sightseeing">
+                <div class="activity-header">
+                    <div class="activity-icon">🏛️</div>
+                    <div class="activity-info">
+                        <div class="activity-time">13:00</div>
+                        <div class="activity-title">門司港懷舊區</div>
+                        <div class="activity-detail">漫步復古港區！門司港站（國家重要文化財）、藍翼吊橋、海峽廣場，充滿大正浪漫風情。必吃門司港名物「焗烤咖哩飯」！</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag">焗烤咖哩</div>
+                            <div class="activity-tag">復古建築</div>
+                            <div class="activity-tag">網美景點</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card sightseeing">
+                <div class="activity-header">
+                    <div class="activity-icon">🌅</div>
+                    <div class="activity-info">
+                        <div class="activity-time">16:30</div>
+                        <div class="activity-title">關門海峽</div>
+                        <div class="activity-detail">欣賞關門海峽的壯麗海景，連接九州與本州的重要海峽，夕陽時分超美～絕佳拍照點！</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag">海景</div>
+                            <div class="activity-tag">夕陽</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card sightseeing">
+                <div class="activity-header">
+                    <div class="activity-icon">🚄</div>
+                    <div class="activity-info">
+                        <div class="activity-time">18:00</div>
+                        <div class="activity-title">返回博多</div>
+                        <div class="activity-detail">搭乘JR返回博多，結束北九州一日遊～</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card hotel">
+                <div class="activity-header">
+                    <div class="activity-icon">🏨</div>
+                    <div class="activity-info">
+                        <div class="activity-time">住宿</div>
+                        <div class="hotel-name">東急博多卓越飯店</div>
+                        <div class="hotel-name-en">Tokyu Excel Hotel Hakata</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 8: 5/3 -->
+        <div class="day-page" data-day="8">
+            <div class="day-header">
+                <div class="day-title">Day 8 • 珍重再見</div>
+                <div class="day-subtitle">5/3 (六) 最後巡禮 & 返台</div>
+            </div>
+
+            <div class="activity-card sightseeing">
+                <div class="activity-header">
+                    <div class="activity-icon">⛩️</div>
+                    <div class="activity-info">
+                        <div class="activity-time">09:00</div>
+                        <div class="activity-title">櫛田神社</div>
+                        <div class="activity-detail">博多總鎮守神社，參拜祈福～神社內展示著巨大的山笠，感受博多祇園山笠祭的熱情！</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag">博多守護神</div>
+                            <div class="activity-tag">山笠祭</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card sightseeing">
+                <div class="activity-header">
+                    <div class="activity-icon">🙏</div>
+                    <div class="activity-info">
+                        <div class="activity-time">11:00</div>
+                        <div class="activity-title">南藏院</div>
+                        <div class="activity-detail">朝聖世界最大的青銅涅槃佛像！全長41公尺，壯觀莊嚴，讓人內心平靜。寺院環境優美，值得細細品味～</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag">世界最大</div>
+                            <div class="activity-tag">涅槃佛</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card shopping">
+                <div class="activity-header">
+                    <div class="activity-icon">🛍️</div>
+                    <div class="activity-info">
+                        <div class="activity-time">14:00</div>
+                        <div class="activity-title">最後採購</div>
+                        <div class="activity-detail">博多車站、天神地區做最後衝刺！明太子、草莓大福、八女茶...把想買的通通帶回家！</div>
+                        <div class="activity-tags">
+                            <div class="activity-tag">伴手禮</div>
+                            <div class="activity-tag">最後機會</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card sightseeing">
+                <div class="activity-header">
+                    <div class="activity-icon">🚖</div>
+                    <div class="activity-info">
+                        <div class="activity-time">17:30</div>
+                        <div class="activity-title">前往福岡機場</div>
+                        <div class="activity-detail">搭乘地鐵或計程車前往機場，準備回家囉～依依不捨啊！</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-card flight">
+                <div class="activity-header">
+                    <div class="activity-icon">✈️</div>
+                    <div class="activity-info">
+                        <div class="activity-time">21:00 起飛</div>
+                        <div class="activity-title">CI 117 返台班機</div>
+                    </div>
+                </div>
+                <div class="flight-route">
+                    <div class="flight-airport">
+                        <div class="flight-code">FUK</div>
+                        <div class="flight-time">21:00</div>
+                    </div>
+                    <div class="flight-arrow">✈️</div>
+                    <div class="flight-airport">
+                        <div class="flight-code">TPE</div>
+                        <div class="flight-time">22:30</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="swipe-hint">← 滑動切換天數 →</div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="trips_index.html" class="nav-item">
+            <span class="nav-icon">🗺️</span>
+            <span>行程總表</span>
+        </a>
+        <a href="dollar.html" class="nav-item">
+            <span class="nav-icon">💱</span>
+            <span>記帳</span>
+        </a>
+    </nav>
+
+    <script>
+        // Trip dates configuration
+        const tripDates = [
+            '2026-04-26', // Day 1
+            '2026-04-27', // Day 2
+            '2026-04-28', // Day 3
+            '2026-04-29', // Day 4
+            '2026-04-30', // Day 5
+            '2026-05-01', // Day 6
+            '2026-05-02', // Day 7
+            '2026-05-03'  // Day 8
+        ];
+
+        let currentDay = 1;
+
+        // Initialize
+        function init() {
+            updateCountdown();
+            detectCurrentDay();
+            showDay(currentDay);
+            setupEventListeners();
+        }
+
+        // Detect which day to show based on current date
+        function detectCurrentDay() {
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+
+            // Find if today matches any trip day
+            const dayIndex = tripDates.indexOf(todayStr);
+
+            if (dayIndex !== -1) {
+                // Today is one of the trip days
+                currentDay = dayIndex + 1;
+                // Mark as today
+                const navItem = document.querySelector(`.day-nav-item[data-day="${currentDay}"]`);
+                if (navItem) {
+                    navItem.classList.add('today');
+                }
+            } else {
+                // Not a trip day, show day 1
+                currentDay = 1;
+            }
+        }
+
+        // Update countdown
+        function updateCountdown() {
+            const tripStart = new Date('2026-04-26');
+            const tripEnd = new Date('2026-05-03');
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            tripStart.setHours(0, 0, 0, 0);
+            tripEnd.setHours(0, 0, 0, 0);
+
+            const countdownEl = document.getElementById('countdown');
+
+            if (today < tripStart) {
+                // 出發前
+                const diff = tripStart - today;
+                const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                countdownEl.textContent = `⏱️ 還有 ${days} 天`;
+            } else if (today >= tripStart && today <= tripEnd) {
+                // 旅行中 - 顯示是第幾天
+                const diff = today - tripStart;
+                const dayNum = Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
+                countdownEl.textContent = `🎊 旅行中 Day ${dayNum}`;
+            } else {
+                // 旅行結束
+                countdownEl.textContent = '💝 旅行結束';
+            }
+        }
+
+        // Show specific day
+        function showDay(day) {
+            currentDay = day;
+
+            // Hide all pages
+            document.querySelectorAll('.day-page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Show selected page
+            const selectedPage = document.querySelector(`.day-page[data-day="${day}"]`);
+            if (selectedPage) {
+                selectedPage.classList.add('active');
+            }
+
+            // Update navigation
+            document.querySelectorAll('.day-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            const selectedNav = document.querySelector(`.day-nav-item[data-day="${day}"]`);
+            if (selectedNav) {
+                selectedNav.classList.add('active');
+                // Scroll nav item into view
+                selectedNav.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Day navigation clicks
+            document.querySelectorAll('.day-nav-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const day = parseInt(item.dataset.day);
+                    showDay(day);
+                });
+            });
+
+            // Touch swipe support
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            document.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+
+            document.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+
+                if (Math.abs(diff) < swipeThreshold) return;
+
+                if (diff > 0) {
+                    // Swipe left - next day
+                    if (currentDay < 8) {
+                        showDay(currentDay + 1);
+                    }
+                } else {
+                    // Swipe right - previous day
+                    if (currentDay > 1) {
+                        showDay(currentDay - 1);
+                    }
+                }
+            }
+
+            // Prevent double-tap zoom
+            document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
+        }
+
+        // Start
+        init();
+    </script>
+</body>
+</html>
