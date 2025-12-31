@@ -48,12 +48,13 @@
             background: var(--primary);
             min-height: 100vh;
             color: var(--text);
-            overflow-x: hidden;
+            overflow: hidden;
             touch-action: manipulation;
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             user-select: none;
-            padding-bottom: 80px;
+            display: flex;
+            flex-direction: column;
         }
 
         .bg-gradient {
@@ -64,9 +65,38 @@
             height: 100%;
             pointer-events: none;
             z-index: 0;
-            background: 
+            background:
                 radial-gradient(ellipse 80% 50% at 20% 40%, rgba(0, 212, 170, 0.04) 0%, transparent 50%),
                 radial-gradient(ellipse 60% 80% at 80% 60%, rgba(59, 130, 246, 0.03) 0%, transparent 50%);
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            background: var(--secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+            z-index: 100;
+            position: relative;
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+            flex: 1;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+            padding-bottom: 80px;
         }
 
         .page {
@@ -76,7 +106,6 @@
             max-width: 480px;
             margin: 0 auto;
             padding: 20px 16px;
-            min-height: calc(100vh - 80px);
         }
 
         .page.active {
@@ -85,9 +114,6 @@
 
         /* Header */
         .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
             margin-bottom: 16px;
         }
 
@@ -1253,13 +1279,6 @@
 <body>
     <div class="bg-gradient"></div>
 
-    <!-- Hamburger Menu Button -->
-    <button class="hamburger-btn" id="hamburgerBtn">
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-    </button>
-
     <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -1281,18 +1300,24 @@
         </div>
     </nav>
 
-    <!-- ========== PAGE: CONVERTER ========== -->
-    <div class="page active" id="pageConverter">
-        <header class="header">
-            <div class="logo">
-                <div class="logo-icon">💱</div>
-                <h1>匯率換算</h1>
-            </div>
-            <div class="status-bar">
-                <span class="status-dot" id="statusDot"></span>
-                <span id="statusText">載入中...</span>
-            </div>
-        </header>
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <button class="hamburger-btn" id="hamburgerBtn">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+        <div class="nav-title">💱 匯率換算</div>
+        <div class="status-bar">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">載入中...</span>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- ========== PAGE: CONVERTER ========== -->
+        <div class="page active" id="pageConverter">
 
         <!-- Current Trip Bar -->
         <div class="trip-bar" id="tripBar">
@@ -1372,17 +1397,18 @@
         <div id="tripsList"></div>
     </div>
 
-    <!-- ========== BOTTOM NAV ========== -->
-    <nav class="bottom-nav">
-        <button class="nav-item active" data-page="pageConverter">
-            <span class="nav-icon">💱</span>
-            <span>換算</span>
-        </button>
-        <button class="nav-item" data-page="pageTrips">
-            <span class="nav-icon">🧳</span>
-            <span>旅程</span>
-        </button>
-    </nav>
+        <!-- ========== BOTTOM NAV ========== -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-page="pageConverter">
+                <span class="nav-icon">💱</span>
+                <span>換算</span>
+            </button>
+            <button class="nav-item" data-page="pageTrips">
+                <span class="nav-icon">🧳</span>
+                <span>旅程</span>
+            </button>
+        </nav>
+    </div>
 
     <!-- ========== MODALS ========== -->
     <!-- Currency Modal -->

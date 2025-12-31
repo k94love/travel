@@ -44,16 +44,42 @@
             background: linear-gradient(135deg, #FFF8F0 0%, #FFE6CC 100%);
             min-height: 100vh;
             color: var(--text-dark);
-            overflow-x: hidden;
+            overflow: hidden;
             touch-action: pan-y;
-            padding-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--orange) 100%);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            flex: 1;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .container {
             max-width: 480px;
             margin: 0 auto;
             padding: 0;
-            min-height: 100vh;
         }
 
         /* Header */
@@ -464,30 +490,31 @@
 
         /* Hamburger Menu Button */
         .hamburger-btn {
-            width: 44px;
-            height: 44px;
-            background: white;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 4px;
             cursor: pointer;
-            z-index: 10;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            backdrop-filter: blur(10px);
         }
 
         .hamburger-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.92);
+            background: rgba(255, 255, 255, 0.3);
         }
 
         .hamburger-line {
             width: 20px;
             height: 2px;
-            background: var(--primary);
+            background: white;
             border-radius: 2px;
             transition: all 0.3s;
         }
@@ -615,21 +642,25 @@
         </div>
     </nav>
 
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-top">
-                <!-- Hamburger Menu Button -->
-                <button class="hamburger-btn" id="hamburgerBtn">
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
-                    <span class="hamburger-line"></span>
-                </button>
-                <div class="countdown-badge" id="countdown">載入中...</div>
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <button class="hamburger-btn" id="hamburgerBtn">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+        <div class="nav-title">福岡之旅 🇯🇵</div>
+        <div class="countdown-badge" id="countdown" style="font-size: 11px; padding: 6px 12px;">載入中...</div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <div class="trip-title">福岡之旅 🇯🇵</div>
+                <div class="trip-dates">2026.04.26 - 05.03 • 8天7夜</div>
             </div>
-            <div class="trip-title">福岡之旅 🇯🇵</div>
-            <div class="trip-dates">2026.04.26 - 05.03 • 8天7夜</div>
-        </div>
 
         <!-- Day Navigation -->
         <div class="day-nav" id="dayNav">
@@ -1250,9 +1281,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+            </div>
 
-        <div class="swipe-hint">← 滑動切換天數 →</div>
+            <div class="swipe-hint">← 滑動切換天數 →</div>
+        </div>
     </div>
 
     <script>

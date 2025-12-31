@@ -45,23 +45,51 @@
             background: linear-gradient(135deg, #FFF8F0 0%, #FFE6CC 100%);
             min-height: 100vh;
             color: var(--text-dark);
-            overflow-x: hidden;
+            overflow: hidden;
             touch-action: pan-y;
-            padding-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .nav-title {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--orange) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            flex: 1;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .container {
             max-width: 480px;
             margin: 0 auto;
             padding: 20px 16px;
-            min-height: 100vh;
         }
 
         /* Header */
         .header {
             text-align: center;
             margin-bottom: 30px;
-            position: relative;
         }
 
         .header-icon {
@@ -358,27 +386,28 @@
 
         /* Hamburger Menu Button */
         .hamburger-btn {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 44px;
-            height: 44px;
-            background: white;
+            width: 40px;
+            height: 40px;
+            background: var(--bg-cream);
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 4px;
             cursor: pointer;
-            z-index: 10;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
+            transition: all 0.2s;
+            flex-shrink: 0;
         }
 
         .hamburger-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.92);
+            background: var(--primary);
+        }
+
+        .hamburger-btn:active .hamburger-line {
+            background: white;
         }
 
         .hamburger-line {
@@ -494,13 +523,6 @@
     </style>
 </head>
 <body>
-    <!-- Hamburger Menu Button -->
-    <button class="hamburger-btn" id="hamburgerBtn">
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-    </button>
-
     <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -524,13 +546,25 @@
         </div>
     </nav>
 
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-icon">🗺️</div>
-            <h1 class="header-title">我的旅程</h1>
-            <p class="header-subtitle">探索世界，記錄美好時光</p>
-        </div>
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <button class="hamburger-btn" id="hamburgerBtn">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+        <div class="nav-title">我的旅程 ✈️</div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-icon">🗺️</div>
+                <h1 class="header-title">我的旅程</h1>
+                <p class="header-subtitle">探索世界，記錄美好時光</p>
+            </div>
 
         <!-- Stats Bar -->
         <div class="stats-bar">
@@ -568,11 +602,12 @@
             <div id="pastTripsContainer"></div>
         </div>
 
-        <!-- Add Trip Button (Future Feature) -->
-        <!-- <button class="add-trip-btn">
-            <div class="add-trip-icon">➕</div>
-            <div class="add-trip-text">新增旅程</div>
-        </button> -->
+            <!-- Add Trip Button (Future Feature) -->
+            <!-- <button class="add-trip-btn">
+                <div class="add-trip-icon">➕</div>
+                <div class="add-trip-text">新增旅程</div>
+            </button> -->
+        </div>
     </div>
 
     <script>
