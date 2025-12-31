@@ -81,6 +81,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            position: relative;
         }
 
         .back-btn {
@@ -463,9 +464,6 @@
 
         /* Hamburger Menu Button */
         .hamburger-btn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
             width: 44px;
             height: 44px;
             background: white;
@@ -477,7 +475,7 @@
             justify-content: center;
             gap: 5px;
             cursor: pointer;
-            z-index: 1001;
+            z-index: 10;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             transition: all 0.3s;
         }
@@ -599,13 +597,6 @@
     </style>
 </head>
 <body>
-    <!-- Hamburger Menu Button -->
-    <button class="hamburger-btn" id="hamburgerBtn">
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-    </button>
-
     <!-- Sidebar Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -628,6 +619,12 @@
         <!-- Header -->
         <div class="header">
             <div class="header-top">
+                <!-- Hamburger Menu Button -->
+                <button class="hamburger-btn" id="hamburgerBtn">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
                 <div class="countdown-badge" id="countdown">載入中...</div>
             </div>
             <div class="trip-title">福岡之旅 🇯🇵</div>
