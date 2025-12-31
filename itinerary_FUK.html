@@ -155,92 +155,10 @@
             font-weight: 500;
         }
 
-        /* Day Navigation */
-        .day-nav {
-            display: flex;
-            gap: 8px;
-            padding: 20px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-        }
-
-        .day-nav::-webkit-scrollbar {
-            display: none;
-        }
-
-        .day-nav-item {
-            min-width: 70px;
-            height: 70px;
-            background: white;
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border: 3px solid transparent;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        }
-
-        .day-nav-item.active {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--orange) 100%);
-            border-color: transparent;
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px var(--shadow);
-        }
-
-        .day-nav-item.today::after {
-            content: '●';
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            color: var(--accent);
-            font-size: 12px;
-        }
-
-        .day-nav-number {
-            font-size: 20px;
-            font-weight: 900;
-            font-family: 'Poppins', sans-serif;
-            margin-bottom: 2px;
-        }
-
-        .day-nav-item.active .day-nav-number {
-            color: white;
-        }
-
-        .day-nav-label {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-gray);
-        }
-
-        .day-nav-item.active .day-nav-label {
-            color: rgba(255, 255, 255, 0.9);
-        }
-
         /* Day Page */
         .day-page {
-            display: none;
             padding: 0 20px 20px;
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        .day-page.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            margin-bottom: 30px;
         }
 
         .day-header {
@@ -367,6 +285,27 @@
             font-weight: 700;
             color: var(--text-dark);
             margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .map-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .map-link:active {
+            transform: scale(0.9);
         }
 
         .activity-detail {
@@ -458,19 +397,6 @@
         }
 
         /* Swipe Indicator */
-        .swipe-hint {
-            text-align: center;
-            padding: 10px;
-            color: var(--text-gray);
-            font-size: 12px;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateX(0); }
-            50% { transform: translateX(10px); }
-        }
-
         /* Empty State */
         .empty-activities {
             text-align: center;
@@ -663,43 +589,7 @@
                 <div class="trip-dates">2026.04.26 - 05.03 • 8天7夜</div>
             </div>
 
-        <!-- Day Navigation -->
-        <div class="day-nav" id="dayNav">
-            <div class="day-nav-item" data-day="1">
-                <div class="day-nav-number">1</div>
-                <div class="day-nav-label">4/26</div>
-            </div>
-            <div class="day-nav-item" data-day="2">
-                <div class="day-nav-number">2</div>
-                <div class="day-nav-label">4/27</div>
-            </div>
-            <div class="day-nav-item" data-day="3">
-                <div class="day-nav-number">3</div>
-                <div class="day-nav-label">4/28</div>
-            </div>
-            <div class="day-nav-item" data-day="4">
-                <div class="day-nav-number">4</div>
-                <div class="day-nav-label">4/29</div>
-            </div>
-            <div class="day-nav-item" data-day="5">
-                <div class="day-nav-number">5</div>
-                <div class="day-nav-label">4/30</div>
-            </div>
-            <div class="day-nav-item" data-day="6">
-                <div class="day-nav-number">6</div>
-                <div class="day-nav-label">5/1</div>
-            </div>
-            <div class="day-nav-item" data-day="7">
-                <div class="day-nav-number">7</div>
-                <div class="day-nav-label">5/2</div>
-            </div>
-            <div class="day-nav-item" data-day="8">
-                <div class="day-nav-number">8</div>
-                <div class="day-nav-label">5/3</div>
-            </div>
-        </div>
-
-        <!-- Day 1: 4/26 -->
+            <!-- Day 1: 4/26 -->
         <div class="day-page" data-day="1">
             <div class="day-header">
                 <div class="day-title">Day 1 • 啟程前往福岡</div>
@@ -732,7 +622,10 @@
                     <div class="activity-icon">🛍️</div>
                     <div class="activity-info">
                         <div class="activity-time">晚上</div>
-                        <div class="activity-title">唐吉軻德購物</div>
+                        <div class="activity-title">
+                            <span>唐吉軻德購物</span>
+                            <a href="https://www.google.com/maps/search/唐吉軻德+福岡" target="_blank" class="map-link">📍</a>
+                        </div>
                         <div class="activity-detail">福岡必逛的24小時驚安殿堂！藥妝、零食、日用品應有盡有，還有超多限定商品等你挖寶～</div>
                         <div class="activity-tags">
                             <div class="activity-tag">購物天堂</div>
@@ -792,7 +685,10 @@
                     <div class="activity-icon">🐟</div>
                     <div class="activity-info">
                         <div class="activity-time">09:30</div>
-                        <div class="activity-title">柳橋連合市場</div>
+                        <div class="activity-title">
+                            <span>柳橋連合市場</span>
+                            <a href="https://www.google.com/maps/search/柳橋連合市場+福岡" target="_blank" class="map-link">📍</a>
+                        </div>
                         <div class="activity-detail">被譽為「福岡的廚房」！新鮮海產、當地特色食材，感受最道地的市場文化，別忘了試試現做的海鮮丼～</div>
                         <div class="activity-tags">
                             <div class="activity-tag">在地市場</div>
@@ -807,7 +703,10 @@
                     <div class="activity-icon">⛩️</div>
                     <div class="activity-info">
                         <div class="activity-time">11:30</div>
-                        <div class="activity-title">太宰府天滿宮</div>
+                        <div class="activity-title">
+                            <span>太宰府天滿宮</span>
+                            <a href="https://www.google.com/maps/search/太宰府天滿宮" target="_blank" class="map-link">📍</a>
+                        </div>
                         <div class="activity-detail">供奉學問之神菅原道真的神社，漫步美麗的參道，品嚐特色梅枝餅，到御守店挑選可愛的御守和繪馬！</div>
                         <div class="activity-tags">
                             <div class="activity-tag">祈求學業</div>
@@ -823,7 +722,10 @@
                     <div class="activity-icon">🚣</div>
                     <div class="activity-info">
                         <div class="activity-time">15:00</div>
-                        <div class="activity-title">柳川遊船</div>
+                        <div class="activity-title">
+                            <span>柳川遊船</span>
+                            <a href="https://www.google.com/maps/search/柳川遊船" target="_blank" class="map-link">📍</a>
+                        </div>
                         <div class="activity-detail">搭乘傳統「どんこ舟」遊覽柳川水道，兩岸垂柳搖曳，古樸街景如畫，船夫還會唱歌喔～超浪漫！</div>
                         <div class="activity-tags">
                             <div class="activity-tag">水鄉之都</div>
@@ -923,7 +825,10 @@
                     <div class="activity-icon">🛍️</div>
                     <div class="activity-info">
                         <div class="activity-time">11:30</div>
-                        <div class="activity-title">由布院散策</div>
+                        <div class="activity-title">
+                            <span>由布院散策</span>
+                            <a href="https://www.google.com/maps/search/由布院+湯布院" target="_blank" class="map-link">📍</a>
+                        </div>
                         <div class="activity-detail">湯之坪街道購物尋寶、金鱗湖畔悠閒散步、必吃B-Speak蛋糕捲（記得早點去排隊！）、還有超多可愛雜貨小店等你發掘～</div>
                         <div class="activity-tags">
                             <div class="activity-tag">B-Speak</div>
@@ -1038,7 +943,10 @@
                     <div class="activity-icon">🏯</div>
                     <div class="activity-info">
                         <div class="activity-time">10:00</div>
-                        <div class="activity-title">熊本城</div>
+                        <div class="activity-title">
+                            <span>熊本城</span>
+                            <a href="https://www.google.com/maps/search/熊本城" target="_blank" class="map-link">📍</a>
+                        </div>
                         <div class="activity-detail">日本三大名城之一！雄偉壯觀的黑色城堡，雖然仍在修復中，但依然超震撼。登上天守閣俯瞰熊本市景～</div>
                         <div class="activity-tags">
                             <div class="activity-tag">三大名城</div>
@@ -1053,7 +961,10 @@
                     <div class="activity-icon">🏮</div>
                     <div class="activity-info">
                         <div class="activity-time">13:00</div>
-                        <div class="activity-title">櫻花馬場城彩苑</div>
+                        <div class="activity-title">
+                            <span>櫻花馬場城彩苑</span>
+                            <a href="https://www.google.com/maps/search/櫻花馬場城彩苑+熊本" target="_blank" class="map-link">📍</a>
+                        </div>
                         <div class="activity-detail">熊本城下町復古風情！品嚐熊本拉麵、馬肉料理等在地美食，還能買到超萌的熊本熊商品～</div>
                         <div class="activity-tags">
                             <div class="activity-tag">熊本美食</div>
@@ -1125,7 +1036,10 @@
                     <div class="activity-icon">🏛️</div>
                     <div class="activity-info">
                         <div class="activity-time">10:00</div>
-                        <div class="activity-title">小倉城</div>
+                        <div class="activity-title">
+                            <span>小倉城</span>
+                            <a href="https://www.google.com/maps/search/小倉城" target="_blank" class="map-link">📍</a>
+                        </div>
                         <div class="activity-detail">參觀小倉城天守閣，了解北九州的歷史文化，城堡周邊的小倉城庭園也很值得一逛～</div>
                         <div class="activity-tags">
                             <div class="activity-tag">歷史古蹟</div>
@@ -1150,7 +1064,10 @@
                     <div class="activity-icon">🏛️</div>
                     <div class="activity-info">
                         <div class="activity-time">13:00</div>
-                        <div class="activity-title">門司港懷舊區</div>
+                        <div class="activity-title">
+                            <span>門司港懷舊區</span>
+                            <a href="https://www.google.com/maps/search/門司港懷舊區" target="_blank" class="map-link">📍</a>
+                        </div>
                         <div class="activity-detail">漫步復古港區！門司港站（國家重要文化財）、藍翼吊橋、海峽廣場，充滿大正浪漫風情。必吃門司港名物「焗烤咖哩飯」！</div>
                         <div class="activity-tags">
                             <div class="activity-tag">焗烤咖哩</div>
@@ -1211,7 +1128,10 @@
                     <div class="activity-icon">⛩️</div>
                     <div class="activity-info">
                         <div class="activity-time">09:00</div>
-                        <div class="activity-title">櫛田神社</div>
+                        <div class="activity-title">
+                            <span>櫛田神社</span>
+                            <a href="https://www.google.com/maps/search/櫛田神社+福岡" target="_blank" class="map-link">📍</a>
+                        </div>
                         <div class="activity-detail">博多總鎮守神社，參拜祈福～神社內展示著巨大的山笠，感受博多祇園山笠祭的熱情！</div>
                         <div class="activity-tags">
                             <div class="activity-tag">博多守護神</div>
@@ -1226,7 +1146,10 @@
                     <div class="activity-icon">🙏</div>
                     <div class="activity-info">
                         <div class="activity-time">11:00</div>
-                        <div class="activity-title">南藏院</div>
+                        <div class="activity-title">
+                            <span>南藏院</span>
+                            <a href="https://www.google.com/maps/search/南藏院+福岡" target="_blank" class="map-link">📍</a>
+                        </div>
                         <div class="activity-detail">朝聖世界最大的青銅涅槃佛像！全長41公尺，壯觀莊嚴，讓人內心平靜。寺院環境優美，值得細細品味～</div>
                         <div class="activity-tags">
                             <div class="activity-tag">世界最大</div>
@@ -1283,8 +1206,6 @@
                 </div>
             </div>
             </div>
-
-            <div class="swipe-hint">← 滑動切換天數 →</div>
         </div>
     </div>
 
@@ -1346,48 +1267,9 @@
             }
         }
 
-        // Trip dates configuration
-        const tripDates = [
-            '2026-04-26', // Day 1
-            '2026-04-27', // Day 2
-            '2026-04-28', // Day 3
-            '2026-04-29', // Day 4
-            '2026-04-30', // Day 5
-            '2026-05-01', // Day 6
-            '2026-05-02', // Day 7
-            '2026-05-03'  // Day 8
-        ];
-
-        let currentDay = 1;
-
         // Initialize
         function init() {
             updateCountdown();
-            detectCurrentDay();
-            showDay(currentDay);
-            setupEventListeners();
-        }
-
-        // Detect which day to show based on current date
-        function detectCurrentDay() {
-            const today = new Date();
-            const todayStr = today.toISOString().split('T')[0];
-
-            // Find if today matches any trip day
-            const dayIndex = tripDates.indexOf(todayStr);
-
-            if (dayIndex !== -1) {
-                // Today is one of the trip days
-                currentDay = dayIndex + 1;
-                // Mark as today
-                const navItem = document.querySelector(`.day-nav-item[data-day="${currentDay}"]`);
-                if (navItem) {
-                    navItem.classList.add('today');
-                }
-            } else {
-                // Not a trip day, show day 1
-                currentDay = 1;
-            }
         }
 
         // Update countdown
@@ -1417,81 +1299,8 @@
             }
         }
 
-        // Show specific day
-        function showDay(day) {
-            currentDay = day;
-
-            // Hide all pages
-            document.querySelectorAll('.day-page').forEach(page => {
-                page.classList.remove('active');
-            });
-
-            // Show selected page
-            const selectedPage = document.querySelector(`.day-page[data-day="${day}"]`);
-            if (selectedPage) {
-                selectedPage.classList.add('active');
-            }
-
-            // Update navigation
-            document.querySelectorAll('.day-nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            const selectedNav = document.querySelector(`.day-nav-item[data-day="${day}"]`);
-            if (selectedNav) {
-                selectedNav.classList.add('active');
-                // Scroll nav item into view
-                selectedNav.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-            }
-
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Setup event listeners
-        function setupEventListeners() {
-            // Day navigation clicks
-            document.querySelectorAll('.day-nav-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const day = parseInt(item.dataset.day);
-                    showDay(day);
-                });
-            });
-
-            // Touch swipe support
-            let touchStartX = 0;
-            let touchEndX = 0;
-
-            document.addEventListener('touchstart', e => {
-                touchStartX = e.changedTouches[0].screenX;
-            });
-
-            document.addEventListener('touchend', e => {
-                touchEndX = e.changedTouches[0].screenX;
-                handleSwipe();
-            });
-
-            function handleSwipe() {
-                const swipeThreshold = 50;
-                const diff = touchStartX - touchEndX;
-
-                if (Math.abs(diff) < swipeThreshold) return;
-
-                if (diff > 0) {
-                    // Swipe left - next day
-                    if (currentDay < 8) {
-                        showDay(currentDay + 1);
-                    }
-                } else {
-                    // Swipe right - previous day
-                    if (currentDay > 1) {
-                        showDay(currentDay - 1);
-                    }
-                }
-            }
-
-            // Prevent double-tap zoom
-            document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
-        }
+        // Prevent double-tap zoom
+        document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
 
         // iOS Web App 模式導航處理
         // 攔截所有內部連結，保持在 Web App 模式中
