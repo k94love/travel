@@ -9,6 +9,9 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="main.png">
     <link rel="apple-touch-icon" href="main.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="main.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="main.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="main.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="旅程">
@@ -43,8 +46,8 @@
             min-height: 100vh;
             color: var(--text-dark);
             overflow-x: hidden;
-            touch-action: manipulation;
-            padding-bottom: 80px;
+            touch-action: pan-y;
+            padding-bottom: 20px;
         }
 
         .container {
@@ -324,47 +327,6 @@
             line-height: 1.6;
         }
 
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 0;
-            padding-bottom: max(12px, env(safe-area-inset-bottom));
-            z-index: 1000;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            background: none;
-            border: none;
-            color: var(--text-gray);
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            padding: 8px 24px;
-            border-radius: 15px;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .nav-item.active {
-            color: var(--primary);
-            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(255, 150, 113, 0.1) 100%);
-        }
-
-        .nav-item .nav-icon {
-            font-size: 24px;
-        }
-
         /* Badges */
         .badge {
             display: inline-block;
@@ -392,9 +354,175 @@
                 transform: translateY(0);
             }
         }
+
+        /* Hamburger Menu Button */
+        .hamburger-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 44px;
+            height: 44px;
+            background: white;
+            border: none;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .hamburger-btn:active {
+            transform: scale(0.95);
+        }
+
+        .hamburger-line {
+            width: 20px;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        .hamburger-btn.active .hamburger-line:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger-btn.active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-btn.active .hamburger-line:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: white;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar-header {
+            padding: 30px 20px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--orange) 100%);
+            color: white;
+        }
+
+        .sidebar-title {
+            font-size: 20px;
+            font-weight: 900;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-item:hover, .sidebar-item.active {
+            background: var(--bg-cream);
+            border-left-color: var(--primary);
+        }
+
+        .sidebar-item-icon {
+            font-size: 22px;
+            width: 30px;
+            text-align: center;
+        }
+
+        .sidebar-item-text {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .sidebar-divider {
+            height: 1px;
+            background: var(--bg-cream);
+            margin: 10px 20px;
+        }
+
+        /* Sidebar Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .sidebar-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
     </style>
 </head>
 <body>
+    <!-- Hamburger Menu Button -->
+    <button class="hamburger-btn" id="hamburgerBtn">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">旅程記帳</div>
+            <div class="sidebar-subtitle">Travel & Finance</div>
+        </div>
+        <div class="sidebar-menu">
+            <a href="trips_index.html" class="sidebar-item active">
+                <span class="sidebar-item-icon">🗺️</span>
+                <span class="sidebar-item-text">我的行程</span>
+            </a>
+            <a href="dollar.html" class="sidebar-item">
+                <span class="sidebar-item-icon">💱</span>
+                <span class="sidebar-item-text">旅行記帳</span>
+            </a>
+            <div class="sidebar-divider"></div>
+            <!-- 未來可以加入更多選項 -->
+        </div>
+    </nav>
+
     <div class="container">
         <!-- Header -->
         <div class="header">
@@ -445,18 +573,6 @@
             <div class="add-trip-text">新增旅程</div>
         </button> -->
     </div>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <a href="trips_index.html" class="nav-item active">
-            <span class="nav-icon">🗺️</span>
-            <span>行程</span>
-        </a>
-        <a href="dollar.html" class="nav-item">
-            <span class="nav-icon">💱</span>
-            <span>記帳</span>
-        </a>
-    </nav>
 
     <script>
         // Trip data configuration
@@ -607,6 +723,64 @@
             document.getElementById('totalTrips').textContent = trips.length;
             document.getElementById('totalDays').textContent = totalDays;
             document.getElementById('upcomingTrips').textContent = upcomingTrips.length;
+        }
+
+        // Sidebar 側邊欄功能
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        function openSidebar() {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.add('show');
+            hamburgerBtn.classList.add('active');
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('show');
+            hamburgerBtn.classList.remove('active');
+        }
+
+        hamburgerBtn.addEventListener('click', () => {
+            if (sidebar.classList.contains('open')) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
+        });
+
+        sidebarOverlay.addEventListener('click', closeSidebar);
+
+        // 左滑返回功能（Web App 模式）
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 100;
+            const diffX = touchEndX - touchStartX;
+            const diffY = Math.abs(touchEndY - touchStartY);
+
+            // 左滑返回（從左邊緣往右滑）
+            if (diffX > swipeThreshold && diffY < 50 && touchStartX < 50) {
+                // 如果有 history 可以返回
+                if (window.history.length > 1) {
+                    window.history.back();
+                }
+            }
         }
 
         // Initialize

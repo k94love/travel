@@ -4,15 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>旅行記帳 | 匯率換算</title>
-    <link rel="icon" type="image/x-icon" href="https://k94love.github.io/travel/favicon.ico">
-    <link rel="shortcut icon" type="image/x-icon" href="https://k94love.github.io/travel/favicon.ico">
-    <link rel="icon" type="image/png" href="https://k94love.github.io/travel/favicon.png">
-    <link rel="apple-touch-icon" href="https://k94love.github.io/travel/favicon.png">
-    <link rel="apple-touch-icon-precomposed" href="https://k94love.github.io/travel/favicon.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://k94love.github.io/travel/favicon.png">
+
+    <!-- PWA / iOS App 設定 -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="main.png">
+    <link rel="apple-touch-icon" href="main.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="main.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="main.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="main.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="旅行記帳">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#00d4aa">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
@@ -1114,10 +1118,171 @@
             .calc-result { font-size: 26px; }
             .calc-btn { font-size: 18px; }
         }
+
+        /* ========== HAMBURGER MENU & SIDEBAR ========== */
+        .hamburger-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 3000;
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .hamburger-btn:hover {
+            border-color: var(--accent);
+        }
+
+        .hamburger-line {
+            width: 20px;
+            height: 2px;
+            background: var(--text);
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        .hamburger-btn.active .hamburger-line:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger-btn.active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-btn.active .hamburger-line:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2500;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: var(--secondary);
+            z-index: 2600;
+            transition: left 0.3s;
+            overflow-y: auto;
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
+            padding: 40px 20px 20px;
+            color: var(--primary);
+        }
+
+        .sidebar-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .sidebar-menu {
+            padding: 16px 0;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 24px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-item:hover {
+            background: var(--tertiary);
+            border-left-color: var(--accent);
+        }
+
+        .sidebar-item.active {
+            background: var(--accent-glow);
+            border-left-color: var(--accent);
+        }
+
+        .sidebar-item-icon {
+            font-size: 22px;
+            width: 28px;
+            text-align: center;
+        }
+
+        .sidebar-item-text {
+            font-size: 15px;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
     <div class="bg-gradient"></div>
+
+    <!-- Hamburger Menu Button -->
+    <button class="hamburger-btn" id="hamburgerBtn">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+    </button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">旅程記帳</div>
+            <div class="sidebar-subtitle">Travel & Finance</div>
+        </div>
+        <div class="sidebar-menu">
+            <a href="trips_index.html" class="sidebar-item">
+                <span class="sidebar-item-icon">🗺️</span>
+                <span class="sidebar-item-text">行程總表</span>
+            </a>
+            <a href="dollar.html" class="sidebar-item active">
+                <span class="sidebar-item-icon">💱</span>
+                <span class="sidebar-item-text">旅行記帳</span>
+            </a>
+        </div>
+    </nav>
 
     <!-- ========== PAGE: CONVERTER ========== -->
     <div class="page active" id="pageConverter">
@@ -1220,10 +1385,6 @@
             <span class="nav-icon">🧳</span>
             <span>旅程</span>
         </button>
-        <a href="trips_index.html" class="nav-item">
-            <span class="nav-icon">🗺️</span>
-            <span>行程</span>
-        </a>
     </nav>
 
     <!-- ========== MODALS ========== -->
@@ -2279,6 +2440,103 @@ TWD(台幣), JPY(日圓), USD(美元), KRW(韓元), EUR(歐元), GBP(英鎊), CN
         }
 
         init();
+
+        // iOS Web App 模式導航處理
+        // 攔截所有內部連結，保持在 Web App 模式中
+        function setupWebAppNavigation() {
+            document.addEventListener('click', function(e) {
+                // 找到被點擊的 <a> 標籤
+                let target = e.target;
+                while (target && target.tagName !== 'A') {
+                    target = target.parentElement;
+                }
+
+                if (target && target.tagName === 'A') {
+                    const href = target.getAttribute('href');
+
+                    // 只處理相對路徑（內部連結）
+                    if (href && !href.startsWith('http') && !href.startsWith('//')) {
+                        e.preventDefault();
+                        window.location.href = href;
+                    }
+                }
+            }, true);
+        }
+
+        // 檢查是否在 Web App 模式中運行
+        if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) {
+            setupWebAppNavigation();
+        }
+
+        // 註冊 Service Worker（PWA 離線支援）
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker 註冊成功:', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker 註冊失敗:', err);
+                    });
+            });
+        }
+
+        // ========== SIDEBAR NAVIGATION ==========
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        function openSidebar() {
+            sidebar.classList.add('active');
+            sidebarOverlay.classList.add('active');
+            hamburgerBtn.classList.add('active');
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+            hamburgerBtn.classList.remove('active');
+        }
+
+        hamburgerBtn.addEventListener('click', () => {
+            if (sidebar.classList.contains('active')) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
+        });
+
+        sidebarOverlay.addEventListener('click', closeSidebar);
+
+        // ========== SWIPE BACK GESTURE ==========
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, false);
+
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+        }, false);
+
+        function handleSwipe() {
+            const swipeThreshold = 100;
+            const diffX = touchEndX - touchStartX;
+            const diffY = Math.abs(touchEndY - touchStartY);
+
+            // 從左邊緣往右滑返回
+            if (diffX > swipeThreshold && diffY < 50 && touchStartX < 50) {
+                if (window.history.length > 1) {
+                    window.history.back();
+                }
+            }
+        }
     </script>
 </body>
 </html>
