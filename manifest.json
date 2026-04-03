@@ -1,0 +1,22 @@
+{
+    "name": "福岡旅遊手冊 2026",
+    "short_name": "福岡行程",
+    "description": "福岡旅遊行程手冊 2026.04.26 - 05.03",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#fdf6ed",
+    "theme_color": "#FF6B6B",
+    "icons": [
+        {
+            "src": "main.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "main.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

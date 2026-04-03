@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>匯率換算 · 福岡手帳</title>
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="main.png">
+    <link rel="apple-touch-icon" href="main.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="福岡行程">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#FF6B6B">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body style="padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 70px);">
+
+    <div class="calc-wrap">
+
+        <!-- Status bar -->
+        <div class="cur-status-bar">
+            <div class="cur-status-pill">
+                <div class="status-dot loading" id="statusDot"></div>
+                <span class="status-text" id="statusText">取得匯率...</span>
+            </div>
+        </div>
+
+        <!-- Screen -->
+        <div class="calc-screen">
+            <div class="screen-detect" id="screenDetect">📍 偵測位置中...</div>
+            <div class="screen-expr-row">
+                <button class="cur-selector-btn" id="curSelectorBtn">
+                    <span class="csb-flag" id="csb-flag">🇯🇵</span>
+                    <span class="csb-code" id="csb-code">JPY</span>
+                    <span class="csb-arrow">▼</span>
+                </button>
+                <div class="screen-expr is-placeholder" id="screenExpr">0</div>
+            </div>
+        </div>
+
+        <!-- Numpad -->
+        <div class="numpad-wrap">
+            <div class="numpad">
+                <button class="np-btn np-clear" data-key="C">C</button>
+                <button class="np-btn np-del"   data-key="DEL">⌫</button>
+                <button class="np-btn np-op"    data-key="%">%</button>
+                <button class="np-btn np-op"    data-key="/">÷</button>
+
+                <button class="np-btn" data-key="7">7</button>
+                <button class="np-btn" data-key="8">8</button>
+                <button class="np-btn" data-key="9">9</button>
+                <button class="np-btn np-op" data-key="*">×</button>
+
+                <button class="np-btn" data-key="4">4</button>
+                <button class="np-btn" data-key="5">5</button>
+                <button class="np-btn" data-key="6">6</button>
+                <button class="np-btn np-op" data-key="-">−</button>
+
+                <button class="np-btn" data-key="1">1</button>
+                <button class="np-btn" data-key="2">2</button>
+                <button class="np-btn" data-key="3">3</button>
+                <button class="np-btn np-op" data-key="+">+</button>
+
+                <button class="np-btn" data-key="0">0</button>
+                <button class="np-btn" data-key="00">00</button>
+                <button class="np-btn" data-key=".">.</button>
+                <button class="np-btn np-eq" data-key="=">=</button>
+            </div>
+        </div>
+
+        <!-- Results list -->
+        <div class="results-section">
+            <div class="results-header">
+                <span class="results-title">換算結果</span>
+                <button class="results-refresh" id="refreshRates">↻ 更新</button>
+            </div>
+            <div id="resultsList"></div>
+        </div>
+
+    </div>
+
+    <!-- Currency picker modal -->
+    <div class="cur-modal-overlay" id="curModal">
+        <div class="cur-modal">
+            <div class="cur-modal-title">選擇輸入幣別</div>
+            <div id="curModalList"></div>
+        </div>
+    </div>
+
+    <!-- Bottom nav -->
+    <nav class="bottom-nav">
+        <div class="nav-tabs">
+            <a class="nav-tab" href="index.html">
+                <span class="nav-icon">🗓️</span>
+                <span>行程</span>
+            </a>
+            <a class="nav-tab active" href="calc.html">
+                <span class="nav-icon">💴</span>
+                <span>換算</span>
+            </a>
+            <a class="nav-tab" href="translate.html">
+                <span class="nav-icon">🍜</span>
+                <span>翻譯菜單</span>
+            </a>
+        </div>
+    </nav>
+
+    <script src="js/calc.js"></script>
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(function() {});
+    }
+    </script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyAAIriMdrL4exmhckQr4MUZLqTPkzmh9_s",
+            authDomain: "trip-a4f93.firebaseapp.com",
+            projectId: "trip-a4f93",
+            storageBucket: "trip-a4f93.firebasestorage.app",
+            messagingSenderId: "954243191002",
+            appId: "1:954243191002:web:3046f9b1d576261249d5e3",
+            measurementId: "G-HKMEJH0V8Q"
+        };
+        const app = initializeApp(firebaseConfig);
+        getAnalytics(app);
+    </script>
+
+</body>
+</html>

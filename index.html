@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>福岡旅遊手冊 2026</title>
+
+    <!-- PWA / iOS App 設定 -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="main.png">
+    <link rel="apple-touch-icon" href="main.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="main.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="main.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="main.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="福岡行程">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#FF6B6B">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+
+    <!-- Book Cover -->
+    <div class="book-cover">
+        <div class="cover-frame">
+            <h1>福岡たび手帳</h1>
+            <div class="subtitle">Fukuoka Travel Handbook</div>
+            <div class="date-badge">2026.04.26 - 05.03</div>
+            <div class="cover-illust">🌸 ✈️ 🍜 ⛩️ 🏯</div>
+        </div>
+    </div>
+
+    <!-- ========== CHECKLIST PAGE ========== -->
+    <div class="page-section" id="pageChecklist" style="display:none;">
+        <div class="day-header">
+            <div class="day-number">行前準備</div>
+            <div class="day-theme">Pre-trip Checklist</div>
+        </div>
+
+        <div class="checklist-progress">
+            <div style="font-size:0.88em;font-weight:700;color:var(--brown-dark);">準備進度</div>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+            <div class="progress-text"><strong id="progressNum">0</strong> / <span id="progressTotal">0</span> 項完成</div>
+        </div>
+
+        <div class="checklist-section" id="checklistArea">
+
+            <div class="checklist-group">
+                <div class="checklist-group-title">
+                    <span class="group-icon">📄</span> 證件文件
+                    <span class="group-count"></span>
+                </div>
+                <label class="check-item"><input type="checkbox" data-id="c01"><span class="check-label">護照（效期6個月以上）<small>確認有效期限至 2026/10 以後</small></span></label>
+                <label class="check-item"><input type="checkbox" data-id="c02"><span class="check-label">身分證</span></label>
+                <label class="check-item"><input type="checkbox" data-id="c03"><span class="check-label">機票（電子機票 CI128）<small>可截圖或列印備用</small></span></label>
+                <label class="check-item"><input type="checkbox" data-id="c04"><span class="check-label">飯店訂房確認信<small>福岡蒙特利酒店等</small></span></label>
+                <label class="check-item"><input type="checkbox" data-id="c05"><span class="check-label">Visit Japan Web 入境登錄<small>提前填寫加速通關</small></span></label>
+                <label class="check-item"><input type="checkbox" data-id="c06"><span class="check-label">旅遊保險</span></label>
+            </div>
+
+            <div class="checklist-group">
+                <div class="checklist-group-title">
+                    <span class="group-icon">💰</span> 金錢交通
+                    <span class="group-count"></span>
+                </div>
+                <label class="check-item"><input type="checkbox" data-id="c07"><span class="check-label">日幣現金<small>建議準備 3~5 萬日幣</small></span></label>
+                <label class="check-item"><input type="checkbox" data-id="c08"><span class="check-label">信用卡（海外刷卡免手續費）</span></label>
+                <label class="check-item"><input type="checkbox" data-id="c09"><span class="check-label">IC 卡（SUICA / ICOCA）<small>可搭地鐵、便利商店付款</small></span></label>
+            </div>
+
+            <div class="checklist-group">
+                <div class="checklist-group-title">
+                    <span class="group-icon">📱</span> 電子設備
+                    <span class="group-count"></span>
+                </div>
+                <label class="check-item"><input type="checkbox" data-id="c10"><span class="check-label">手機 + 充電線</span></label>
+                <label class="check-item"><input type="checkbox" data-id="c11"><span class="check-label">行動電源</span></label>
+                <label class="check-item"><input type="checkbox" data-id="c12"><span class="check-label">eSIM / WiFi 分享器<small>日本上網用</small></span></label>
+                <label class="check-item"><input type="checkbox" data-id="c13"><span class="check-label">轉接頭（日本為雙扁平插頭）</span></label>
+                <label class="check-item"><input type="checkbox" data-id="c14"><span class="check-label">相機 / GoPro</span></label>
+            </div>
+
+            <div class="checklist-group">
+                <div class="checklist-group-title">
+                    <span class="group-icon">🧳</span> 行李衣物
+                    <span class="group-count"></span>
+                </div>
+                <label class="check-item"><input type="checkbox" data-id="c15"><span class="check-label">行李箱（託運限重 23kg）</span></label>
+                <label class="check-item"><input type="checkbox" data-id="c16"><span class="check-label">隨身後背包</span></label>
+                <label class="check-item"><input type="checkbox" data-id="c17"><span class="check-label">換洗衣物（8 天份）<small>4月底福岡約 15~22°C，建議薄外套</small></span></label>
+                <label class="check-item"><input type="checkbox" data-id="c18"><span class="check-label">外套 / 防風外套</span></label>
+                <label class="check-item"><input type="checkbox" data-id="c19"><span class="check-label">舒適好走的鞋子</span></label>
+                <label class="check-item"><input type="checkbox" data-id="c20"><span class="check-label">折疊傘 / 雨具</span></label>
+            </div>
+
+            <div class="checklist-group">
+                <div class="checklist-group-title">
+                    <span class="group-icon">🧴</span> 個人用品
+                    <span class="group-count"></span>
+                </div>
+                <label class="check-item"><input type="checkbox" data-id="c21"><span class="check-label">盥洗用品（牙刷、牙膏）<small>飯店可能有提供，可先確認</small></span></label>
+                <label class="check-item"><input type="checkbox" data-id="c22"><span class="check-label">保養品 / 防曬</span></label>
+                <label class="check-item"><input type="checkbox" data-id="c23"><span class="check-label">個人藥品（胃藥、止痛藥）</span></label>
+                <label class="check-item"><input type="checkbox" data-id="c24"><span class="check-label">口罩</span></label>
+                <label class="check-item"><input type="checkbox" data-id="c25"><span class="check-label">面紙 / 濕紙巾</span></label>
+            </div>
+
+            <div class="checklist-group">
+                <div class="checklist-group-title">
+                    <span class="group-icon">✅</span> 出發前確認
+                    <span class="group-count"></span>
+                </div>
+                <label class="check-item"><input type="checkbox" data-id="c26"><span class="check-label">確認航班時間（CI128 14:40）</span></label>
+                <label class="check-item"><input type="checkbox" data-id="c27"><span class="check-label">線上預辦登機 Check-in</span></label>
+                <label class="check-item"><input type="checkbox" data-id="c28"><span class="check-label">確認住宿地址存入 Google Map</span></label>
+                <label class="check-item"><input type="checkbox" data-id="c29"><span class="check-label">下載離線地圖（福岡區域）</span></label>
+                <label class="check-item"><input type="checkbox" data-id="c30"><span class="check-label">通知信用卡公司出國日期</span></label>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ========== DAY 1 ========== -->
+    <div class="page-section" id="day1">
+        <div class="day-header">
+            <div class="day-number">Day 1</div>
+            <div class="day-theme">啟程前往福岡</div>
+            <div class="day-route">
+                <span>4/26 (日)</span>
+                <span>台北 → 福岡</span>
+                <span>CI128</span>
+            </div>
+        </div>
+
+        <div class="hotel-card">
+            <div class="hotel-icon">🏨 本日住宿</div>
+            <div class="hotel-name">
+                <a href="https://www.google.com/maps/search/Hotel+Monterey+Fukuoka" target="_blank" rel="noopener">福岡蒙特利酒店 Hotel Monterey Fukuoka</a>
+            </div>
+            <div class="tl-actions" style="margin-top:8px;">
+                <span class="note-toggle" data-target="hotelNote1">
+                    <span class="arrow">&#9654;</span> 飯店資訊
+                </span>
+            </div>
+            <div class="note-body" id="hotelNote1">
+                4星級歐式老飯店，飯店1樓有飲料、咖啡無限使用，還有微波爐、飲水機可使用，電梯旁可直通7-11。<br><br>
+                3樓設有桑拿浴場，營業時間：<br>
+                ・15:00 ~ 24:00（最晚受理 23:30）<br>
+                ・06:00 ~ 11:00（最晚受理 10:30）<br><br>
+                樓下過個馬路有 7-11、LAWSON，走路去天神南只要 10 分鐘，天神 AEON 超市營業到 22 點。
+            </div>
+        </div>
+
+        <div class="page-dots">. . . . . . . . .</div>
+
+        <div class="timeline">
+            <div class="tl-card">
+                <div class="tl-time-bar">
+                    <span class="tl-time">10:30</span>
+                    <span class="tl-badge taxi">🚕 計程車</span>
+                </div>
+                <div class="tl-body"><div class="tl-title">邢媽家出發</div></div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar">
+                    <span class="tl-time">14:40 → 18:05</span>
+                    <span class="tl-badge flight">✈️ 飛行</span>
+                </div>
+                <div class="tl-body">
+                    <div class="tl-title">TPE → FUK（CI128）</div>
+                    <div class="tl-sub">桃園國際機場 → 福岡機場</div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar"><span class="tl-time">18:05 → 19:05</span></div>
+                <div class="tl-body">
+                    <div class="tl-title">入境 + 領取行李</div>
+                    <div class="tl-sub">預估約 60 分鐘</div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar">
+                    <span class="tl-time">19:05 → 19:10</span>
+                    <span class="tl-badge train">🚇 地鐵</span>
+                </div>
+                <div class="tl-body">
+                    <div class="tl-title">地下鐵空港線</div>
+                    <div class="tl-sub">前往福岡機場站</div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar">
+                    <span class="tl-time">19:10 → 19:20</span>
+                    <span class="tl-badge train">🚇 機場線</span>
+                </div>
+                <div class="tl-body"><div class="tl-title">福岡機場站 → 博多站</div></div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar">
+                    <span class="tl-time">19:20 → 19:40</span>
+                    <span class="tl-badge train">🚇 七隈線</span>
+                </div>
+                <div class="tl-body"><div class="tl-title">博多站（換七隈線）→ 渡邊通站</div></div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar">
+                    <span class="tl-time">19:40 → 19:45</span>
+                    <span class="tl-badge walk">🚶 步行</span>
+                </div>
+                <div class="tl-body"><div class="tl-title">渡邊通站 2 號出口</div></div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar">
+                    <span class="tl-time">19:30 → 19:40</span>
+                    <span class="tl-tag hotel">住宿</span>
+                </div>
+                <div class="tl-body">
+                    <div class="tl-title">抵達福岡蒙特利酒店</div>
+                    <div class="tl-sub">Check-in、放行李</div>
+                    <div class="tl-actions">
+                        <a class="map-link" href="https://www.google.com/maps/search/Hotel+Monterey+Fukuoka" target="_blank" rel="noopener">📍 地圖</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar">
+                    <span class="tl-time">19:40 → 20:00</span>
+                    <span class="tl-tag food">美食</span>
+                </div>
+                <div class="tl-body">
+                    <div class="tl-title">晚餐時間</div>
+                    <div class="tl-sub">＊建議來得及看 20 點表演再去吃一蘭？</div>
+                    <div class="choice-card">
+                        <div class="choice-header">🍜 晚餐二選一</div>
+                        <div class="choice-item">
+                            <div class="choice-name">A. 一蘭拉麵 總本店</div>
+                            <div class="choice-info">飯店搭地鐵 → 天神南站 5 號出口，走路 9 分鐘<br>總路程約 15 分鐘 ・ 🕐 24 小時營業</div>
+                            <div class="tl-actions">
+                                <a class="map-link" href="https://www.google.com/maps/search/一蘭拉麵+天神西通り店+福岡" target="_blank" rel="noopener">📍 地圖</a>
+                                <span class="note-toggle" data-target="ichiran-note"><span class="arrow">&#9654;</span> 介紹</span>
+                            </div>
+                            <div class="note-body" id="ichiran-note">
+                                世界上研究豚骨拉麵的公司，一蘭拉麵誕生於1960年的福岡，最初只是一間不起眼的小拉麵店。1966年正式改名為「一蘭」，並在1993年於福岡南區那之川地區開設第一家直營店。<br><br>
+                                以講究的豚骨高湯、細直麵條與畫龍點睛的赤紅秘製醬汁聞名，再加上獨創的「味集中」隔板式座位、以及能自由調整口味濃淡、蒜量與辣度的客製化點餐方式。<br><br>
+                                🌟 每天晚上 8 點整，店門口櫥窗會上演一段特別夜間表演！
+                            </div>
+                        </div>
+                        <div class="choice-item">
+                            <div class="choice-name">B. 博多拉麵 ShinShin</div>
+                            <div class="choice-info">飯店搭地鐵 → 天神南站 5 號出口，走路 11 分鐘<br>總路程約 17 分鐘 ・ 🕐 營業至凌晨 3 點</div>
+                            <div class="tl-actions">
+                                <a class="map-link" href="https://www.google.com/maps/search/博多拉麵ShinShin+天神本店" target="_blank" rel="noopener">📍 地圖</a>
+                                <span class="note-toggle" data-target="shinshin-note"><span class="arrow">&#9654;</span> 介紹</span>
+                            </div>
+                            <div class="note-body" id="shinshin-note">
+                                以傳統博多拉麵、長濱拉麵為基礎，獨創清爽無異味的豚骨湯頭，帶有雞骨清香，順口不鹹膩，真的超讚！<br><br>
+                                極細卻保有硬度的麵條、肥瘦適中的叉燒，整體滋味無可挑惕，吃飽喝足還能帶一盒快煮麵當伴手禮喔～
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar">
+                    <span class="tl-time">22:00 → 22:15</span>
+                    <span class="tl-tag shopping">購物</span>
+                </div>
+                <div class="tl-body">
+                    <div class="tl-title">唐吉訶德 福岡天神本店</div>
+                    <div class="tl-sub">上述兩個餐廳路程皆約 15 分鐘</div>
+                    <div class="tl-actions">
+                        <a class="map-link" href="https://www.google.com/maps/search/唐吉訶德+福岡天神本店" target="_blank" rel="noopener">📍 地圖</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar">
+                    <span class="tl-time">23:50 → 00:00</span>
+                    <span class="tl-badge walk">🚶 步行</span>
+                </div>
+                <div class="tl-body">
+                    <div class="tl-title">步行 10 分鐘回飯店</div>
+                    <div class="tl-sub">返回福岡蒙特利酒店，好好休息！</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day 2~8 placeholders -->
+    <!-- ========== DAY 2 ========== -->
+    <div class="page-section" id="day2" style="display:none;">
+        <div class="day-header">
+            <div class="day-number">Day 2</div>
+            <div class="day-theme">文化巡禮</div>
+            <div class="day-route">
+                <span>4/27 (一)</span>
+                <span>柳橋市場</span>
+                <span>太宰府</span>
+                <span>天神</span>
+            </div>
+        </div>
+
+        <div class="hotel-card">
+            <div class="hotel-icon">🏨 本日住宿</div>
+            <div class="hotel-name">
+                <a href="https://www.google.com/maps/search/ANA+Crowne+Plaza+Fukuoka" target="_blank" rel="noopener">福岡全日空皇冠假日酒店 ANA Crowne Plaza Fukuoka</a>
+            </div>
+            <div class="tl-actions" style="margin-top:8px;">
+                <span class="note-toggle" data-target="hotelNote2"><span class="arrow">&#9654;</span> 飯店資訊</span>
+            </div>
+            <div class="note-body" id="hotelNote2">
+                開幕時間為1976年，目前已高齡50歲，一直到2009年才重新裝修。<br><br>
+                距離博多車站只要步行5分鐘的距離，周遭的餐廳、便利商店和藥局等也都相當多，整體來說非常方便。
+            </div>
+        </div>
+
+        <div class="page-dots">. . . . . . . . .</div>
+
+        <div class="timeline">
+
+            <div class="tl-card">
+                <div class="tl-time-bar"><span class="tl-time">08:30 → 09:30</span><span class="tl-tag food">美食</span></div>
+                <div class="tl-body">
+                    <div class="tl-title">飯店早餐</div>
+                    <div class="tl-sub">營業時間 07:00～09:30（最終入場 09:00）</div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar"><span class="tl-time">09:30 → 10:00</span><span class="tl-badge walk">🚶 步行</span></div>
+                <div class="tl-body"><div class="tl-title">飯店步行至柳橋市場（約 7 分鐘）</div></div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar"><span class="tl-time">10:00 → 11:00</span><span class="tl-tag shopping">市場</span></div>
+                <div class="tl-body">
+                    <div class="tl-title">柳橋連合市場</div>
+                    <div class="tl-actions">
+                        <a class="map-link" href="https://www.google.com/maps/search/柳橋連合市場+福岡" target="_blank" rel="noopener">📍 地圖</a>
+                        <span class="note-toggle" data-target="yanagibashi-note"><span class="arrow">&#9654;</span> 介紹</span>
+                    </div>
+                    <div class="note-body" id="yanagibashi-note">
+                        被譽為福岡「博多廚房」的小型市場，創立於1918年7月。能見到更多是來買菜的在地人，或許價格也更能找到平價實惠的項目。<br><br>
+                        ＊市場內規劃良好，設有洗手間。<br><br>
+                        參考：<a href="https://banbi.tw/yanagibashi-rengo/" target="_blank" rel="noopener" style="color:var(--mint-dark)">banbi.tw/yanagibashi-rengo</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar"><span class="tl-time">11:00 → 11:20</span><span class="tl-badge walk">🚶 步行</span></div>
+                <div class="tl-body"><div class="tl-title">柳橋連合市場 → 藥院站（步行約 11 分鐘）</div></div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar"><span class="tl-time">11:20 → 11:50</span><span class="tl-badge train">🚃 西鐵</span></div>
+                <div class="tl-body">
+                    <div class="tl-title">藥院站 → 太宰府站</div>
+                    <div class="tl-sub">
+                        藥院 → 西鐵二日市（急行 4 站 14 分）→ 太宰府（普通 2 站 8 分）<br>
+                        西鐵天神大牟田線 + 太宰府線
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar"><span class="tl-time">11:50 → 12:15</span><span class="tl-tag food">美食</span></div>
+                <div class="tl-body">
+                    <div class="tl-title">YAMAYA BASE</div>
+                    <div class="tl-sub">太宰府站步行約 2 分鐘</div>
+                    <div class="tl-actions">
+                        <a class="map-link" href="https://www.google.com/maps/search/YAMAYA+BASE+太宰府" target="_blank" rel="noopener">📍 地圖</a>
+                        <span class="note-toggle" data-target="yamaya-note"><span class="arrow">&#9654;</span> 介紹</span>
+                    </div>
+                    <div class="note-body" id="yamaya-note">
+                        ・明太子法國麵包 ¥500（加飲料組合 ¥700~850）<br>
+                        ・起司明太子法國麵包 ¥600（加飲料組合 ¥800~950）<br><br>
+                        麵衣咀嚼感十足，內餡香濃，明太子的微辣鹹香搭配濃郁奶香，濕潤對味！<br><br>
+                        ＊也可離開太宰府時外帶回飯店享用
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar"><span class="tl-time">12:15 → 12:30</span><span class="tl-tag food">美食</span></div>
+                <div class="tl-body">
+                    <div class="tl-title">天山草莓最中・大福</div>
+                    <div class="tl-sub">步行約 3 分鐘</div>
+                    <div class="tl-actions">
+                        <a class="map-link" href="https://www.google.com/maps/search/天山+草莓大福+太宰府" target="_blank" rel="noopener">📍 地圖</a>
+                        <span class="note-toggle" data-target="tenzan-note"><span class="arrow">&#9654;</span> 介紹</span>
+                    </div>
+                    <div class="note-body" id="tenzan-note">
+                        胖嘟嘟「甘王草莓大福」，垂涎欲滴太誘人了～排隊人潮眾多但前進速度快！<br><br>
+                        頂級草莓酸甜多汁，搭配 QQ 麻糬皮、甜而不膩紅豆泥，女孩兒一定會愛上。其他還有「甘王葛根冰棒」、「甘王草莓糰子」等，季節限定商品多驚喜不斷。
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar"><span class="tl-time">12:30 → 12:45</span><span class="tl-tag food">美食</span></div>
+                <div class="tl-body">
+                    <div class="tl-title">ふくや 太宰府店</div>
+                    <div class="tl-sub">步行約 1 分鐘</div>
+                    <div class="tl-actions">
+                        <a class="map-link" href="https://www.google.com/maps/search/ふくや+太宰府店" target="_blank" rel="noopener">📍 地圖</a>
+                        <span class="note-toggle" data-target="fukuya-note"><span class="arrow">&#9654;</span> 介紹</span>
+                    </div>
+                    <div class="note-body" id="fukuya-note">
+                        創業於1948年，日本第一家銷售辛辣明太子品牌，分店多達25家以上。鮮甜柴魚高湯佐上大塊辣味十足明太子，中間點綴嗆辣芥末，整體頗辣但很過癮。<br><br>
+                        店家提供「明太茶泡飯套餐」內用，比起外帶擺盤更精緻吃法更多樣。<br><br>
+                        ＊店內還有販售明太子伴手禮：明太子原條、明太子罐頭、明太子牙膏等，都是熱賣的福岡必買。
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar"><span class="tl-time">12:45 → 13:00</span><span class="tl-tag food">美食</span></div>
+                <div class="tl-body">
+                    <div class="tl-title">梅枝餅 かさの家</div>
+                    <div class="tl-sub">步行約 1 分鐘</div>
+                    <div class="tl-actions">
+                        <a class="map-link" href="https://www.google.com/maps/search/かさの家+太宰府" target="_blank" rel="noopener">📍 地圖</a>
+                        <span class="note-toggle" data-target="kasanoya-note"><span class="arrow">&#9654;</span> 介紹</span>
+                    </div>
+                    <div class="note-body" id="kasanoya-note">
+                        太宰府天滿宮參道上的老字號，創業於1922年，主打太宰府名物「梅ヶ枝餅」。<br><br>
+                        外皮糯米與粳米混合，烤至金黃微脆，內餡北海道十勝紅豆甜而不膩。非常有名，常有排隊人潮但等待約10~15分鐘，現場製作剛拿到很燙，小心食用！<br><br>
+                        ＊在星巴克對面，蠻好認的
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar"><span class="tl-time">13:00 → 15:30</span><span class="tl-tag hotel">文化</span></div>
+                <div class="tl-body">
+                    <div class="tl-title">太宰府天滿宮 散策</div>
+                    <div class="tl-sub">學問之神・日本重要文化財</div>
+                    <div class="tl-actions">
+                        <a class="map-link" href="https://www.google.com/maps/search/太宰府天満宮" target="_blank" rel="noopener">📍 地圖</a>
+                        <span class="note-toggle" data-target="dazaifu-note"><span class="arrow">&#9654;</span> 景點路線</span>
+                    </div>
+                    <div class="note-body" id="dazaifu-note">
+                        <strong>🔴 三の鳥居</strong>（13:00）<br>
+                        樓門前最後的結界「第五鳥居」，1902年為紀念菅原道真一千年大祭而建，鳥居額上「天滿宮」三字由福岡藩第13代藩主黑田長成親筆題字。<br><br>
+                        <strong>🐂 御神牛</strong>（13:00）<br>
+                        境內共有11座，摸牛頭可增長智慧，摸身體部位能治癒相對應病痛。<br><br>
+                        <strong>🌉 太鼓橋・心字池</strong>（13:10）<br>
+                        三段橋象徵「過去、現在、未來」；穿越水域有淨化心靈之意。<br><br>
+                        <strong>🦒 麒麟像和鷽像</strong>（13:20）<br>
+                        1852年所立，福岡縣指定文化財。麒麟象徵長壽智慧，鷽鳥是天神守護鳥。<br><br>
+                        <strong>💧 手水舍</strong>（13:30）<br>
+                        疫情後改成水管自動出水，不再提供勺子。<br><br>
+                        <strong>⛩️ 樓門 → 御本殿</strong>（13:40）<br>
+                        朱紅色樓門從太鼓橋方向看為雙層，從御本殿方向看卻只有一層。御本殿1591年修建，陡峭屋簷與精細雕刻是安土桃山時代華麗風格代表，列為日本國家重要文化財。<br><br>
+                        <strong>🌸 飛梅</strong>（13:50）<br>
+                        御本殿右側，6,000多株梅樹中最知名的一株。據說是菅原道真在京都最愛的梅樹，在他被流放後飛來此地團聚。<br><br>
+                        <strong>🎁 御守・繪馬・御神籤</strong>（14:00）<br>
+                        熱門：學業御守搭配學業鉛筆、金鷽鳥幸福御守、鷽鳥御神籤（可當吊飾）。籤詩顏色隨季節變更，4~5月為淺綠色。<br><br>
+                        <strong>🍡 中嶋神社</strong>（14:20）<br>
+                        供奉菓子之神，適合甜點業者參拜。<br><br>
+                        <strong>🦊 天開稻荷神社</strong>（14:30）<br>
+                        位於最深處小山丘，九州最古老稻荷神社，步行約7分鐘上山。主祭稻荷大神，象徵生意興隆和好運。<br><br>
+                        <strong>📜 寶物殿</strong>（15:00）<br>
+                        展示約50,000件歷史文物，含菅原道真詩歌、唐代《翰苑》等。<br>
+                        門票：成人¥500・高中¥200・中小學¥100
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar"><span class="tl-time">15:30 → 16:00</span><span class="tl-badge walk">🚶 步行</span></div>
+                <div class="tl-body"><div class="tl-title">寶物殿 → 太宰府站（步行約 7 分鐘）</div></div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar"><span class="tl-time">16:00 → 16:30</span><span class="tl-badge train">🚃 西鐵</span></div>
+                <div class="tl-body">
+                    <div class="tl-title">太宰府站 → 西鐵福岡（天神）</div>
+                    <div class="tl-sub">太宰府 → 西鐵二日市（普通 2 站）→ 天神（急行 5 站 17 分）</div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar"><span class="tl-time">16:30 → 19:10</span><span class="tl-tag shopping">購物</span></div>
+                <div class="tl-body">
+                    <div class="tl-title">mina 天神</div>
+                    <div class="tl-sub">西鐵天神步行約 8 分鐘</div>
+                    <div class="tl-actions">
+                        <a class="map-link" href="https://www.google.com/maps/search/mina天神+福岡" target="_blank" rel="noopener">📍 地圖</a>
+                        <span class="note-toggle" data-target="mina-note"><span class="arrow">&#9654;</span> 介紹</span>
+                    </div>
+                    <div class="note-body" id="mina-note">
+                        坐擁九州最大規模的 UNIQLO（1~2 樓），以及九州唯一的全系列 GU 門市（3 樓）！<br><br>
+                        逛街攻略參考：<a href="https://kyushu.letsgojp.com/archives/703559/" target="_blank" rel="noopener" style="color:var(--mint-dark)">kyushu.letsgojp.com</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar"><span class="tl-time">19:10 → 21:30</span><span class="tl-tag food">美食</span></div>
+                <div class="tl-body">
+                    <div class="tl-title">博多水炊 鳥千代</div>
+                    <div class="tl-sub">mina 天神步行約 19 分鐘・預約 ID：NDW2ZJ</div>
+                    <div class="tl-actions">
+                        <a class="map-link" href="https://www.google.com/maps/search/博多水炊き鳥千代+福岡" target="_blank" rel="noopener">📍 地圖</a>
+                        <span class="note-toggle" data-target="torichiye-note"><span class="arrow">&#9654;</span> 介紹</span>
+                    </div>
+                    <div class="note-body" id="torichiye-note">
+                        以濃郁雞湯搭配雞肉與新鮮蔬菜，湯頭清甜鮮美，還能免費加湯。用餐時全程都有店員貼心服務，從煮鍋到分食都會幫忙處理。
+                    </div>
+                </div>
+            </div>
+
+            <div class="tl-card">
+                <div class="tl-time-bar"><span class="tl-time">21:30 → 22:00</span><span class="tl-badge train">🚇 地鐵</span></div>
+                <div class="tl-body">
+                    <div class="tl-title">前往福岡全日空皇冠假日酒店 Check-in</div>
+                    <div class="tl-sub">鳥千代 → 福岡蒙特利酒店取行李（步行 4 分）→ 渡邊通站 → 博多站 → 博多站西16出口步行 5 分鐘</div>
+                    <div class="tl-actions">
+                        <a class="map-link" href="https://www.google.com/maps/search/ANA+Crowne+Plaza+Fukuoka" target="_blank" rel="noopener">📍 地圖</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="page-section" id="day3" style="display:none;">
+        <div class="day-header"><div class="day-number">Day 3</div><div class="day-theme">待規劃...</div><div class="day-route"><span>4/28 (二)</span></div></div>
+    </div>
+    <div class="page-section" id="day4" style="display:none;">
+        <div class="day-header"><div class="day-number">Day 4</div><div class="day-theme">待規劃...</div><div class="day-route"><span>4/29 (三)</span></div></div>
+    </div>
+    <div class="page-section" id="day5" style="display:none;">
+        <div class="day-header"><div class="day-number">Day 5</div><div class="day-theme">待規劃...</div><div class="day-route"><span>4/30 (四)</span></div></div>
+    </div>
+    <div class="page-section" id="day6" style="display:none;">
+        <div class="day-header"><div class="day-number">Day 6</div><div class="day-theme">待規劃...</div><div class="day-route"><span>5/1 (五)</span></div></div>
+    </div>
+    <div class="page-section" id="day7" style="display:none;">
+        <div class="day-header"><div class="day-number">Day 7</div><div class="day-theme">待規劃...</div><div class="day-route"><span>5/2 (六)</span></div></div>
+    </div>
+    <div class="page-section" id="day8" style="display:none;">
+        <div class="day-header"><div class="day-number">Day 8</div><div class="day-theme">待規劃...</div><div class="day-route"><span>5/3 (日)</span></div></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="book-footer">
+        <div class="footer-deco"></div>
+        <p>福岡たび手帳 2026 ✿ Have a nice trip!</p>
+    </div>
+
+    <!-- Scroll to top -->
+    <button class="scroll-top-btn" id="scrollTopBtn">↑</button>
+
+    <!-- ======== BOTTOM NAV ======== -->
+    <nav class="bottom-nav" id="bottomNav">
+        <!-- Draggable Day Strip (only on itinerary tab) -->
+        <div class="day-strip-wrap" id="dayStripWrap">
+            <div class="day-strip" id="dayStrip">
+                <div class="day-strip-pill" id="dayPill"></div>
+                <div class="day-chip active" data-day="1"><span class="chip-day">D1</span><span class="chip-date">4/26</span></div>
+                <div class="day-chip" data-day="2"><span class="chip-day">D2</span><span class="chip-date">4/27</span></div>
+                <div class="day-chip" data-day="3"><span class="chip-day">D3</span><span class="chip-date">4/28</span></div>
+                <div class="day-chip" data-day="4"><span class="chip-day">D4</span><span class="chip-date">4/29</span></div>
+                <div class="day-chip" data-day="5"><span class="chip-day">D5</span><span class="chip-date">4/30</span></div>
+                <div class="day-chip" data-day="6"><span class="chip-day">D6</span><span class="chip-date">5/1</span></div>
+                <div class="day-chip" data-day="7"><span class="chip-day">D7</span><span class="chip-date">5/2</span></div>
+                <div class="day-chip" data-day="8"><span class="chip-day">D8</span><span class="chip-date">5/3</span></div>
+            </div>
+        </div>
+
+        <!-- Main Nav Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab" data-page="checklist">
+                <span class="nav-icon">✅</span>
+                <span>行前準備</span>
+            </button>
+            <button class="nav-tab active" data-page="itinerary">
+                <span class="nav-icon">🗓️</span>
+                <span>每日行程</span>
+            </button>
+            <a class="nav-tab" href="calc.html">
+                <span class="nav-icon">💴</span>
+                <span>換算</span>
+            </a>
+            <a class="nav-tab" href="translate.html">
+                <span class="nav-icon">🍜</span>
+                <span>翻譯菜單</span>
+            </a>
+        </div>
+    </nav>
+
+    <script src="js/app.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyAAIriMdrL4exmhckQr4MUZLqTPkzmh9_s",
+            authDomain: "trip-a4f93.firebaseapp.com",
+            projectId: "trip-a4f93",
+            storageBucket: "trip-a4f93.firebasestorage.app",
+            messagingSenderId: "954243191002",
+            appId: "1:954243191002:web:3046f9b1d576261249d5e3",
+            measurementId: "G-HKMEJH0V8Q"
+        };
+        const app = initializeApp(firebaseConfig);
+        getAnalytics(app);
+    </script>
+
+</body>
+</html>

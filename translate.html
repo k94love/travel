@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>菜單翻譯 · 福岡手帳</title>
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="main.png">
+    <link rel="apple-touch-icon" href="main.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="福岡行程">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#FF6B6B">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/translate.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+
+    <div class="tr-wrap">
+
+        <!-- Header -->
+        <div class="tr-header">
+            <div class="tr-header-title">
+                <span class="tr-header-icon">🍜</span>
+                <div>
+                    <div class="tr-header-main">菜單翻譯</div>
+                    <div class="tr-header-sub">拍照・即時翻譯日文菜單</div>
+                </div>
+            </div>
+            <div class="tr-powered">by Gemini AI</div>
+        </div>
+
+        <!-- Upload zone -->
+        <div class="tr-upload-zone" id="uploadZone">
+            <input type="file" id="menuFileInput" accept="image/*" style="display:none">
+            <img id="previewImg" style="display:none" alt="菜單預覽">
+            <div class="tr-upload-placeholder">
+                <div class="tr-upload-icon">📷</div>
+                <div class="tr-upload-text">點擊拍照或選取菜單圖片</div>
+                <div class="tr-upload-hint">支援 JPG、PNG、HEIC</div>
+            </div>
+            <button class="tr-clear-btn" id="clearBtn">✕</button>
+        </div>
+
+        <!-- Translate button -->
+        <button class="tr-translate-btn" id="translateBtn" disabled>翻譯菜單</button>
+
+        <!-- Loading -->
+        <div class="tr-loading" id="loadingArea" style="display:none">
+            <div class="tr-loading-dots"><span></span><span></span><span></span></div>
+            <div class="tr-loading-text">AI 分析中，請稍候...</div>
+        </div>
+
+        <!-- Results -->
+        <div class="tr-result-area" id="resultArea" style="display:none">
+            <div class="tr-result-header">
+                <span class="tr-result-title">翻譯結果</span>
+                <span class="tr-result-count" id="resultCount"></span>
+            </div>
+            <div id="resultList"></div>
+        </div>
+
+        <!-- History -->
+        <div class="tr-history-section" id="historySection" style="display:none">
+            <div class="tr-result-header">
+                <span class="tr-result-title">📋 歷史記錄</span>
+                <span class="tr-result-count" id="historyCount"></span>
+            </div>
+            <div id="historyList"></div>
+        </div>
+
+    </div>
+
+    <!-- Bottom nav -->
+    <nav class="bottom-nav">
+        <div class="nav-tabs">
+            <a class="nav-tab" href="index.html">
+                <span class="nav-icon">🗓️</span>
+                <span>行程</span>
+            </a>
+            <a class="nav-tab" href="calc.html">
+                <span class="nav-icon">💴</span>
+                <span>換算</span>
+            </a>
+            <a class="nav-tab active" href="translate.html">
+                <span class="nav-icon">🍜</span>
+                <span>翻譯菜單</span>
+            </a>
+        </div>
+    </nav>
+
+    <script src="js/translate.js"></script>
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(function() {});
+    }
+    </script>
+
+    <!-- Firebase: Analytics + Firestore for history -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAnalytics }  from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+        import {
+            getFirestore, collection, addDoc, getDocs,
+            deleteDoc, doc, orderBy, query, limit
+        } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey:            "AIzaSyAAIriMdrL4exmhckQr4MUZLqTPkzmh9_s",
+            authDomain:        "trip-a4f93.firebaseapp.com",
+            projectId:         "trip-a4f93",
+            storageBucket:     "trip-a4f93.firebasestorage.app",
+            messagingSenderId: "954243191002",
+            appId:             "1:954243191002:web:3046f9b1d576261249d5e3",
+            measurementId:     "G-HKMEJH0V8Q"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        getAnalytics(app);
+        const db = getFirestore(app);
+
+        const COL = 'menuHistory';
+
+        async function saveFn(data) {
+            await addDoc(collection(db, COL), data);
+        }
+
+        async function loadFn() {
+            const q = query(collection(db, COL), orderBy('ts', 'desc'), limit(30));
+            const snap = await getDocs(q);
+            return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        }
+
+        async function deleteFn(id) {
+            await deleteDoc(doc(db, COL, id));
+        }
+
+        // Bridge to translate.js (handles both load orders)
+        if (typeof window.__historyInit === 'function') {
+            window.__historyInit(saveFn, loadFn, deleteFn);
+        } else {
+            window.__historyInitData = [saveFn, loadFn, deleteFn];
+        }
+    </script>
+
+</body>
+</html>
