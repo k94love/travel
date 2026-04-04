@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>票券保險箱 · 福岡手帳</title>
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="main.png">
+    <link rel="apple-touch-icon" href="main.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="福岡行程">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#FF6B6B">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/vault.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+
+    <div class="vault-wrap">
+
+        <!-- Header -->
+        <div class="vault-header">
+            <div class="vault-header-title">
+                <span class="vault-header-icon">🎫</span>
+                <div>
+                    <div class="vault-header-main">票券保險箱</div>
+                    <div class="vault-header-sub">機票・訂房・票券・保險</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Folders bar -->
+        <div class="vault-folders-bar">
+            <div class="vault-folders-scroll" id="foldersScroll">
+                <!-- chips injected by JS -->
+            </div>
+            <button class="vault-add-folder-btn" id="addFolderBtn" title="新增資料夾">＋</button>
+        </div>
+
+        <!-- Loading -->
+        <div class="vault-empty" id="loadingState">
+            <div class="vault-empty-icon">⏳</div>
+            <div class="vault-empty-title">載入中...</div>
+        </div>
+
+        <!-- Files grid -->
+        <div class="vault-files-grid" id="filesGrid"></div>
+
+        <!-- Empty state -->
+        <div class="vault-empty" id="emptyState" style="display:none">
+            <div class="vault-empty-icon">📂</div>
+            <div class="vault-empty-title">尚無文件</div>
+            <div class="vault-empty-sub">點擊右下角 ＋ 上傳照片或 PDF</div>
+        </div>
+
+    </div>
+
+    <!-- Upload FAB -->
+    <button class="vault-fab" id="uploadFab" aria-label="上傳文件">＋</button>
+    <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none">
+
+    <!-- Bottom nav -->
+    <nav class="bottom-nav">
+        <div class="nav-tabs">
+            <a class="nav-tab" href="index.html">
+                <span class="nav-icon">🗓️</span>
+                <span>行程</span>
+            </a>
+            <a class="nav-tab" href="calc.html">
+                <span class="nav-icon">💴</span>
+                <span>換算</span>
+            </a>
+            <a class="nav-tab" href="translate.html">
+                <span class="nav-icon">🍜</span>
+                <span>翻譯</span>
+            </a>
+            <a class="nav-tab active" href="vault.html">
+                <span class="nav-icon">🎫</span>
+                <span>保險箱</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Overlays -->
+    <div class="vault-overlay" id="modalOverlay"></div>
+    <div class="vault-overlay" id="sheetOverlay"></div>
+
+    <!-- ===== FOLDER MODAL ===== -->
+    <div class="vault-modal" id="folderModal">
+        <div class="modal-drag-handle"></div>
+        <div class="modal-title" id="folderModalTitle">新增資料夾</div>
+        <button class="modal-close-btn">✕</button>
+        <label class="vault-label">資料夾名稱</label>
+        <input class="vault-input" id="folderNameInput" type="text" placeholder="例如：機票、訂房確認" maxlength="20">
+        <label class="vault-label">選擇圖示</label>
+        <div class="emoji-picker">
+            <button class="emoji-btn selected" data-emoji="📁">📁</button>
+            <button class="emoji-btn" data-emoji="✈️">✈️</button>
+            <button class="emoji-btn" data-emoji="🏨">🏨</button>
+            <button class="emoji-btn" data-emoji="🎫">🎫</button>
+            <button class="emoji-btn" data-emoji="🎟️">🎟️</button>
+            <button class="emoji-btn" data-emoji="🛡️">🛡️</button>
+            <button class="emoji-btn" data-emoji="💳">💳</button>
+            <button class="emoji-btn" data-emoji="📄">📄</button>
+            <button class="emoji-btn" data-emoji="📸">📸</button>
+            <button class="emoji-btn" data-emoji="🗺️">🗺️</button>
+            <button class="emoji-btn" data-emoji="💊">💊</button>
+            <button class="emoji-btn" data-emoji="🚂">🚂</button>
+        </div>
+        <button class="vault-confirm-btn" id="folderConfirmBtn">確認</button>
+    </div>
+
+    <!-- ===== UPLOAD MODAL ===== -->
+    <div class="vault-modal" id="uploadModal">
+        <div class="modal-drag-handle"></div>
+        <div class="modal-title">上傳文件</div>
+        <button class="modal-close-btn">✕</button>
+        <label class="vault-label">文件名稱</label>
+        <input class="vault-input" id="uploadFileName" type="text" placeholder="例如：機票 CI128" maxlength="50">
+        <label class="vault-label">放入資料夾</label>
+        <select class="vault-select" id="uploadFolderSelect">
+            <option value="">— 不分類 —</option>
+        </select>
+        <div class="vault-progress-bar" id="uploadProgress" style="display:none">
+            <div class="vault-progress-fill"></div>
+        </div>
+        <button class="vault-confirm-btn" id="uploadConfirmBtn">上傳</button>
+    </div>
+
+    <!-- ===== MOVE MODAL ===== -->
+    <div class="vault-modal" id="moveModal">
+        <div class="modal-drag-handle"></div>
+        <div class="modal-title">移動到資料夾</div>
+        <button class="modal-close-btn">✕</button>
+        <label class="vault-label">選擇目標資料夾</label>
+        <select class="vault-select" id="moveFolderSelect">
+            <option value="">— 不分類 —</option>
+        </select>
+        <button class="vault-confirm-btn" id="moveConfirmBtn">確認</button>
+    </div>
+
+    <!-- ===== PREVIEW MODAL (fullscreen) ===== -->
+    <div class="vault-modal modal-preview" id="previewModal">
+        <button class="modal-close-btn" style="top:8px;right:8px;">✕</button>
+        <div class="preview-img-wrap">
+            <img id="previewImg" src="" alt="">
+        </div>
+        <div class="preview-file-name" id="previewFileName"></div>
+        <div class="preview-actions">
+            <button class="preview-btn" id="previewClose">關閉</button>
+            <button class="preview-btn primary" id="previewOpen">在新分頁開啟</button>
+        </div>
+    </div>
+
+    <!-- ===== FILE ACTION SHEET ===== -->
+    <div class="vault-action-sheet" id="fileActionSheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-item" id="sheetRename">
+            <span class="sheet-icon">✏️</span><span>重新命名</span>
+        </div>
+        <div class="sheet-item" id="sheetMove">
+            <span class="sheet-icon">📂</span><span>移動資料夾</span>
+        </div>
+        <div class="sheet-divider"></div>
+        <div class="sheet-item danger" id="sheetDelete">
+            <span class="sheet-icon">🗑️</span><span>刪除</span>
+        </div>
+    </div>
+
+    <!-- ===== FOLDER ACTION SHEET ===== -->
+    <div class="vault-action-sheet" id="folderActionSheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-item" id="folderSheetEdit">
+            <span class="sheet-icon">✏️</span><span>編輯資料夾</span>
+        </div>
+        <div class="sheet-divider"></div>
+        <div class="sheet-item danger" id="folderSheetDelete">
+            <span class="sheet-icon">🗑️</span><span>刪除資料夾</span>
+        </div>
+    </div>
+
+    <script src="js/vault.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(function () {});
+        }
+    </script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAnalytics }  from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+        import {
+            getFirestore, collection, addDoc, getDocs,
+            doc, updateDoc, deleteDoc
+        } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+        import {
+            getStorage, ref, uploadBytesResumable,
+            getDownloadURL, deleteObject
+        } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey:            "AIzaSyAAIriMdrL4exmhckQr4MUZLqTPkzmh9_s",
+            authDomain:        "trip-a4f93.firebaseapp.com",
+            projectId:         "trip-a4f93",
+            storageBucket:     "trip-a4f93.firebasestorage.app",
+            messagingSenderId: "954243191002",
+            appId:             "1:954243191002:web:3046f9b1d576261249d5e3",
+            measurementId:     "G-HKMEJH0V8Q"
+        };
+
+        const app     = initializeApp(firebaseConfig);
+        getAnalytics(app);
+        const db      = getFirestore(app);
+        const storage = getStorage(app);
+
+        const FC = 'vaultFolders';
+        const FF = 'vaultFiles';
+
+        const dbFns = {
+            async getFolders() {
+                const snap = await getDocs(collection(db, FC));
+                return snap.docs.map(d => ({ id: d.id, ...d.data() }))
+                                .sort((a, b) => (a.order || 0) - (b.order || 0));
+            },
+            async getFiles() {
+                const snap = await getDocs(collection(db, FF));
+                return snap.docs.map(d => ({ id: d.id, ...d.data() }))
+                                .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            },
+            async addFolder(data)        { return (await addDoc(collection(db, FC), data)).id; },
+            async updateFolder(id, data) { await updateDoc(doc(db, FC, id), data); },
+            async deleteFolder(id)       { await deleteDoc(doc(db, FC, id)); },
+            async addFile(data)          { return (await addDoc(collection(db, FF), data)).id; },
+            async updateFile(id, data)   { await updateDoc(doc(db, FF, id), data); },
+            async deleteFile(id)         { await deleteDoc(doc(db, FF, id)); }
+        };
+
+        const storageFns = {
+            uploadFile(file, name) {
+                return new Promise((resolve, reject) => {
+                    const ext  = file.name.includes('.') ? file.name.split('.').pop() : '';
+                    const path = `vault/${Date.now()}_${name}${ext ? '.' + ext : ''}`;
+                    const task = uploadBytesResumable(ref(storage, path), file);
+                    task.on('state_changed', null, reject, async () => {
+                        const url = await getDownloadURL(task.snapshot.ref);
+                        resolve({ path, url });
+                    });
+                });
+            },
+            async deleteFile(path) {
+                if (!path) return;
+                try { await deleteObject(ref(storage, path)); }
+                catch (e) { console.warn('Storage delete:', e); }
+            }
+        };
+
+        if (typeof window.__vaultInit === 'function') {
+            window.__vaultInit(dbFns, storageFns);
+        } else {
+            window.__vaultInitData = [dbFns, storageFns];
+        }
+    </script>
+
+</body>
+</html>
