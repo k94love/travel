@@ -4,5 +4,8 @@ service cloud.firestore {
     match /menuHistory/{docId} {
       allow read, write: if true;
     }
+    match /checklist/{docId} {
+      allow read, write: if true;
+    }
   }
 }
