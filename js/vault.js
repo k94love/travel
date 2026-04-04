@@ -109,25 +109,19 @@ $(function () {
         clearTimeout(_lpTimer);
     });
 
-    // ======== FILE CARD CLICK (preview) ========
+    // ======== FILE CARD CLICK ========
     $(document).on('click', '.vfile-card', function (e) {
         if ($(e.target).closest('.vfile-more-btn').length) return;
         var id = $(this).data('id');
         var file = files.find(function (f) { return f.id === id; });
         if (!file || !file.data) return;
 
-        var dataUrl = 'data:' + file.mimeType + ';base64,' + file.data;
         if (file.mimeType && file.mimeType.startsWith('image/')) {
+            var dataUrl = 'data:' + file.mimeType + ';base64,' + file.data;
             openPreview(file, dataUrl);
         } else {
-            // PDF: open via Blob URL
-            try {
-                var binary = atob(file.data);
-                var bytes  = new Uint8Array(binary.length);
-                for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-                var blob   = new Blob([bytes], { type: file.mimeType });
-                window.open(URL.createObjectURL(blob), '_blank');
-            } catch (e) { window.open(dataUrl, '_blank'); }
+            // PDF / other: share directly
+            shareFile(file);
         }
     });
 
@@ -326,12 +320,41 @@ $(function () {
     function openPreview(file, dataUrl) {
         $('#previewImg').attr('src', dataUrl);
         $('#previewFileName').text(file.name);
-        $('#previewOpen').off('click').on('click', function () {
-            window.open(dataUrl, '_blank');
+        $('#previewShare').off('click').on('click', function () {
+            shareFile(file);
         });
         openModal('previewModal');
     }
     $('#previewClose').on('click', function () { closeModal('previewModal'); });
+
+    // ======== SHARE (Web Share API) ========
+    async function shareFile(file) {
+        try {
+            var ext = file.mimeType === 'application/pdf' ? '.pdf'
+                    : file.mimeType === 'image/png'       ? '.png'
+                    : '.jpg';
+            var binary = atob(file.data);
+            var bytes  = new Uint8Array(binary.length);
+            for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            var blob      = new Blob([bytes], { type: file.mimeType });
+            var shareFile = new File([blob], file.name + ext, { type: file.mimeType });
+
+            if (navigator.canShare && navigator.canShare({ files: [shareFile] })) {
+                await navigator.share({ files: [shareFile], title: file.name });
+            } else if (navigator.share) {
+                await navigator.share({ title: file.name, text: file.name });
+            } else {
+                // 桌機 fallback：下載檔案
+                var url = URL.createObjectURL(blob);
+                var a   = document.createElement('a');
+                a.href = url; a.download = file.name + ext;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        } catch (e) {
+            if (e.name !== 'AbortError') console.warn('Share failed:', e);
+        }
+    }
 
     // ======== EMOJI PICKER ========
     $(document).on('click', '.emoji-btn', function () {
