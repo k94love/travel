@@ -197,10 +197,6 @@
             getFirestore, collection, addDoc, getDocs,
             doc, updateDoc, deleteDoc
         } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-        import {
-            getStorage, ref, uploadBytesResumable,
-            getDownloadURL, deleteObject
-        } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey:            "AIzaSyAAIriMdrL4exmhckQr4MUZLqTPkzmh9_s",
@@ -212,10 +208,9 @@
             measurementId:     "G-HKMEJH0V8Q"
         };
 
-        const app     = initializeApp(firebaseConfig);
+        const app = initializeApp(firebaseConfig);
         getAnalytics(app);
-        const db      = getFirestore(app);
-        const storage = getStorage(app);
+        const db  = getFirestore(app);
 
         const FC = 'vaultFolders';
         const FF = 'vaultFiles';
@@ -239,30 +234,12 @@
             async deleteFile(id)         { await deleteDoc(doc(db, FF, id)); }
         };
 
-        const storageFns = {
-            uploadFile(file, name) {
-                return new Promise((resolve, reject) => {
-                    const ext  = file.name.includes('.') ? file.name.split('.').pop() : '';
-                    const path = `vault/${Date.now()}_${name}${ext ? '.' + ext : ''}`;
-                    const task = uploadBytesResumable(ref(storage, path), file);
-                    task.on('state_changed', null, reject, async () => {
-                        const url = await getDownloadURL(task.snapshot.ref);
-                        resolve({ path, url });
-                    });
-                });
-            },
-            async deleteFile(path) {
-                if (!path) return;
-                try { await deleteObject(ref(storage, path)); }
-                catch (e) { console.warn('Storage delete:', e); }
-            }
-        };
-
         if (typeof window.__vaultInit === 'function') {
-            window.__vaultInit(dbFns, storageFns);
+            window.__vaultInit(dbFns);
         } else {
-            window.__vaultInitData = [dbFns, storageFns];
+            window.__vaultInitData = dbFns;
         }
+
     </script>
 
 </body>
