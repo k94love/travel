@@ -150,6 +150,21 @@
         } else {
             window.__historyInitData = [saveFn, loadFn, deleteFn];
         }
+
+        // Load Gemini API key from Firestore
+        (async () => {
+            try {
+                const snap = await getDocs(collection(db, 'gemini_API'));
+                if (!snap.empty) {
+                    const key = snap.docs[0].data().key;
+                    if (key && typeof window.__setGeminiKey === 'function') {
+                        window.__setGeminiKey(key);
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to load Gemini key:', e);
+            }
+        })();
     </script>
 
 </body>

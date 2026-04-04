@@ -1,6 +1,14 @@
 $(function() {
-    var API_KEY = 'AIzaSyDlyDJ0DDls_8y_44FyyvahAAKYuhXjTFQ';
-    var API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + API_KEY;
+    var API_KEY = null;
+    var API_URL = null;
+
+    // Bridge: called by Firebase module once key is loaded from Firestore
+    window.__setGeminiKey = function(key) {
+        API_KEY  = key;
+        API_URL  = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + key;
+        // Enable translate button if image is already selected
+        if (currentBase64) $('#translateBtn').prop('disabled', false);
+    };
 
     var PROMPT = [
         '請分析這張日文菜單圖片，逐一翻譯每道菜色成繁體中文。',
@@ -44,7 +52,7 @@ $(function() {
             currentBase64 = dataUrl.split(',')[1];
             $('#previewImg').attr('src', dataUrl).show();
             $('#uploadZone').addClass('has-image');
-            $('#translateBtn').prop('disabled', false);
+            $('#translateBtn').prop('disabled', !API_KEY); // 等 key 載入後才開放
             $('#resultArea').hide();
         };
         reader.readAsDataURL(file);
@@ -67,7 +75,7 @@ $(function() {
 
     // ---- Translate ----
     $('#translateBtn').on('click', async function() {
-        if (!currentBase64) return;
+        if (!currentBase64 || !API_URL) return;
         $('#translateBtn').prop('disabled', true).text('翻譯中...');
         $('#resultArea').hide();
         $('#loadingArea').show();
