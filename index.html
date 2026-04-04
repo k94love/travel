@@ -608,7 +608,9 @@
     <script src="js/app.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+        import { getAnalytics }  from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyAAIriMdrL4exmhckQr4MUZLqTPkzmh9_s",
             authDomain: "trip-a4f93.firebaseapp.com",
@@ -618,8 +620,25 @@
             appId: "1:954243191002:web:3046f9b1d576261249d5e3",
             measurementId: "G-HKMEJH0V8Q"
         };
+
         const app = initializeApp(firebaseConfig);
         getAnalytics(app);
+        const db = getFirestore(app);
+        const DOC = doc(db, 'checklist', 'fukuoka_2026');
+
+        async function saveFn(checked) {
+            await setDoc(DOC, { checked });
+        }
+        async function loadFn() {
+            const snap = await getDoc(DOC);
+            return snap.exists() ? (snap.data().checked || {}) : {};
+        }
+
+        if (typeof window.__checklistInit === 'function') {
+            window.__checklistInit(saveFn, loadFn);
+        } else {
+            window.__checklistInitData = [saveFn, loadFn];
+        }
     </script>
 
 </body>

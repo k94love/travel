@@ -126,18 +126,23 @@ $(function() {
     $scrollBtn.on('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
     // ======== CHECKLIST ========
-    function getCookie(name) {
-        var v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
-        return v ? v.pop() : '';
+    var _dbSave = null, _dbLoad = null;
+
+    window.__checklistInit = function(saveFn, loadFn) {
+        _dbSave = saveFn;
+        _dbLoad = loadFn;
+        loadChecklist();
+    };
+    if (window.__checklistInitData) {
+        window.__checklistInit.apply(null, window.__checklistInitData);
+        delete window.__checklistInitData;
     }
-    function setCookie(name, val) {
-        var d = new Date(); d.setTime(d.getTime() + 365 * 24 * 60 * 60 * 1000);
-        document.cookie = name + '=' + val + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
-    }
-    function loadChecklist() {
-        var data = getCookie('fukuoka_checklist');
+
+    async function loadChecklist() {
         var checked = {};
-        if (data) { try { checked = JSON.parse(decodeURIComponent(data)); } catch(e) {} }
+        if (_dbLoad) {
+            try { checked = await _dbLoad(); } catch(e) { console.warn('Checklist load failed:', e); }
+        }
         $('#checklistArea input[type="checkbox"]').each(function() {
             if (checked[$(this).data('id')]) {
                 $(this).prop('checked', true);
@@ -146,13 +151,17 @@ $(function() {
         });
         updateProgress(); updateGroupCounts();
     }
-    function saveChecklist() {
+
+    async function saveChecklist() {
         var checked = {};
         $('#checklistArea input[type="checkbox"]').each(function() {
             if ($(this).prop('checked')) checked[$(this).data('id')] = true;
         });
-        setCookie('fukuoka_checklist', encodeURIComponent(JSON.stringify(checked)));
+        if (_dbSave) {
+            try { await _dbSave(checked); } catch(e) { console.warn('Checklist save failed:', e); }
+        }
     }
+
     function updateProgress() {
         var total = $('#checklistArea input[type="checkbox"]').length;
         var done  = $('#checklistArea input[type="checkbox"]:checked').length;
@@ -173,7 +182,6 @@ $(function() {
     });
 
     // ======== INIT ========
-    loadChecklist();
     updateUI();
     setTimeout(updateDayStrip, 50);
 });
