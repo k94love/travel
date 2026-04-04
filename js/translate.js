@@ -83,7 +83,7 @@ $(function() {
                             { inline_data: { mime_type: currentMime, data: currentBase64 } }
                         ]
                     }],
-                    generationConfig: { temperature: 0.2, maxOutputTokens: 2048 }
+                    generationConfig: { temperature: 0.2, maxOutputTokens: 8192 }
                 })
             });
 
