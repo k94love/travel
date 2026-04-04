@@ -1,5 +1,5 @@
 $(function() {
-    var API_KEY = 'AIzaSyDKP18yGpmFh-mdY_7insV6-Z4F5BW8WLo';
+    var API_KEY = 'AIzaSyDlyDJ0DDls_8y_44FyyvahAAKYuhXjTFQ';
     var API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + API_KEY;
 
     var PROMPT = [
