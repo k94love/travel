@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>API 用量 · 福岡手帳</title>
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="main.png">
+    <link rel="apple-touch-icon" href="main.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="福岡行程">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#FF6B6B">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/usage.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+
+    <div class="us-wrap">
+
+        <!-- Header -->
+        <div class="us-header">
+            <div class="us-header-title">
+                <span class="us-header-icon">📊</span>
+                <div>
+                    <div class="us-header-main">API 用量</div>
+                    <div class="us-header-sub">Gemini Token 使用記錄</div>
+                </div>
+            </div>
+            <button class="us-refresh-btn" id="refreshBtn" title="重新整理">↻</button>
+        </div>
+
+        <!-- Model Tabs -->
+        <div class="us-model-tabs">
+            <button class="us-model-btn active" data-model="gemini-3.1-flash-lite-preview">
+                Flash Lite 3.1
+                <span class="us-model-sub">RPD 500 · RPM 15</span>
+            </button>
+            <button class="us-model-btn" data-model="gemini-2.5-flash">
+                Flash 2.5
+                <span class="us-model-sub">RPD 20 · RPM 5</span>
+            </button>
+        </div>
+
+        <!-- Loading -->
+        <div class="us-loading" id="loadingState" style="display:none">⏳ 載入中...</div>
+
+        <!-- Today Stats -->
+        <div class="us-card">
+            <div class="us-card-title">今日用量</div>
+
+            <div class="us-gauge-row">
+                <!-- RPD -->
+                <div class="us-gauge-box">
+                    <div class="us-gauge-label" id="rpdLabel">今日請求 (RPD)</div>
+                    <div class="us-gauge-bar-wrap">
+                        <div class="us-gauge-bar" id="rpdBar" style="width:0%"></div>
+                    </div>
+                    <div class="us-gauge-nums" id="rpdNums">0 <span class="us-gauge-limit">/ —</span></div>
+                    <div class="us-status us-status-green" id="rpdStatus">✅ 正常</div>
+                </div>
+                <!-- RPM -->
+                <div class="us-gauge-box">
+                    <div class="us-gauge-label" id="rpmLabel">近1分鐘 (RPM)</div>
+                    <div class="us-gauge-bar-wrap">
+                        <div class="us-gauge-bar" id="rpmBar" style="width:0%"></div>
+                    </div>
+                    <div class="us-gauge-nums" id="rpmNums">0 <span class="us-gauge-limit">/ —</span></div>
+                    <div class="us-status us-status-green" id="rpmStatus">✅ 正常</div>
+                </div>
+            </div>
+
+            <!-- Tokens today -->
+            <div class="us-tokens-box">
+                <div>
+                    <div class="us-tokens-label">今日 Tokens 總計</div>
+                    <div class="us-tokens-sub" id="todayTokenSub">↑ 0  ↓ 0</div>
+                </div>
+                <div class="us-tokens-val" id="todayTokens">0</div>
+            </div>
+
+            <!-- Limit reminder chips -->
+            <div class="us-limit-row" id="limitChips"></div>
+        </div>
+
+        <!-- 7-day Chart -->
+        <div class="us-card">
+            <div class="us-card-title">7 天請求次數</div>
+            <div class="us-chart-wrap" id="chartArea">
+                <!-- bars injected by JS -->
+            </div>
+            <div style="font-size:0.68em;color:var(--text-light);text-align:right;margin-top:4px" id="chartSub"></div>
+        </div>
+
+        <!-- Recent Calls -->
+        <div class="us-card">
+            <div class="us-card-title">最近呼叫記錄</div>
+            <div id="recentList">
+                <div class="us-empty">尚無記錄</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bottom nav -->
+    <nav class="bottom-nav">
+        <div class="nav-tabs">
+            <a class="nav-tab" href="index.html">
+                <span class="nav-icon">🗓️</span>
+                <span>行程</span>
+            </a>
+            <a class="nav-tab" href="calc.html">
+                <span class="nav-icon">💴</span>
+                <span>換算</span>
+            </a>
+            <a class="nav-tab" href="translate.html">
+                <span class="nav-icon">🍜</span>
+                <span>翻譯</span>
+            </a>
+            <a class="nav-tab" href="vault.html">
+                <span class="nav-icon">🎫</span>
+                <span>保險箱</span>
+            </a>
+            <a class="nav-tab active" href="usage.html">
+                <span class="nav-icon">📊</span>
+                <span>用量</span>
+            </a>
+        </div>
+    </nav>
+
+    <script src="js/usage.js"></script>
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(function() {});
+    }
+    </script>
+
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getAnalytics }  from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+        import {
+            getFirestore, collection, getDocs, orderBy, query, where
+        } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey:            "AIzaSyAAIriMdrL4exmhckQr4MUZLqTPkzmh9_s",
+            authDomain:        "trip-a4f93.firebaseapp.com",
+            projectId:         "trip-a4f93",
+            storageBucket:     "trip-a4f93.firebasestorage.app",
+            messagingSenderId: "954243191002",
+            appId:             "1:954243191002:web:3046f9b1d576261249d5e3",
+            measurementId:     "G-HKMEJH0V8Q"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        getAnalytics(app);
+        const db  = getFirestore(app);
+
+        // Load last 30 days of token usage records
+        async function loadFn() {
+            const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
+            const q = query(
+                collection(db, 'tokenUsage'),
+                where('ts', '>=', cutoff),
+                orderBy('ts', 'desc')
+            );
+            const snap = await getDocs(q);
+            return snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+        }
+
+        if (typeof window.__usageInit === 'function') {
+            window.__usageInit(loadFn);
+        } else {
+            window.__usageInitData = loadFn;
+        }
+    </script>
+
+</body>
+</html>

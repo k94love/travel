@@ -104,8 +104,21 @@
                 <span class="nav-icon">🎫</span>
                 <span>保險箱</span>
             </a>
+            <a class="nav-tab" href="usage.html">
+                <span class="nav-icon">📊</span>
+                <span>用量</span>
+            </a>
         </div>
     </nav>
+
+    <!-- Translating full-screen mask -->
+    <div class="tr-mask" id="translatingMask">
+        <div class="tr-mask-box">
+            <div class="tr-mask-spinner"></div>
+            <div class="tr-mask-title">AI 翻譯中</div>
+            <div class="tr-mask-sub">～休蛋幾累～</div>
+        </div>
+    </div>
 
     <script src="js/translate.js"></script>
     <script>
@@ -122,6 +135,7 @@
             getFirestore, collection, addDoc, getDocs,
             deleteDoc, doc, orderBy, query, limit
         } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
 
         const firebaseConfig = {
             apiKey:            "AIzaSyAAIriMdrL4exmhckQr4MUZLqTPkzmh9_s",
@@ -159,6 +173,17 @@
         } else {
             window.__historyInitData = [saveFn, loadFn, deleteFn];
         }
+
+        // Token usage bridge
+        window.__saveTokenUsage = async function(usageMeta, model) {
+            await addDoc(collection(db, 'tokenUsage'), {
+                model:        model,
+                inputTokens:  usageMeta.promptTokenCount      || 0,
+                outputTokens: usageMeta.candidatesTokenCount  || 0,
+                totalTokens:  usageMeta.totalTokenCount       || 0,
+                ts:           Date.now()
+            });
+        };
 
         // Load Gemini API key from Firestore
         (async () => {

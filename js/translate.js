@@ -90,12 +90,27 @@ $(function() {
         $('#menuFileInput').val('');
     });
 
+    // ---- Mask helpers ----
+    function showMask() {
+        $('#translatingMask').addClass('active');
+        window.addEventListener('beforeunload', onBeforeUnload);
+    }
+    function hideMask() {
+        $('#translatingMask').removeClass('active');
+        window.removeEventListener('beforeunload', onBeforeUnload);
+    }
+    function onBeforeUnload(e) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+
     // ---- Translate ----
     $('#translateBtn').on('click', async function() {
         if (!currentBase64 || !API_KEY) return;
         $('#translateBtn').prop('disabled', true).text('翻譯中...');
         $('#resultArea').hide();
         $('#loadingArea').show();
+        showMask();
 
         var apiUrl = buildApiUrl(API_KEY, currentModel);
 
@@ -126,9 +141,15 @@ $(function() {
             if (!text) throw new Error('回傳格式異常');
             renderResults(text.trim());
 
+            // Save token usage
+            if (data.usageMetadata && typeof window.__saveTokenUsage === 'function') {
+                window.__saveTokenUsage(data.usageMetadata, currentModel).catch(function() {});
+            }
+
         } catch(err) {
             renderError(err.message || '翻譯失敗，請重試');
         } finally {
+            hideMask();
             $('#loadingArea').hide();
             $('#translateBtn').prop('disabled', false).text('翻譯菜單');
         }
