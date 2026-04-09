@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>班機查詢 · 福岡手帳</title>
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="main.png">
+    <link rel="apple-touch-icon" href="main.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="福岡行程">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#FF6B6B">
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        :root {
+            --pink: #FF6B6B;
+            --pink-light: #ffe0e0;
+            --pink-dark: #e04545;
+            --cream: #fdf6ed;
+            --brown: #8d6e63;
+            --brown-dark: #5d4037;
+            --mint: #b2dfdb;
+            --mint-dark: #4db6ac;
+            --sky: #b3e5fc;
+            --text: #4a3728;
+            --text-light: #7b6b5d;
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--cream);
+            color: var(--text);
+            min-height: 100dvh;
+            padding-top: var(--safe-top);
+            padding-bottom: calc(var(--safe-bottom) + 32px);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .wrap {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        /* Header */
+        .fl-header {
+            background: white;
+            border: 2px solid var(--pink);
+            border-radius: 20px;
+            padding: 20px 20px 18px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(255,107,107,0.12);
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .fl-header::before {
+            content: '✈ ✈ ✈';
+            position: absolute;
+            top: 8px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: var(--pink);
+            letter-spacing: 6px;
+        }
+        .fl-header-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.4em;
+            font-weight: 800;
+            color: var(--pink-dark);
+            margin-top: 8px;
+        }
+        .fl-header-sub {
+            font-size: 0.78em;
+            color: var(--brown);
+            margin-top: 2px;
+        }
+
+        /* Search Box */
+        .search-box {
+            background: white;
+            border-radius: 16px;
+            padding: 18px 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            margin-bottom: 16px;
+        }
+        .search-label {
+            font-size: 0.78em;
+            font-weight: 700;
+            color: var(--brown-dark);
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .search-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .search-input {
+            flex: 1;
+            border: 2px solid var(--pink-light);
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 1.1em;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: var(--text);
+            background: var(--cream);
+            outline: none;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus {
+            border-color: var(--pink);
+        }
+        .search-input::placeholder {
+            font-weight: 400;
+            color: #ccc;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+        .search-btn {
+            background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 0.9em;
+            font-weight: 700;
+            font-family: 'Noto Sans TC', sans-serif;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: opacity 0.2s, transform 0.1s;
+            box-shadow: 0 3px 10px rgba(255,107,107,0.3);
+        }
+        .search-btn:active { opacity: 0.85; transform: scale(0.97); }
+        .search-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .search-hint {
+            font-size: 0.72em;
+            color: var(--text-light);
+            margin-top: 8px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            display: none;
+        }
+        .loading-spinner {
+            width: 36px; height: 36px;
+            border: 3px solid var(--pink-light);
+            border-top-color: var(--pink);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text {
+            font-size: 0.85em;
+            color: var(--brown);
+        }
+
+        /* Error */
+        .error-box {
+            background: #fff3f3;
+            border: 1.5px solid #ffb3b3;
+            border-radius: 14px;
+            padding: 16px 18px;
+            text-align: center;
+            display: none;
+            margin-bottom: 12px;
+        }
+        .error-icon { font-size: 1.8em; margin-bottom: 6px; }
+        .error-text { font-size: 0.85em; color: #c0392b; font-weight: 500; }
+
+        /* Result Card */
+        .result-card {
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 3px 16px rgba(0,0,0,0.09);
+            display: none;
+            margin-bottom: 12px;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #2c3e50, #3d5a80);
+            color: white;
+            padding: 16px 18px;
+        }
+        .card-flight-num {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.6em;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+        .card-airline {
+            font-size: 0.82em;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+        .status-badge {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 0.72em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .status-scheduled  { background: rgba(179,229,252,0.3); color: #b3e5fc; border: 1px solid rgba(179,229,252,0.4); }
+        .status-active     { background: rgba(178,223,219,0.3); color: #80cbc4; border: 1px solid rgba(128,203,196,0.4); }
+        .status-landed     { background: rgba(200,230,201,0.3); color: #a5d6a7; border: 1px solid rgba(165,214,167,0.4); }
+        .status-cancelled  { background: rgba(255,138,101,0.2); color: #ff8a65; border: 1px solid rgba(255,138,101,0.3); }
+        .status-diverted   { background: rgba(255,224,130,0.3); color: #ffd54f; border: 1px solid rgba(255,213,79,0.4); }
+        .status-unknown    { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); }
+
+        /* Route Bar */
+        .route-bar {
+            display: flex;
+            align-items: center;
+            padding: 16px 18px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #f0f0f0;
+            gap: 8px;
+        }
+        .route-airport {
+            flex: 1;
+            text-align: center;
+        }
+        .route-iata {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5em;
+            font-weight: 800;
+            color: var(--brown-dark);
+        }
+        .route-city {
+            font-size: 0.7em;
+            color: var(--text-light);
+            margin-top: 1px;
+        }
+        .route-arrow {
+            color: var(--pink);
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+
+        /* Info Sections */
+        .info-section {
+            padding: 14px 18px;
+            border-bottom: 1px solid #f5f0eb;
+        }
+        .info-section:last-child { border-bottom: none; }
+        .info-section-title {
+            font-size: 0.68em;
+            font-weight: 700;
+            color: var(--brown);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .info-section-title span { font-size: 1.1em; }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .info-grid.single { grid-template-columns: 1fr; }
+        .info-grid.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+        .info-item {
+            background: var(--cream);
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+        .info-item-label {
+            font-size: 0.65em;
+            color: var(--text-light);
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+        .info-item-value {
+            font-size: 0.95em;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .info-item-value.big {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2em;
+            color: var(--brown-dark);
+        }
+        .info-item-value.highlight {
+            color: var(--pink-dark);
+        }
+        .info-item-value.na {
+            color: #ccc;
+            font-weight: 400;
+            font-size: 0.85em;
+        }
+
+        /* Time diff */
+        .time-diff {
+            font-size: 0.7em;
+            color: var(--text-light);
+            font-weight: 400;
+            margin-top: 2px;
+        }
+        .time-diff.delayed { color: #e67e22; }
+        .time-diff.early { color: #27ae60; }
+
+        /* Multiple flights notice */
+        .multi-notice {
+            background: #fff8e1;
+            border: 1.5px solid #ffe082;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 0.78em;
+            color: #7d6608;
+            margin-bottom: 12px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Nav tabs for multiple results */
+        .result-nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+        .result-nav-btn {
+            background: white;
+            border: 1.5px solid var(--pink-light);
+            border-radius: 10px;
+            padding: 6px 14px;
+            font-size: 0.78em;
+            font-weight: 600;
+            color: var(--brown);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .result-nav-btn.active {
+            background: var(--pink);
+            border-color: var(--pink);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrap">
+
+    <!-- Header -->
+    <div class="fl-header">
+        <div class="fl-header-title">✈ 班機查詢</div>
+        <div class="fl-header-sub">Flight Information Lookup</div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-box">
+        <label class="search-label">輸入班機號碼</label>
+        <div class="search-row">
+            <input type="text" class="search-input" id="flightInput"
+                placeholder="例：CI100, BR101"
+                maxlength="10"
+                autocomplete="off"
+                autocorrect="off"
+                spellcheck="false">
+            <button class="search-btn" id="searchBtn" onclick="searchFlight()">查詢</button>
+        </div>
+        <div class="search-hint">輸入航空公司代碼 + 航班號，例如 CI100（中華航空100班）</div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading" id="loadingBox">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">查詢班機資料中…</div>
+    </div>
+
+    <!-- Error -->
+    <div class="error-box" id="errorBox">
+        <div class="error-icon">⚠️</div>
+        <div class="error-text" id="errorText">查無此班機，請確認班機號碼是否正確。</div>
+    </div>
+
+    <!-- Multiple results nav -->
+    <div class="multi-notice" id="multiNotice">
+        <span>📋</span>
+        <span id="multiText"></span>
+    </div>
+    <div class="result-nav" id="resultNav" style="display:none;"></div>
+
+    <!-- Result Card -->
+    <div class="result-card" id="resultCard">
+
+        <div class="card-header">
+            <div class="card-flight-num" id="rFlightNum">—</div>
+            <div class="card-airline" id="rAirline">—</div>
+            <span class="status-badge" id="rStatus">—</span>
+        </div>
+
+        <div class="route-bar">
+            <div class="route-airport">
+                <div class="route-iata" id="rDepIATA">—</div>
+                <div class="route-city" id="rDepCity">—</div>
+            </div>
+            <div class="route-arrow">→</div>
+            <div class="route-airport">
+                <div class="route-iata" id="rArrIATA">—</div>
+                <div class="route-city" id="rArrCity">—</div>
+            </div>
+        </div>
+
+        <!-- Departure Info -->
+        <div class="info-section">
+            <div class="info-section-title"><span>🛫</span> 出發資訊</div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-item-label">預定起飛</div>
+                    <div class="info-item-value big" id="rDepSched">—</div>
+                    <div class="time-diff" id="rDepSchedDate"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-item-label">實際起飛</div>
+                    <div class="info-item-value big" id="rDepActual">—</div>
+                    <div class="time-diff" id="rDepDelay"></div>
+                </div>
+            </div>
+            <div class="info-grid" style="margin-top:10px;">
+                <div class="info-item">
+                    <div class="info-item-label">出發航廈</div>
+                    <div class="info-item-value highlight" id="rDepTerminal">—</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-item-label">登機門</div>
+                    <div class="info-item-value highlight" id="rDepGate">—</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Arrival Info -->
+        <div class="info-section">
+            <div class="info-section-title"><span>🛬</span> 抵達資訊</div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-item-label">預定抵達</div>
+                    <div class="info-item-value big" id="rArrSched">—</div>
+                    <div class="time-diff" id="rArrSchedDate"></div>
+                </div>
+                <div class="info-item">
+                    <div class="info-item-label">實際抵達</div>
+                    <div class="info-item-value big" id="rArrActual">—</div>
+                    <div class="time-diff" id="rArrDelay"></div>
+                </div>
+            </div>
+            <div class="info-grid" style="margin-top:10px;">
+                <div class="info-item">
+                    <div class="info-item-label">抵達航廈</div>
+                    <div class="info-item-value highlight" id="rArrTerminal">—</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-item-label">抵達登機門</div>
+                    <div class="info-item-value highlight" id="rArrGate">—</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Baggage -->
+        <div class="info-section">
+            <div class="info-section-title"><span>🧳</span> 行李轉盤</div>
+            <div class="info-grid single">
+                <div class="info-item">
+                    <div class="info-item-label">行李轉盤號</div>
+                    <div class="info-item-value big highlight" id="rBaggage">—</div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /result-card -->
+
+</div><!-- /wrap -->
+
+<script>
+    const API_KEY = '480b341bde01313ed89d6ff96a21111b';
+    let allFlights = [];
+
+    // Allow Enter key to search
+    document.getElementById('flightInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') searchFlight();
+    });
+
+    function showLoading() {
+        document.getElementById('loadingBox').style.display = 'block';
+        document.getElementById('errorBox').style.display = 'none';
+        document.getElementById('resultCard').style.display = 'none';
+        document.getElementById('multiNotice').style.display = 'none';
+        document.getElementById('resultNav').style.display = 'none';
+        document.getElementById('searchBtn').disabled = true;
+    }
+
+    function hideLoading() {
+        document.getElementById('loadingBox').style.display = 'none';
+        document.getElementById('searchBtn').disabled = false;
+    }
+
+    function showError(msg) {
+        hideLoading();
+        const box = document.getElementById('errorBox');
+        document.getElementById('errorText').textContent = msg;
+        box.style.display = 'block';
+    }
+
+    function formatTime(isoStr) {
+        if (!isoStr) return null;
+        const d = new Date(isoStr);
+        if (isNaN(d)) return null;
+        return d.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+
+    function formatDate(isoStr) {
+        if (!isoStr) return null;
+        const d = new Date(isoStr);
+        if (isNaN(d)) return null;
+        return d.toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric', weekday: 'short' });
+    }
+
+    function getDelayMinutes(scheduled, actual) {
+        if (!scheduled || !actual) return null;
+        const s = new Date(scheduled), a = new Date(actual);
+        if (isNaN(s) || isNaN(a)) return null;
+        return Math.round((a - s) / 60000);
+    }
+
+    function setVal(id, val, naText) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (val === null || val === undefined || val === '') {
+            el.textContent = naText || '—';
+            el.className = el.className.replace(/\bbig\b|\bhighlight\b/g, '').trim() + ' na';
+        } else {
+            el.className = el.className.replace(/\bna\b/g, '').trim();
+            el.textContent = val;
+        }
+    }
+
+    function statusLabel(status) {
+        const map = {
+            'scheduled':  ['scheduled',  '已排班'],
+            'active':     ['active',     '飛行中'],
+            'landed':     ['landed',     '已降落'],
+            'cancelled':  ['cancelled',  '已取消'],
+            'diverted':   ['diverted',   '備降改降'],
+            'incident':   ['cancelled',  '事故'],
+        };
+        return map[status] || ['unknown', status || '未知'];
+    }
+
+    function renderFlight(f) {
+        const dep = f.departure || {};
+        const arr = f.arrival || {};
+        const flight = f.flight || {};
+        const airline = f.airline || {};
+
+        // Header
+        document.getElementById('rFlightNum').textContent = flight.iata || f.flight_iata || '—';
+        document.getElementById('rAirline').textContent = airline.name || '—';
+
+        const [cls, label] = statusLabel(f.flight_status);
+        const badge = document.getElementById('rStatus');
+        badge.textContent = label;
+        badge.className = 'status-badge status-' + cls;
+
+        // Route
+        setVal('rDepIATA', dep.iata);
+        setVal('rDepCity', dep.airport);
+        setVal('rArrIATA', arr.iata);
+        setVal('rArrCity', arr.airport);
+
+        // Departure times
+        const depSchedTime = formatTime(dep.scheduled);
+        const depSchedDate = formatDate(dep.scheduled);
+        setVal('rDepSched', depSchedTime);
+        document.getElementById('rDepSchedDate').textContent = depSchedDate || '';
+
+        const depActualTime = formatTime(dep.actual || dep.estimated);
+        setVal('rDepActual', depActualTime);
+
+        const depDelay = getDelayMinutes(dep.scheduled, dep.actual || dep.estimated);
+        const depDelayEl = document.getElementById('rDepDelay');
+        if (depDelay !== null) {
+            if (depDelay > 0) {
+                depDelayEl.textContent = `延誤 ${depDelay} 分`;
+                depDelayEl.className = 'time-diff delayed';
+            } else if (depDelay < 0) {
+                depDelayEl.textContent = `提前 ${Math.abs(depDelay)} 分`;
+                depDelayEl.className = 'time-diff early';
+            } else {
+                depDelayEl.textContent = '準時';
+                depDelayEl.className = 'time-diff';
+            }
+        } else {
+            depDelayEl.textContent = '';
+        }
+
+        // Departure terminal & gate
+        setVal('rDepTerminal', dep.terminal ? `航廈 ${dep.terminal}` : null);
+        setVal('rDepGate', dep.gate ? `${dep.gate}` : null);
+
+        // Arrival times
+        const arrSchedTime = formatTime(arr.scheduled);
+        const arrSchedDate = formatDate(arr.scheduled);
+        setVal('rArrSched', arrSchedTime);
+        document.getElementById('rArrSchedDate').textContent = arrSchedDate || '';
+
+        const arrActualTime = formatTime(arr.actual || arr.estimated);
+        setVal('rArrActual', arrActualTime);
+
+        const arrDelay = getDelayMinutes(arr.scheduled, arr.actual || arr.estimated);
+        const arrDelayEl = document.getElementById('rArrDelay');
+        if (arrDelay !== null) {
+            if (arrDelay > 0) {
+                arrDelayEl.textContent = `延誤 ${arrDelay} 分`;
+                arrDelayEl.className = 'time-diff delayed';
+            } else if (arrDelay < 0) {
+                arrDelayEl.textContent = `提前 ${Math.abs(arrDelay)} 分`;
+                arrDelayEl.className = 'time-diff early';
+            } else {
+                arrDelayEl.textContent = '準時';
+                arrDelayEl.className = 'time-diff';
+            }
+        } else {
+            arrDelayEl.textContent = '';
+        }
+
+        setVal('rArrTerminal', arr.terminal ? `航廈 ${arr.terminal}` : null);
+        setVal('rArrGate', arr.gate ? `${arr.gate}` : null);
+
+        // Baggage
+        setVal('rBaggage', arr.baggage ? `轉盤 ${arr.baggage}` : null);
+
+        document.getElementById('resultCard').style.display = 'block';
+    }
+
+    function buildNav(flights) {
+        const nav = document.getElementById('resultNav');
+        nav.innerHTML = '';
+        flights.forEach((f, i) => {
+            const dep = f.departure || {};
+            const arr = f.arrival || {};
+            const btn = document.createElement('button');
+            btn.className = 'result-nav-btn' + (i === 0 ? ' active' : '');
+            const t = formatTime(dep.scheduled) || '';
+            btn.textContent = `${dep.iata || '?'} → ${arr.iata || '?'} ${t}`;
+            btn.onclick = () => {
+                nav.querySelectorAll('.result-nav-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderFlight(flights[i]);
+            };
+            nav.appendChild(btn);
+        });
+        nav.style.display = 'flex';
+    }
+
+    async function searchFlight() {
+        const raw = document.getElementById('flightInput').value.trim().toUpperCase().replace(/\s+/g, '');
+        if (!raw) {
+            document.getElementById('flightInput').focus();
+            return;
+        }
+
+        showLoading();
+
+        const url = `https://api.aviationstack.com/v1/flights?access_key=${API_KEY}&flight_iata=${encodeURIComponent(raw)}`;
+
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const json = await res.json();
+
+            hideLoading();
+
+            if (json.error) {
+                showError(`API 錯誤：${json.error.message || JSON.stringify(json.error)}`);
+                return;
+            }
+
+            const data = json.data;
+            if (!data || data.length === 0) {
+                showError(`查無班機 ${raw}，請確認班機號碼（如 CI100、BR101）。`);
+                return;
+            }
+
+            allFlights = data;
+
+            if (data.length > 1) {
+                const notice = document.getElementById('multiNotice');
+                document.getElementById('multiText').textContent =
+                    `找到 ${data.length} 筆班次，請選擇日期`;
+                notice.style.display = 'flex';
+                buildNav(data);
+            } else {
+                document.getElementById('multiNotice').style.display = 'none';
+                document.getElementById('resultNav').style.display = 'none';
+            }
+
+            renderFlight(data[0]);
+
+        } catch (err) {
+            // Try HTTP fallback (for local/non-HTTPS environments)
+            if (url.startsWith('https://')) {
+                try {
+                    const httpUrl = url.replace('https://', 'http://');
+                    const res2 = await fetch(httpUrl);
+                    if (!res2.ok) throw new Error(`HTTP ${res2.status}`);
+                    const json2 = await res2.json();
+                    hideLoading();
+                    if (json2.error) { showError(`API 錯誤：${json2.error.message}`); return; }
+                    const data2 = json2.data;
+                    if (!data2 || data2.length === 0) { showError(`查無班機 ${raw}。`); return; }
+                    allFlights = data2;
+                    if (data2.length > 1) {
+                        document.getElementById('multiText').textContent = `找到 ${data2.length} 筆班次，請選擇日期`;
+                        document.getElementById('multiNotice').style.display = 'flex';
+                        buildNav(data2);
+                    }
+                    renderFlight(data2[0]);
+                    return;
+                } catch (e2) { /* fall through */ }
+            }
+            showError(`連線失敗：${err.message}。若問題持續請確認網路狀態。`);
+        }
+    }
+</script>
+
+</body>
+</html>
