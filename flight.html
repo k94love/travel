@@ -447,7 +447,7 @@
                     <div class="time-diff" id="rDepDelay"></div>
                 </div>
             </div>
-            <div class="info-grid" style="margin-top:10px;">
+            <div class="info-grid triple" style="margin-top:10px;">
                 <div class="info-item">
                     <div class="info-item-label">出發航廈</div>
                     <div class="info-item-value highlight" id="rDepTerminal">—</div>
@@ -455,6 +455,10 @@
                 <div class="info-item">
                     <div class="info-item-label">登機門</div>
                     <div class="info-item-value highlight" id="rDepGate">—</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-item-label">報到櫃檯</div>
+                    <div class="info-item-value highlight" id="rCheckin">—</div>
                 </div>
             </div>
         </div>
@@ -531,29 +535,42 @@
         box.style.display = 'block';
     }
 
-    function formatTime(isoStr, tz) {
+    // aviationstack 回傳的時間是當地時間，但時區標記為 +00:00
+    // 所以直接解析字串的時間部分，不做任何時區轉換
+    function parseLocalISO(isoStr) {
         if (!isoStr) return null;
-        const d = new Date(isoStr);
-        if (isNaN(d)) return null;
-        const opts = { hour: '2-digit', minute: '2-digit', hour12: false };
-        if (tz) opts.timeZone = tz;
-        return d.toLocaleTimeString('zh-TW', opts);
+        // 格式: "2026-04-09T14:40:00+00:00" 或 "2026-04-09T14:40:00"
+        const m = isoStr.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+        if (!m) return null;
+        return { year: +m[1], month: +m[2], day: +m[3], hour: +m[4], minute: +m[5] };
     }
 
-    function formatDate(isoStr, tz) {
-        if (!isoStr) return null;
-        const d = new Date(isoStr);
-        if (isNaN(d)) return null;
-        const opts = { month: 'numeric', day: 'numeric', weekday: 'short' };
-        if (tz) opts.timeZone = tz;
-        return d.toLocaleDateString('zh-TW', opts);
+    function formatTime(isoStr) {
+        const p = parseLocalISO(isoStr);
+        if (!p) return null;
+        return `${String(p.hour).padStart(2,'0')}:${String(p.minute).padStart(2,'0')}`;
+    }
+
+    function formatDate(isoStr) {
+        const p = parseLocalISO(isoStr);
+        if (!p) return null;
+        // 用 Date(UTC) 來格式化日期文字，避免時區影響日期顯示
+        const d = new Date(Date.UTC(p.year, p.month - 1, p.day));
+        return d.toLocaleDateString('zh-TW', { timeZone: 'UTC', month: 'numeric', day: 'numeric', weekday: 'short' });
     }
 
     function getDelayMinutes(scheduled, actual) {
         if (!scheduled || !actual) return null;
-        const s = new Date(scheduled), a = new Date(actual);
-        if (isNaN(s) || isNaN(a)) return null;
-        return Math.round((a - s) / 60000);
+        const s = parseLocalISO(scheduled), a = parseLocalISO(actual);
+        if (!s || !a) return null;
+        // 直接比較分鐘數（同一天的時間差）
+        const sMin = s.hour * 60 + s.minute;
+        const aMin = a.hour * 60 + a.minute;
+        let diff = aMin - sMin;
+        // 跨日處理（例如 23:50 → 00:10 = 延誤 20 分）
+        if (diff < -12 * 60) diff += 24 * 60;
+        if (diff > 12 * 60) diff -= 24 * 60;
+        return diff;
     }
 
     function setVal(id, val, naText) {
@@ -602,13 +619,12 @@
         setVal('rArrCity', arr.airport);
 
         // Departure times
-        const depTz = dep.timezone || null;
-        const depSchedTime = formatTime(dep.scheduled, depTz);
-        const depSchedDate = formatDate(dep.scheduled, depTz);
+        const depSchedTime = formatTime(dep.scheduled);
+        const depSchedDate = formatDate(dep.scheduled);
         setVal('rDepSched', depSchedTime);
         document.getElementById('rDepSchedDate').textContent = depSchedDate || '';
 
-        const depActualTime = formatTime(dep.actual || dep.estimated, depTz);
+        const depActualTime = formatTime(dep.actual || dep.estimated);
         setVal('rDepActual', depActualTime);
 
         const depDelay = getDelayMinutes(dep.scheduled, dep.actual || dep.estimated);
@@ -633,13 +649,12 @@
         setVal('rDepGate', dep.gate ? `${dep.gate}` : null);
 
         // Arrival times
-        const arrTz = arr.timezone || null;
-        const arrSchedTime = formatTime(arr.scheduled, arrTz);
-        const arrSchedDate = formatDate(arr.scheduled, arrTz);
+        const arrSchedTime = formatTime(arr.scheduled);
+        const arrSchedDate = formatDate(arr.scheduled);
         setVal('rArrSched', arrSchedTime);
         document.getElementById('rArrSchedDate').textContent = arrSchedDate || '';
 
-        const arrActualTime = formatTime(arr.actual || arr.estimated, arrTz);
+        const arrActualTime = formatTime(arr.actual || arr.estimated);
         setVal('rArrActual', arrActualTime);
 
         const arrDelay = getDelayMinutes(arr.scheduled, arr.actual || arr.estimated);
@@ -665,6 +680,9 @@
         // Baggage
         setVal('rBaggage', arr.baggage ? `轉盤 ${arr.baggage}` : null);
 
+        // Check-in counter (departure)
+        setVal('rCheckin', dep.checkin || null);
+
         document.getElementById('resultCard').style.display = 'block';
     }
 
@@ -676,7 +694,7 @@
             const arr = f.arrival || {};
             const btn = document.createElement('button');
             btn.className = 'result-nav-btn' + (i === 0 ? ' active' : '');
-            const t = formatTime(dep.scheduled, dep.timezone || null) || '';
+            const t = formatTime(dep.scheduled) || '';
             btn.textContent = `${dep.iata || '?'} → ${arr.iata || '?'} ${t}`;
             btn.onclick = () => {
                 nav.querySelectorAll('.result-nav-btn').forEach(b => b.classList.remove('active'));
