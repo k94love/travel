@@ -506,10 +506,34 @@
 </nav>
 
 <script>
-    const API_KEY = '480b341bde01313ed89d6ff96a21111b';
+    const API_KEY = '25342ecc-924a-40fd-8824-be8ef4b2b8d8';
     let allFlights = [];
 
-    // Allow Enter key to search
+    // 航空公司名稱對照
+    const AIRLINE_NAMES = {
+        'CI': '中華航空', 'BR': '長榮航空', 'IT': '台灣虎航', 'AE': '華信航空', 'B7': '立榮航空',
+        'JL': '日本航空', 'NH': '全日空', 'JW': '香草航空', 'MM': '樂桃航空', 'GK': '捷星日本',
+        'KE': '大韓航空', 'OZ': '韓亞航空', '7C': '濟州航空', 'LJ': '真航空',
+        'CX': '國泰航空', 'HX': '香港航空', 'UO': '香港快運',
+        'SQ': '新加坡航空', 'TR': '酷航', 'MI': '勝安航空',
+        'TG': '泰國航空', 'FD': '泰亞洲', 'DD': '諾克航空',
+        'MH': '馬來西亞航空', 'AK': '亞洲航空', 'D7': '亞洲航空X',
+        'VN': '越南航空', 'VJ': '越捷航空', 'BL': '太平洋航空',
+        'CA': '中國國際', 'MU': '中國東方', 'CZ': '中國南方', 'HU': '海南航空',
+        'EK': '阿聯酋航空', 'QR': '卡達航空', 'TK': '土耳其航空',
+    };
+
+    // 機場名稱對照（常用）
+    const AIRPORT_NAMES = {
+        'TPE': '桃園', 'TSA': '松山', 'KHH': '高雄', 'RMQ': '台中', 'TNN': '台南', 'HUN': '花蓮',
+        'NRT': '東京成田', 'HND': '東京羽田', 'KIX': '大阪關西', 'ITM': '大阪伊丹',
+        'FUK': '福岡', 'CTS': '札幌千歲', 'OKA': '沖繩那霸', 'NGO': '名古屋',
+        'ICN': '首爾仁川', 'GMP': '首爾金浦', 'PUS': '釜山',
+        'HKG': '香港', 'MFM': '澳門', 'SIN': '新加坡',
+        'BKK': '曼谷素萬那普', 'DMK': '曼谷廊曼', 'KUL': '吉隆坡',
+        'PEK': '北京首都', 'PVG': '上海浦東', 'SHA': '上海虹橋', 'CAN': '廣州',
+    };
+
     document.getElementById('flightInput').addEventListener('keydown', function(e) {
         if (e.key === 'Enter') searchFlight();
     });
@@ -530,54 +554,30 @@
 
     function showError(msg) {
         hideLoading();
-        const box = document.getElementById('errorBox');
         document.getElementById('errorText').textContent = msg;
-        box.style.display = 'block';
+        document.getElementById('errorBox').style.display = 'block';
     }
 
-    // aviationstack 回傳的時間是當地時間，但時區標記為 +00:00
-    // 所以直接解析字串的時間部分，不做任何時區轉換
-    function parseLocalISO(isoStr) {
-        if (!isoStr) return null;
-        // 格式: "2026-04-09T14:40:00+00:00" 或 "2026-04-09T14:40:00"
-        const m = isoStr.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+    // airlabs 時間格式: "2026-04-09 14:40" — 已是當地時間，直接取用
+    function formatTime(timeStr) {
+        if (!timeStr) return null;
+        const m = timeStr.match(/(\d{2}):(\d{2})$/);
+        return m ? `${m[1]}:${m[2]}` : null;
+    }
+
+    function formatDate(timeStr) {
+        if (!timeStr) return null;
+        const m = timeStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
         if (!m) return null;
-        return { year: +m[1], month: +m[2], day: +m[3], hour: +m[4], minute: +m[5] };
-    }
-
-    function formatTime(isoStr) {
-        const p = parseLocalISO(isoStr);
-        if (!p) return null;
-        return `${String(p.hour).padStart(2,'0')}:${String(p.minute).padStart(2,'0')}`;
-    }
-
-    function formatDate(isoStr) {
-        const p = parseLocalISO(isoStr);
-        if (!p) return null;
-        // 用 Date(UTC) 來格式化日期文字，避免時區影響日期顯示
-        const d = new Date(Date.UTC(p.year, p.month - 1, p.day));
+        const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
         return d.toLocaleDateString('zh-TW', { timeZone: 'UTC', month: 'numeric', day: 'numeric', weekday: 'short' });
     }
 
-    function getDelayMinutes(scheduled, actual) {
-        if (!scheduled || !actual) return null;
-        const s = parseLocalISO(scheduled), a = parseLocalISO(actual);
-        if (!s || !a) return null;
-        // 直接比較分鐘數（同一天的時間差）
-        const sMin = s.hour * 60 + s.minute;
-        const aMin = a.hour * 60 + a.minute;
-        let diff = aMin - sMin;
-        // 跨日處理（例如 23:50 → 00:10 = 延誤 20 分）
-        if (diff < -12 * 60) diff += 24 * 60;
-        if (diff > 12 * 60) diff -= 24 * 60;
-        return diff;
-    }
-
-    function setVal(id, val, naText) {
+    function setVal(id, val) {
         const el = document.getElementById(id);
         if (!el) return;
         if (val === null || val === undefined || val === '') {
-            el.textContent = naText || '—';
+            el.textContent = '—';
             el.className = el.className.replace(/\bbig\b|\bhighlight\b/g, '').trim() + ' na';
         } else {
             el.className = el.className.replace(/\bna\b/g, '').trim();
@@ -585,101 +585,73 @@
         }
     }
 
+    function renderDelay(elId, delayMin) {
+        const el = document.getElementById(elId);
+        if (!el) return;
+        if (delayMin === null || delayMin === undefined) { el.textContent = ''; return; }
+        if (delayMin > 0) {
+            el.textContent = `延誤 ${delayMin} 分`;
+            el.className = 'time-diff delayed';
+        } else if (delayMin < 0) {
+            el.textContent = `提前 ${Math.abs(delayMin)} 分`;
+            el.className = 'time-diff early';
+        } else {
+            el.textContent = '準時';
+            el.className = 'time-diff';
+        }
+    }
+
     function statusLabel(status) {
         const map = {
-            'scheduled':  ['scheduled',  '已排班'],
-            'active':     ['active',     '飛行中'],
-            'landed':     ['landed',     '已降落'],
-            'cancelled':  ['cancelled',  '已取消'],
-            'diverted':   ['diverted',   '備降改降'],
-            'incident':   ['cancelled',  '事故'],
+            'scheduled': ['scheduled', '已排班'],
+            'en-route':  ['active',    '飛行中'],
+            'landed':    ['landed',    '已降落'],
+            'cancelled': ['cancelled', '已取消'],
+            'diverted':  ['diverted',  '備降'],
+            'unknown':   ['unknown',   '未知'],
         };
         return map[status] || ['unknown', status || '未知'];
     }
 
     function renderFlight(f) {
-        const dep = f.departure || {};
-        const arr = f.arrival || {};
-        const flight = f.flight || {};
-        const airline = f.airline || {};
-
         // Header
-        document.getElementById('rFlightNum').textContent = flight.iata || f.flight_iata || '—';
-        document.getElementById('rAirline').textContent = airline.name || '—';
+        document.getElementById('rFlightNum').textContent = f.flight_iata || '—';
+        const airlineName = AIRLINE_NAMES[f.airline_iata] || f.airline_iata || '—';
+        document.getElementById('rAirline').textContent = airlineName;
 
-        const [cls, label] = statusLabel(f.flight_status);
+        const [cls, label] = statusLabel(f.status);
         const badge = document.getElementById('rStatus');
         badge.textContent = label;
         badge.className = 'status-badge status-' + cls;
 
         // Route
-        setVal('rDepIATA', dep.iata);
-        setVal('rDepCity', dep.airport);
-        setVal('rArrIATA', arr.iata);
-        setVal('rArrCity', arr.airport);
+        setVal('rDepIATA', f.dep_iata);
+        setVal('rDepCity', AIRPORT_NAMES[f.dep_iata] || f.dep_iata || null);
+        setVal('rArrIATA', f.arr_iata);
+        setVal('rArrCity', AIRPORT_NAMES[f.arr_iata] || f.arr_iata || null);
 
         // Departure times
-        const depSchedTime = formatTime(dep.scheduled);
-        const depSchedDate = formatDate(dep.scheduled);
-        setVal('rDepSched', depSchedTime);
-        document.getElementById('rDepSchedDate').textContent = depSchedDate || '';
-
-        const depActualTime = formatTime(dep.actual || dep.estimated);
-        setVal('rDepActual', depActualTime);
-
-        const depDelay = getDelayMinutes(dep.scheduled, dep.actual || dep.estimated);
-        const depDelayEl = document.getElementById('rDepDelay');
-        if (depDelay !== null) {
-            if (depDelay > 0) {
-                depDelayEl.textContent = `延誤 ${depDelay} 分`;
-                depDelayEl.className = 'time-diff delayed';
-            } else if (depDelay < 0) {
-                depDelayEl.textContent = `提前 ${Math.abs(depDelay)} 分`;
-                depDelayEl.className = 'time-diff early';
-            } else {
-                depDelayEl.textContent = '準時';
-                depDelayEl.className = 'time-diff';
-            }
-        } else {
-            depDelayEl.textContent = '';
-        }
+        setVal('rDepSched', formatTime(f.dep_time));
+        document.getElementById('rDepSchedDate').textContent = formatDate(f.dep_time) || '';
+        setVal('rDepActual', formatTime(f.dep_actual || f.dep_estimated));
+        renderDelay('rDepDelay', f.dep_delayed ?? null);
 
         // Departure terminal & gate
-        setVal('rDepTerminal', dep.terminal ? `航廈 ${dep.terminal}` : null);
-        setVal('rDepGate', dep.gate ? `${dep.gate}` : null);
+        setVal('rDepTerminal', f.dep_terminal ? `航廈 ${f.dep_terminal}` : null);
+        setVal('rDepGate', f.dep_gate || null);
 
         // Arrival times
-        const arrSchedTime = formatTime(arr.scheduled);
-        const arrSchedDate = formatDate(arr.scheduled);
-        setVal('rArrSched', arrSchedTime);
-        document.getElementById('rArrSchedDate').textContent = arrSchedDate || '';
+        setVal('rArrSched', formatTime(f.arr_time));
+        document.getElementById('rArrSchedDate').textContent = formatDate(f.arr_time) || '';
+        setVal('rArrActual', formatTime(f.arr_actual || f.arr_estimated));
+        renderDelay('rArrDelay', f.arr_delayed ?? null);
 
-        const arrActualTime = formatTime(arr.actual || arr.estimated);
-        setVal('rArrActual', arrActualTime);
-
-        const arrDelay = getDelayMinutes(arr.scheduled, arr.actual || arr.estimated);
-        const arrDelayEl = document.getElementById('rArrDelay');
-        if (arrDelay !== null) {
-            if (arrDelay > 0) {
-                arrDelayEl.textContent = `延誤 ${arrDelay} 分`;
-                arrDelayEl.className = 'time-diff delayed';
-            } else if (arrDelay < 0) {
-                arrDelayEl.textContent = `提前 ${Math.abs(arrDelay)} 分`;
-                arrDelayEl.className = 'time-diff early';
-            } else {
-                arrDelayEl.textContent = '準時';
-                arrDelayEl.className = 'time-diff';
-            }
-        } else {
-            arrDelayEl.textContent = '';
-        }
-
-        setVal('rArrTerminal', arr.terminal ? `航廈 ${arr.terminal}` : null);
-        setVal('rArrGate', arr.gate ? `${arr.gate}` : null);
+        // Arrival terminal & gate
+        setVal('rArrTerminal', f.arr_terminal ? `航廈 ${f.arr_terminal}` : null);
+        setVal('rArrGate', f.arr_gate || null);
 
         // Baggage
-        setVal('rBaggage', arr.baggage ? `轉盤 ${arr.baggage}` : null);
-
+        setVal('rBaggage', f.arr_baggage ? `轉盤 ${f.arr_baggage}` : null);
 
         document.getElementById('resultCard').style.display = 'block';
     }
@@ -688,12 +660,11 @@
         const nav = document.getElementById('resultNav');
         nav.innerHTML = '';
         flights.forEach((f, i) => {
-            const dep = f.departure || {};
-            const arr = f.arrival || {};
             const btn = document.createElement('button');
             btn.className = 'result-nav-btn' + (i === 0 ? ' active' : '');
-            const t = formatTime(dep.scheduled) || '';
-            btn.textContent = `${dep.iata || '?'} → ${arr.iata || '?'} ${t}`;
+            const t = formatTime(f.dep_time) || '';
+            const date = formatDate(f.dep_time) || '';
+            btn.textContent = `${f.dep_iata || '?'} → ${f.arr_iata || '?'}  ${date} ${t}`;
             btn.onclick = () => {
                 nav.querySelectorAll('.result-nav-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
@@ -706,20 +677,16 @@
 
     async function searchFlight() {
         const raw = document.getElementById('flightInput').value.trim().toUpperCase().replace(/\s+/g, '');
-        if (!raw) {
-            document.getElementById('flightInput').focus();
-            return;
-        }
+        if (!raw) { document.getElementById('flightInput').focus(); return; }
 
         showLoading();
 
-        const url = `https://api.aviationstack.com/v1/flights?access_key=${API_KEY}&flight_iata=${encodeURIComponent(raw)}`;
+        const url = `https://airlabs.co/api/v9/schedules?flight_iata=${encodeURIComponent(raw)}&api_key=${API_KEY}`;
 
         try {
             const res = await fetch(url);
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const json = await res.json();
-
             hideLoading();
 
             if (json.error) {
@@ -727,19 +694,17 @@
                 return;
             }
 
-            const data = json.data;
+            const data = json.response;
             if (!data || data.length === 0) {
-                showError(`查無班機 ${raw}，請確認班機號碼（如 CI100、BR101）。`);
+                showError(`查無班機 ${raw}，請確認班機號碼（如 CI128、BR101）。`);
                 return;
             }
 
             allFlights = data;
 
             if (data.length > 1) {
-                const notice = document.getElementById('multiNotice');
-                document.getElementById('multiText').textContent =
-                    `找到 ${data.length} 筆班次，請選擇日期`;
-                notice.style.display = 'flex';
+                document.getElementById('multiText').textContent = `找到 ${data.length} 筆班次，請選擇`;
+                document.getElementById('multiNotice').style.display = 'flex';
                 buildNav(data);
             } else {
                 document.getElementById('multiNotice').style.display = 'none';
@@ -749,28 +714,7 @@
             renderFlight(data[0]);
 
         } catch (err) {
-            // Try HTTP fallback (for local/non-HTTPS environments)
-            if (url.startsWith('https://')) {
-                try {
-                    const httpUrl = url.replace('https://', 'http://');
-                    const res2 = await fetch(httpUrl);
-                    if (!res2.ok) throw new Error(`HTTP ${res2.status}`);
-                    const json2 = await res2.json();
-                    hideLoading();
-                    if (json2.error) { showError(`API 錯誤：${json2.error.message}`); return; }
-                    const data2 = json2.data;
-                    if (!data2 || data2.length === 0) { showError(`查無班機 ${raw}。`); return; }
-                    allFlights = data2;
-                    if (data2.length > 1) {
-                        document.getElementById('multiText').textContent = `找到 ${data2.length} 筆班次，請選擇日期`;
-                        document.getElementById('multiNotice').style.display = 'flex';
-                        buildNav(data2);
-                    }
-                    renderFlight(data2[0]);
-                    return;
-                } catch (e2) { /* fall through */ }
-            }
-            showError(`連線失敗：${err.message}。若問題持續請確認網路狀態。`);
+            showError(`連線失敗：${err.message}。請確認網路狀態。`);
         }
     }
 </script>
