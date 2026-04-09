@@ -447,7 +447,7 @@
                     <div class="time-diff" id="rDepDelay"></div>
                 </div>
             </div>
-            <div class="info-grid triple" style="margin-top:10px;">
+            <div class="info-grid" style="margin-top:10px;">
                 <div class="info-item">
                     <div class="info-item-label">出發航廈</div>
                     <div class="info-item-value highlight" id="rDepTerminal">—</div>
@@ -455,10 +455,6 @@
                 <div class="info-item">
                     <div class="info-item-label">登機門</div>
                     <div class="info-item-value highlight" id="rDepGate">—</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-item-label">報到櫃檯</div>
-                    <div class="info-item-value highlight" id="rCheckin">—</div>
                 </div>
             </div>
         </div>
@@ -504,6 +500,36 @@
     </div><!-- /result-card -->
 
 </div><!-- /wrap -->
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+    <div class="nav-tabs">
+        <a class="nav-tab" href="index.html">
+            <span class="nav-icon">🗓️</span>
+            <span>行程</span>
+        </a>
+        <a class="nav-tab" href="calc.html">
+            <span class="nav-icon">💴</span>
+            <span>換算</span>
+        </a>
+        <a class="nav-tab" href="translate.html">
+            <span class="nav-icon">🍜</span>
+            <span>翻譯</span>
+        </a>
+        <a class="nav-tab" href="vault.html">
+            <span class="nav-icon">🎫</span>
+            <span>保險箱</span>
+        </a>
+        <a class="nav-tab" href="usage.html">
+            <span class="nav-icon">📊</span>
+            <span>AI用量</span>
+        </a>
+        <a class="nav-tab active" href="flight.html">
+            <span class="nav-icon">✈️</span>
+            <span>班機</span>
+        </a>
+    </div>
+</nav>
 
 <script>
     const API_KEY = '480b341bde01313ed89d6ff96a21111b';
@@ -680,8 +706,6 @@
         // Baggage
         setVal('rBaggage', arr.baggage ? `轉盤 ${arr.baggage}` : null);
 
-        // Check-in counter (departure)
-        setVal('rCheckin', dep.checkin || null);
 
         document.getElementById('resultCard').style.display = 'block';
     }
