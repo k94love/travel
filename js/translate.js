@@ -1,11 +1,19 @@
 $(function() {
     var API_KEY = null;
-    var API_URL = null;
+
+    var MODELS = {
+        'gemini-3.1-flash-lite-preview': 'Flash Lite（快）',
+        'gemini-2.5-flash':              'Flash 2.5（強）'
+    };
+    var currentModel = 'gemini-3.1-flash-lite-preview';
+
+    function buildApiUrl(key, model) {
+        return 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + key;
+    }
 
     // Bridge: called by Firebase module once key is loaded from Firestore
     window.__setGeminiKey = function(key) {
-        API_KEY  = key;
-        API_URL  = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + key;
+        API_KEY = key;
         // Enable translate button if image is already selected
         if (currentBase64) $('#translateBtn').prop('disabled', false);
     };
@@ -41,6 +49,15 @@ $(function() {
         delete window.__historyInitData;
     }
 
+    // ---- Model selector ----
+    $(document).on('click', '.tr-model-btn', function() {
+        var model = $(this).data('model');
+        if (!MODELS[model]) return;
+        currentModel = model;
+        $('.tr-model-btn').removeClass('active');
+        $(this).addClass('active');
+    });
+
     // ---- File input ----
     $('#menuFileInput').on('change', function(e) {
         var file = e.target.files[0];
@@ -75,13 +92,15 @@ $(function() {
 
     // ---- Translate ----
     $('#translateBtn').on('click', async function() {
-        if (!currentBase64 || !API_URL) return;
+        if (!currentBase64 || !API_KEY) return;
         $('#translateBtn').prop('disabled', true).text('翻譯中...');
         $('#resultArea').hide();
         $('#loadingArea').show();
 
+        var apiUrl = buildApiUrl(API_KEY, currentModel);
+
         try {
-            var res = await fetch(API_URL, {
+            var res = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

@@ -15,13 +15,16 @@ exports.translateMenu = onRequest(
             return;
         }
 
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey.value()}`;
+        const ALLOWED_MODELS = ['gemini-2.5-flash', 'gemini-3.1-flash-lite-preview'];
+        const model = ALLOWED_MODELS.includes(req.body?.model) ? req.body.model : 'gemini-3.1-flash-lite-preview';
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey.value()}`;
 
         try {
+            const { model: _model, ...bodyToForward } = req.body;
             const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(req.body)
+                body: JSON.stringify(bodyToForward)
             });
             const data = await response.json();
             res.status(response.status).json(data);
