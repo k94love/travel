@@ -473,6 +473,62 @@
 
     </div><!-- /result-card -->
 
+    <!-- Route Card (時刻表 fallback) -->
+    <div class="result-card" id="routeCard">
+        <div class="card-header">
+            <div class="card-flight-num" id="rtFlightNum">—</div>
+            <div class="card-airline" id="rtAirline">—</div>
+            <span class="status-badge status-unknown" id="rtStatus">固定時刻表</span>
+        </div>
+        <div class="route-bar">
+            <div class="route-airport">
+                <div class="route-iata" id="rtDepIATA">—</div>
+                <div class="route-city" id="rtDepCity">—</div>
+            </div>
+            <div class="route-arrow">→</div>
+            <div class="route-airport">
+                <div class="route-iata" id="rtArrIATA">—</div>
+                <div class="route-city" id="rtArrCity">—</div>
+            </div>
+        </div>
+        <div class="info-section">
+            <div class="info-section-title"><span>🕐</span> 例行時刻（非即時）</div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-item-label">出發時間</div>
+                    <div class="info-item-value big" id="rtDepTime">—</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-item-label">抵達時間</div>
+                    <div class="info-item-value big" id="rtArrTime">—</div>
+                </div>
+            </div>
+            <div class="info-grid" style="margin-top:10px;">
+                <div class="info-item">
+                    <div class="info-item-label">飛行時間</div>
+                    <div class="info-item-value" id="rtDuration">—</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-item-label">機型</div>
+                    <div class="info-item-value" id="rtAircraft">—</div>
+                </div>
+            </div>
+        </div>
+        <div class="info-section">
+            <div class="info-section-title"><span>📅</span> 飛行日</div>
+            <div class="info-grid single">
+                <div class="info-item">
+                    <div class="info-item-value" id="rtDays">—</div>
+                </div>
+            </div>
+        </div>
+        <div class="info-section" style="background:#fff8e1;border-radius:0 0 18px 18px;">
+            <div style="font-size:0.75em;color:#7d6608;line-height:1.5;">
+                ⚠️ 今日查無即時班次，以上為固定時刻表資訊（不含即時動態）。<br>請於出發當天重新查詢以取得即時資訊。
+            </div>
+        </div>
+    </div><!-- /routeCard -->
+
 </div><!-- /wrap -->
 
 <!-- Bottom Nav -->
@@ -675,43 +731,84 @@
         nav.style.display = 'flex';
     }
 
+    function renderRoute(r) {
+        const DAYS_TW = ['', '週一', '週二', '週三', '週四', '週五', '週六', '週日'];
+        document.getElementById('rtFlightNum').textContent = r.flight_iata || '—';
+        document.getElementById('rtAirline').textContent = AIRLINE_NAMES[r.airline_iata] || r.airline_iata || '—';
+        document.getElementById('rtDepIATA').textContent = r.dep_iata || '—';
+        document.getElementById('rtDepCity').textContent = AIRPORT_NAMES[r.dep_iata] || r.dep_iata || '';
+        document.getElementById('rtArrIATA').textContent = r.arr_iata || '—';
+        document.getElementById('rtArrCity').textContent = AIRPORT_NAMES[r.arr_iata] || r.arr_iata || '';
+        document.getElementById('rtDepTime').textContent = r.dep_time || '—';
+        document.getElementById('rtArrTime').textContent = r.arr_time || '—';
+
+        if (r.duration) {
+            const h = Math.floor(r.duration / 60), m = r.duration % 60;
+            document.getElementById('rtDuration').textContent = `${h} 小時 ${m} 分`;
+        } else {
+            document.getElementById('rtDuration').textContent = '—';
+        }
+
+        document.getElementById('rtAircraft').textContent = r.aircraft_iata || '—';
+
+        if (r.days && r.days.length) {
+            const dayStr = r.days.length === 7 ? '每天' : r.days.map(d => DAYS_TW[d]).join('、');
+            document.getElementById('rtDays').textContent = dayStr;
+        } else {
+            document.getElementById('rtDays').textContent = '—';
+        }
+
+        document.getElementById('routeCard').style.display = 'block';
+    }
+
     async function searchFlight() {
         const raw = document.getElementById('flightInput').value.trim().toUpperCase().replace(/\s+/g, '');
         if (!raw) { document.getElementById('flightInput').focus(); return; }
 
         showLoading();
-
-        const url = `https://airlabs.co/api/v9/schedules?flight_iata=${encodeURIComponent(raw)}&api_key=${API_KEY}`;
+        document.getElementById('routeCard').style.display = 'none';
 
         try {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const json = await res.json();
+            // 先查即時班次
+            const schedRes = await fetch(`https://airlabs.co/api/v9/schedules?flight_iata=${encodeURIComponent(raw)}&api_key=${API_KEY}`);
+            if (!schedRes.ok) throw new Error(`HTTP ${schedRes.status}`);
+            const schedJson = await schedRes.json();
             hideLoading();
 
-            if (json.error) {
-                showError(`API 錯誤：${json.error.message || JSON.stringify(json.error)}`);
+            if (schedJson.error) {
+                showError(`API 錯誤：${schedJson.error.message || JSON.stringify(schedJson.error)}`);
                 return;
             }
 
-            const data = json.response;
-            if (!data || data.length === 0) {
-                showError(`查無班機 ${raw}，請確認班機號碼（如 CI128、BR101）。`);
+            const data = schedJson.response;
+            if (data && data.length > 0) {
+                // 有即時資料
+                allFlights = data;
+                if (data.length > 1) {
+                    document.getElementById('multiText').textContent = `找到 ${data.length} 筆班次，請選擇`;
+                    document.getElementById('multiNotice').style.display = 'flex';
+                    buildNav(data);
+                } else {
+                    document.getElementById('multiNotice').style.display = 'none';
+                    document.getElementById('resultNav').style.display = 'none';
+                }
+                renderFlight(data[0]);
                 return;
             }
 
-            allFlights = data;
+            // 即時查無 → fallback 查固定時刻表
+            document.getElementById('multiNotice').style.display = 'none';
+            document.getElementById('resultNav').style.display = 'none';
 
-            if (data.length > 1) {
-                document.getElementById('multiText').textContent = `找到 ${data.length} 筆班次，請選擇`;
-                document.getElementById('multiNotice').style.display = 'flex';
-                buildNav(data);
+            const routeRes = await fetch(`https://airlabs.co/api/v9/routes?flight_iata=${encodeURIComponent(raw)}&api_key=${API_KEY}`);
+            if (!routeRes.ok) throw new Error(`HTTP ${routeRes.status}`);
+            const routeJson = await routeRes.json();
+
+            if (routeJson.response && routeJson.response.length > 0) {
+                renderRoute(routeJson.response[0]);
             } else {
-                document.getElementById('multiNotice').style.display = 'none';
-                document.getElementById('resultNav').style.display = 'none';
+                showError(`查無班機 ${raw}，請確認班機號碼是否正確（如 CI128、BR101）。`);
             }
-
-            renderFlight(data[0]);
 
         } catch (err) {
             showError(`連線失敗：${err.message}。請確認網路狀態。`);
