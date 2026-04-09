@@ -20,5 +20,9 @@ service cloud.firestore {
     match /tokenUsage/{docId} {
       allow read, write: if true;
     }
+    match /vaultConfig/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
   }
 }

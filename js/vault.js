@@ -6,6 +6,7 @@ $(function () {
     var selectedFile = null;
     var selectedFolder = null;
     var pendingUploadFile = null;
+    var _lazyObserver = null;
 
     // ======== FIREBASE BRIDGE ========
     window.__vaultInit = function (db) {
@@ -62,10 +63,10 @@ $(function () {
         list.forEach(function (f) {
             var isImg = f.mimeType && f.mimeType.startsWith('image/');
             var isPDF = f.mimeType === 'application/pdf';
-            var dataUrl = f.data ? 'data:' + f.mimeType + ';base64,' + f.data : '';
-            var thumb = isImg && dataUrl
-                ? '<img class="vfile-thumb-img" src="' + dataUrl + '" alt="" loading="lazy">'
+            var thumb = isImg && f.data
+                ? '<img class="vfile-thumb-img" data-lazy="' + f.id + '" src="" alt="">'
                 : '<div class="vfile-thumb-icon">' + (isPDF ? '📄' : '📎') + '</div>';
+            var thumbClass = isImg && f.data ? ' vfile-thumb-lazy' : '';
 
             var dateStr = f.createdAt ? fmtDate(f.createdAt) : '';
             var fTag = '';
@@ -77,7 +78,7 @@ $(function () {
                                   : '<div class="vfile-date">' + dateStr + '</div>';
 
             html += '<div class="vfile-card" data-id="' + f.id + '">' +
-                    '<div class="vfile-thumb">' + thumb + '</div>' +
+                    '<div class="vfile-thumb' + thumbClass + '">' + thumb + '</div>' +
                     '<div class="vfile-info">' +
                     '<div class="vfile-name">' + escHtml(f.name) + '</div>' +
                     fTag + sizeTag +
@@ -86,6 +87,47 @@ $(function () {
                     '</div>';
         });
         $('#filesGrid').html(html);
+        initLazyImages();
+    }
+
+    // ======== LAZY LOAD ========
+    function initLazyImages() {
+        if (_lazyObserver) { _lazyObserver.disconnect(); _lazyObserver = null; }
+
+        var imgs = document.querySelectorAll('img[data-lazy]');
+        if (!imgs.length) return;
+
+        if (!('IntersectionObserver' in window)) {
+            // Fallback for old browsers: load all immediately
+            imgs.forEach(function (el) { loadLazyImage(el); });
+            return;
+        }
+
+        _lazyObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    loadLazyImage(entry.target);
+                    _lazyObserver.unobserve(entry.target);
+                }
+            });
+        }, { rootMargin: '150px' }); // 提前 150px 開始載入
+
+        imgs.forEach(function (el) { _lazyObserver.observe(el); });
+    }
+
+    function loadLazyImage(el) {
+        var id   = el.getAttribute('data-lazy');
+        var file = files.find(function (f) { return f.id === id; });
+        if (!file || !file.data) return;
+
+        el.onload = function () {
+            el.classList.add('loaded');
+            // 移除 shimmer
+            var thumb = el.closest('.vfile-thumb');
+            if (thumb) thumb.classList.remove('vfile-thumb-lazy');
+            el.removeAttribute('data-lazy');
+        };
+        el.src = 'data:' + file.mimeType + ';base64,' + file.data;
     }
 
     // ======== FOLDER CHIP CLICK ========

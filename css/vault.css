@@ -4,6 +4,109 @@ body {
     padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
 }
 
+/* ---- Lock Screen ---- */
+.vault-lock {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: linear-gradient(160deg, #2d1f1f 0%, #4a1010 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+.vault-lock.unlocked {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.vlock-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 28px;
+    padding: 36px 28px 32px;
+    width: min(320px, 88vw);
+    text-align: center;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+@keyframes vlock-shake {
+    0%,100% { transform: translateX(0); }
+    20%      { transform: translateX(-10px); }
+    40%      { transform: translateX(10px); }
+    60%      { transform: translateX(-6px); }
+    80%      { transform: translateX(6px); }
+}
+.vlock-card.shake { animation: vlock-shake 0.45s ease; }
+
+.vlock-icon  { font-size: 2.8em; margin-bottom: 10px; }
+.vlock-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2em; font-weight: 800;
+    color: white; margin-bottom: 4px;
+}
+.vlock-sub { font-size: 0.78em; color: rgba(255,255,255,0.55); margin-bottom: 22px; }
+
+/* Dots */
+.vlock-dots {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+.vlock-dots span {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.4);
+    background: transparent;
+    transition: background 0.15s, border-color 0.15s;
+}
+.vlock-dots span.filled {
+    background: var(--pink);
+    border-color: var(--pink);
+    box-shadow: 0 0 8px rgba(255,107,107,0.6);
+}
+
+/* Error */
+.vlock-error {
+    font-size: 0.75em;
+    color: #ff8a80;
+    min-height: 20px;
+    margin-bottom: 18px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.vlock-error.show { opacity: 1; }
+
+/* Numpad */
+.vlock-pad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+.vlock-key {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 14px;
+    color: white;
+    font-size: 1.3em;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    padding: 16px 0;
+    cursor: pointer;
+    transition: background 0.12s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+}
+.vlock-key:active {
+    background: rgba(255,107,107,0.35);
+    transform: scale(0.93);
+}
+.vlock-del {
+    background: rgba(255,255,255,0.06);
+    font-size: 1.1em;
+}
+
 .vault-wrap {
     max-width: 500px;
     margin: 0 auto;
@@ -113,6 +216,18 @@ body {
 }
 .vfile-card:active { transform: scale(0.97); }
 
+/* ---- Lazy load shimmer ---- */
+@keyframes vshimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+}
+.vfile-thumb-lazy {
+    background: linear-gradient(90deg,
+        #f0ebe4 25%, #fdf6ed 50%, #f0ebe4 75%);
+    background-size: 200% 100%;
+    animation: vshimmer 1.4s ease infinite;
+}
+
 .vfile-thumb {
     width: 100%;
     aspect-ratio: 4/3;
@@ -122,7 +237,13 @@ body {
     justify-content: center;
     overflow: hidden;
 }
-.vfile-thumb-img  {  height: 100%; object-fit: cover; }
+.vfile-thumb-img {
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.vfile-thumb-img.loaded { opacity: 1; }
 .vfile-thumb-icon { font-size: 2.5em; }
 
 .vfile-info  { padding: 8px 10px 10px; }

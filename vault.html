@@ -21,6 +21,34 @@
 </head>
 <body>
 
+    <!-- ===== LOCK SCREEN ===== -->
+    <div class="vault-lock" id="vaultLock">
+        <div class="vlock-card">
+            <div class="vlock-icon">🔒</div>
+            <div class="vlock-title">票券保險箱</div>
+            <div class="vlock-sub">請輸入 PIN 碼</div>
+            <div class="vlock-dots" id="vlockDots">
+                <span></span><span></span><span></span>
+                <span></span><span></span><span></span>
+            </div>
+            <div class="vlock-error" id="vlockError"></div>
+            <div class="vlock-pad">
+                <button class="vlock-key" data-key="1">1</button>
+                <button class="vlock-key" data-key="2">2</button>
+                <button class="vlock-key" data-key="3">3</button>
+                <button class="vlock-key" data-key="4">4</button>
+                <button class="vlock-key" data-key="5">5</button>
+                <button class="vlock-key" data-key="6">6</button>
+                <button class="vlock-key" data-key="7">7</button>
+                <button class="vlock-key" data-key="8">8</button>
+                <button class="vlock-key" data-key="9">9</button>
+                <div></div>
+                <button class="vlock-key" data-key="0">0</button>
+                <button class="vlock-key vlock-del" data-key="del">⌫</button>
+            </div>
+        </div>
+    </div>
+
     <div class="vault-wrap">
 
         <!-- Header -->
@@ -85,7 +113,7 @@
             </a>
             <a class="nav-tab" href="usage.html">
                 <span class="nav-icon">📊</span>
-                <span>用量</span>
+                <span>AI用量</span>
             </a>
         </div>
     </nav>
@@ -199,7 +227,7 @@
         import { getAnalytics }  from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
         import {
             getFirestore, collection, addDoc, getDocs,
-            doc, updateDoc, deleteDoc
+            doc, updateDoc, deleteDoc, getDoc
         } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -238,10 +266,87 @@
             async deleteFile(id)         { await deleteDoc(doc(db, FF, id)); }
         };
 
-        if (typeof window.__vaultInit === 'function') {
-            window.__vaultInit(dbFns);
+        // ===== PIN AUTH =====
+        let storedPin = null;
+
+        // Load PIN from Firestore
+        (async () => {
+            try {
+                const snap = await getDoc(doc(db, 'vaultConfig', 'auth'));
+                if (snap.exists()) storedPin = String(snap.data().pin);
+            } catch (e) {
+                console.warn('Failed to load vault PIN:', e);
+            }
+        })();
+
+        function unlockVault() {
+            sessionStorage.setItem('vault_unlocked', '1');
+            document.getElementById('vaultLock').classList.add('unlocked');
+            // Init vault after unlock
+            if (typeof window.__vaultInit === 'function') {
+                window.__vaultInit(dbFns);
+            } else {
+                window.__vaultInitData = dbFns;
+            }
+        }
+
+        // If already unlocked in this session, skip lock screen
+        if (sessionStorage.getItem('vault_unlocked') === '1') {
+            unlockVault();
         } else {
-            window.__vaultInitData = dbFns;
+            // PIN pad logic
+            let entered = '';
+            const MAX = 6;
+
+            function updateDots() {
+                document.querySelectorAll('#vlockDots span').forEach(function (s, i) {
+                    s.classList.toggle('filled', i < entered.length);
+                });
+            }
+
+            function showError(msg) {
+                const el = document.getElementById('vlockError');
+                el.textContent = msg;
+                el.classList.add('show');
+                document.querySelector('.vlock-card').classList.add('shake');
+                setTimeout(function () {
+                    document.querySelector('.vlock-card').classList.remove('shake');
+                }, 500);
+                setTimeout(function () { el.classList.remove('show'); }, 2000);
+            }
+
+            function checkPin() {
+                if (storedPin === null) {
+                    showError('驗證服務載入中，請稍候');
+                    entered = '';
+                    updateDots();
+                    return;
+                }
+                if (entered === storedPin) {
+                    unlockVault();
+                } else {
+                    showError('密碼錯誤，請再試一次');
+                    entered = '';
+                    updateDots();
+                }
+            }
+
+            document.querySelectorAll('.vlock-key').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    const key = this.getAttribute('data-key');
+                    if (key === 'del') {
+                        entered = entered.slice(0, -1);
+                    } else if (entered.length < MAX) {
+                        entered += key;
+                        if (entered.length === MAX) {
+                            updateDots();
+                            setTimeout(checkPin, 150);
+                            return;
+                        }
+                    }
+                    updateDots();
+                });
+            });
         }
 
     </script>
