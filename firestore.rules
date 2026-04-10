@@ -28,5 +28,9 @@ service cloud.firestore {
       allow read: if true;
       allow write: if false;
     }
+    match /maps_API/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
   }
 }
