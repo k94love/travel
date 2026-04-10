@@ -187,6 +187,11 @@
             opacity: 0.8;
             margin-top: 2px;
         }
+        .card-aircraft {
+            font-size: 0.72em;
+            opacity: 0.6;
+            margin-top: 1px;
+        }
         .status-badge {
             display: inline-block;
             margin-top: 8px;
@@ -391,6 +396,7 @@
         <div class="card-header">
             <div class="card-flight-num" id="rFlightNum">—</div>
             <div class="card-airline" id="rAirline">—</div>
+            <div class="card-aircraft" id="rAircraft"></div>
             <span class="status-badge" id="rStatus">—</span>
         </div>
 
@@ -421,7 +427,7 @@
                     <div class="time-diff" id="rDepDelay"></div>
                 </div>
             </div>
-            <div class="info-grid" style="margin-top:10px;">
+            <div class="info-grid triple" style="margin-top:10px;">
                 <div class="info-item">
                     <div class="info-item-label">出發航廈</div>
                     <div class="info-item-value highlight" id="rDepTerminal">—</div>
@@ -429,6 +435,10 @@
                 <div class="info-item">
                     <div class="info-item-label">登機門</div>
                     <div class="info-item-value highlight" id="rDepGate">—</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-item-label">報到櫃台</div>
+                    <div class="info-item-value highlight" id="rCheckIn">—</div>
                 </div>
             </div>
         </div>
@@ -612,6 +622,8 @@
         // Header — AeroDataBox flight number 格式 "CI 128"，移除空格顯示
         document.getElementById('rFlightNum').textContent = (f.number || '—').replace(' ', '');
         document.getElementById('rAirline').textContent = airline.name || '—';
+        const aircraft = f.aircraft || {};
+        document.getElementById('rAircraft').textContent = aircraft.model || '';
 
         const [cls, label] = statusLabel(f.status);
         const badge = document.getElementById('rStatus');
@@ -625,8 +637,8 @@
         setVal('rArrCity', arrAirport.municipalityName || arrAirport.shortName || arrAirport.name || null);
 
         // Departure times — scheduledTime.local, revisedTime.local
-        const depSched = dep.scheduledTime && dep.scheduledTime.local;
-        const depActual = dep.revisedTime && dep.revisedTime.local;
+        const depSched = (dep.scheduledTime || dep.predictedTime || {}).local || null;
+        const depActual = (dep.revisedTime || {}).local || null;
         setVal('rDepSched', formatTime(depSched));
         document.getElementById('rDepSchedDate').textContent = formatDate(depSched) || '';
         setVal('rDepActual', formatTime(depActual));
@@ -634,10 +646,11 @@
 
         setVal('rDepTerminal', dep.terminal ? `航廈 ${dep.terminal}` : null);
         setVal('rDepGate', dep.gate || null);
+        setVal('rCheckIn', dep.checkInDesk ? `${dep.checkInDesk}` : null);
 
         // Arrival times
-        const arrSched = arr.scheduledTime && arr.scheduledTime.local;
-        const arrActual = arr.revisedTime && arr.revisedTime.local;
+        const arrSched = (arr.scheduledTime || arr.predictedTime || {}).local || null;
+        const arrActual = (arr.revisedTime || {}).local || null;
         setVal('rArrSched', formatTime(arrSched));
         document.getElementById('rArrSchedDate').textContent = formatDate(arrSched) || '';
         setVal('rArrActual', formatTime(arrActual));
