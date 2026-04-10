@@ -509,9 +509,39 @@
     </div>
 </nav>
 
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js';
+    import { getFirestore, getDocs, collection } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js';
+
+    const app = initializeApp({
+        apiKey:            'AIzaSyAAIriMdrL4exmhckQr4MUZLqTPkzmh9_s',
+        authDomain:        'trip-a4f93.firebaseapp.com',
+        projectId:         'trip-a4f93',
+        storageBucket:     'trip-a4f93.firebasestorage.app',
+        messagingSenderId: '954243191002',
+        appId:             '1:954243191002:web:3046f9b1d576261249d5e3',
+    });
+    const db = getFirestore(app);
+
+    window.__flightKeysReady = (async () => {
+        try {
+            const snap = await getDocs(collection(db, 'flightConfig'));
+            if (!snap.empty) {
+                const data = snap.docs[0].data();
+                if (data.aerodatabox_key)   window.RAPIDAPI_KEY  = data.aerodatabox_key;
+                if (data.aviationstack_key) window.AVSTACK_KEY   = data.aviationstack_key;
+            }
+        } catch (e) {
+            console.warn('flightConfig load failed, using fallback keys', e);
+        }
+    })();
+</script>
+
 <script>
-    const RAPIDAPI_KEY = 'cabd4cb27bmshfe43a4a8b489f8cp1d76c1jsne2f94f6d02d6';
-    const RAPIDAPI_HOST = 'aerodatabox.p.rapidapi.com';
+    // 預設 fallback（Firestore 載入失敗時使用）
+    window.RAPIDAPI_KEY  = window.RAPIDAPI_KEY  || 'cabd4cb27bmshfe43a4a8b489f8cp1d76c1jsne2f94f6d02d6';
+    window.AVSTACK_KEY   = window.AVSTACK_KEY   || '480b341bde01313ed89d6ff96a21111b';
+    const RAPIDAPI_HOST  = 'aerodatabox.p.rapidapi.com';
     let allFlights = [];
 
     document.getElementById('flightInput').addEventListener('keydown', function(e) {
@@ -692,11 +722,13 @@
         if (!raw) { document.getElementById('flightInput').focus(); return; }
 
         showLoading();
+        // 等待 Firestore key 載入完成（通常已快取，幾乎無延遲）
+        if (window.__flightKeysReady) await window.__flightKeysReady;
 
         try {
             const res = await fetch(`https://aerodatabox.p.rapidapi.com/flights/number/${encodeURIComponent(raw)}`, {
                 headers: {
-                    'x-rapidapi-key': RAPIDAPI_KEY,
+                    'x-rapidapi-key': window.RAPIDAPI_KEY,
                     'x-rapidapi-host': RAPIDAPI_HOST,
                 }
             });
@@ -742,9 +774,8 @@
 
     // skipBaggage=true 表示 AeroDataBox 已有 baggageBelt，不需覆寫
     async function fetchAviationstackData(flightIata, skipBaggage) {
-        const AVSTACK_KEY = '480b341bde01313ed89d6ff96a21111b';
         try {
-            const res = await fetch(`https://api.aviationstack.com/v1/flights?access_key=${AVSTACK_KEY}&flight_iata=${encodeURIComponent(flightIata)}`);
+            const res = await fetch(`https://api.aviationstack.com/v1/flights?access_key=${window.AVSTACK_KEY}&flight_iata=${encodeURIComponent(flightIata)}`);
             if (!res.ok) return;
             const json = await res.json();
             if (json.error || !json.data || json.data.length === 0) return;
