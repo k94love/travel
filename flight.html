@@ -657,7 +657,8 @@
         renderDelay('rArrDelay', calcDelay(arrSched, arrActual) ?? arr.delay ?? null);
 
         setVal('rArrTerminal', arr.terminal ? `航廈 ${arr.terminal}` : null);
-        setVal('rBaggage', arr.baggage ? `轉盤 ${arr.baggage}` : null);
+        const baggageBelt = arr.baggageBelt || arr.baggage || null;
+        setVal('rBaggage', baggageBelt ? `轉盤 ${baggageBelt}` : null);
 
         document.getElementById('routeNotice').style.display = 'none';
         document.getElementById('resultCard').style.display = 'block';
@@ -729,26 +730,44 @@
             }
 
             renderFlight(flights[0]);
-            fetchBaggage(raw);
+            // 航廈優先用 aviationstack；行李轉盤若 AeroDataBox 已有則跳過
+            const arrData = flights[0].arrival || {};
+            const hasBaggageBelt = !!(arrData.baggageBelt || arrData.baggage);
+            fetchAviationstackData(raw, hasBaggageBelt);
 
         } catch (err) {
             showError(`連線失敗：${err.message}。請確認網路狀態。`);
         }
     }
 
-    async function fetchBaggage(flightIata) {
+    // skipBaggage=true 表示 AeroDataBox 已有 baggageBelt，不需覆寫
+    async function fetchAviationstackData(flightIata, skipBaggage) {
         const AVSTACK_KEY = '480b341bde01313ed89d6ff96a21111b';
         try {
             const res = await fetch(`https://api.aviationstack.com/v1/flights?access_key=${AVSTACK_KEY}&flight_iata=${encodeURIComponent(flightIata)}`);
             if (!res.ok) return;
             const json = await res.json();
             if (json.error || !json.data || json.data.length === 0) return;
-            // 找第一筆有行李轉盤資料的航班
-            const item = json.data.find(d => d.arrival && d.arrival.baggage) || json.data[0];
-            const baggage = item && item.arrival && item.arrival.baggage;
-            setVal('rBaggage', baggage ? `轉盤 ${baggage}` : null);
+
+            // 找最佳記錄：優先有出發航廈的
+            const item = json.data.find(d => d.departure && d.departure.terminal) || json.data[0];
+
+            // 優先覆寫出發航廈
+            if (item.departure && item.departure.terminal) {
+                setVal('rDepTerminal', `航廈 ${item.departure.terminal}`);
+            }
+            // 優先覆寫抵達航廈
+            if (item.arrival && item.arrival.terminal) {
+                setVal('rArrTerminal', `航廈 ${item.arrival.terminal}`);
+            }
+            // 行李轉盤：只在 AeroDataBox 沒有時才補
+            if (!skipBaggage) {
+                const baggageItem = json.data.find(d => d.arrival && d.arrival.baggage) || item;
+                const baggage = baggageItem.arrival && baggageItem.arrival.baggage;
+                setVal('rBaggage', baggage ? `轉盤 ${baggage}` : null);
+            }
         } catch (e) {
-            // 靜默失敗，保持 —
+            // 靜默失敗
         }
     }
 </script>
