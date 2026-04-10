@@ -32,7 +32,7 @@
                     <div class="nb-header-sub">AI 推薦・美食景點一把罩</div>
                 </div>
             </div>
-            <div class="nb-powered">by Gemini AI</div>
+            <div class="nb-powered">by Google Maps</div>
         </div>
 
         <!-- Location Card -->
@@ -146,7 +146,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import { getAnalytics }  from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
         import {
-            getFirestore, collection, addDoc, getDocs
+            getFirestore, collection, getDocs
         } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -163,24 +163,7 @@
         getAnalytics(app);
         const db = getFirestore(app);
 
-        // Load Gemini API key
-        (async () => {
-            try {
-                const snap = await getDocs(collection(db, 'gemini_API'));
-                if (!snap.empty) {
-                    const key = snap.docs[0].data().key;
-                    if (key && typeof window.__setGeminiKey === 'function') {
-                        window.__setGeminiKey(key);
-                    } else {
-                        window.__pendingGeminiKey = key;
-                    }
-                }
-            } catch (e) {
-                console.warn('Failed to load Gemini key:', e);
-            }
-        })();
-
-        // Load Google Maps API key (optional — stored in maps_API collection)
+        // Load Google Maps API key from Firestore
         (async () => {
             try {
                 const snap = await getDocs(collection(db, 'maps_API'));
@@ -193,22 +176,9 @@
                     }
                 }
             } catch (e) {
-                // Maps key not required — AI-only mode
+                console.warn('Failed to load Maps key:', e);
             }
         })();
-
-        // Token usage saver
-        window.__saveTokenUsage = async function(usageMeta, model) {
-            try {
-                await addDoc(collection(db, 'tokenUsage'), {
-                    model:        model,
-                    inputTokens:  usageMeta.promptTokenCount      || 0,
-                    outputTokens: usageMeta.candidatesTokenCount  || 0,
-                    totalTokens:  usageMeta.totalTokenCount       || 0,
-                    ts:           Date.now()
-                });
-            } catch(e) {}
-        };
     </script>
 
 </body>

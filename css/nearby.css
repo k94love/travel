@@ -573,10 +573,34 @@ body {
     line-height: 1.5;
 }
 
-/* ---- Price level dots ---- */
+/* ---- Price level ---- */
 .nb-price {
     font-size: 0.72em;
     color: #66bb6a;
     font-weight: 700;
     letter-spacing: 1px;
+}
+
+/* ---- Extra row (open badge + price) ---- */
+.nb-extra-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+/* ---- Open/Closed badge ---- */
+.nb-open-badge {
+    font-size: 0.68em;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 10px;
+}
+.nb-open-badge.open   { background: #e8f5e9; color: #2e7d32; }
+.nb-open-badge.closed { background: #fce4ec; color: #c62828; }
+
+/* ---- Editorial summary (no AI label) ---- */
+.nb-card-desc.nb-summary::before {
+    content: '📝 簡介';
+    color: var(--text-light);
 }
