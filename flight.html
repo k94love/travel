@@ -729,9 +729,26 @@
             }
 
             renderFlight(flights[0]);
+            fetchBaggage(raw);
 
         } catch (err) {
             showError(`連線失敗：${err.message}。請確認網路狀態。`);
+        }
+    }
+
+    async function fetchBaggage(flightIata) {
+        const AVSTACK_KEY = '480b341bde01313ed89d6ff96a21111b';
+        try {
+            const res = await fetch(`https://api.aviationstack.com/v1/flights?access_key=${AVSTACK_KEY}&flight_iata=${encodeURIComponent(flightIata)}`);
+            if (!res.ok) return;
+            const json = await res.json();
+            if (json.error || !json.data || json.data.length === 0) return;
+            // 找第一筆有行李轉盤資料的航班
+            const item = json.data.find(d => d.arrival && d.arrival.baggage) || json.data[0];
+            const baggage = item && item.arrival && item.arrival.baggage;
+            setVal('rBaggage', baggage ? `轉盤 ${baggage}` : null);
+        } catch (e) {
+            // 靜默失敗，保持 —
         }
     }
 </script>
